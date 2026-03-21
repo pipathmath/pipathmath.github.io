@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orlando | Expert Math Tutoring</title>
     <style>
-        /* This imports a clean, modern font similar to your screenshot */
+        /* This imports a clean, modern font */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
         body {
@@ -13,14 +13,51 @@
             color: #222;
             line-height: 1.6;
             margin: 0;
-            padding: 50px 20px;
             background-color: #ffffff;
         }
+
+        /* --- HEADER & NAVIGATION STYLES --- */
+        header {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 20px;
+        }
+        .header-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #555;
+        }
+        nav a {
+            margin-left: 25px;
+            color: #666;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        nav a:hover {
+            color: #222;
+        }
+
+        /* --- BANNER STYLES --- */
+        .banner {
+            width: 100%;
+            height: 250px; 
+            background-image: url('duke_cherry_blossoms.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-color: #e0e0e0; 
+            margin-bottom: 50px;
+        }
+
+        /* --- TWO-COLUMN LAYOUT STYLES --- */
         .container {
             max-width: 1000px;
             margin: 0 auto;
             display: flex;
             gap: 60px;
+            padding: 0 20px 50px 20px;
         }
         .left-column {
             width: 30%;
@@ -106,6 +143,10 @@
 
         /* Makes it stack vertically on mobile phones */
         @media (max-width: 768px) {
+            header { 
+                flex-direction: column; 
+                gap: 15px; 
+            }
             .container {
                 flex-direction: column;
             }
@@ -120,6 +161,17 @@
 </head>
 <body>
 
+<header>
+    <div class="header-name">Orlando Ferrer</div>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="tutoring.html">Tutoring Services</a>
+        <a href="contact.html">Contact Me</a>
+    </nav>
+</header>
+
+<div class="banner"></div>
+
 <div class="container">
     <div class="left-column">
         <img src="Orlando.png" alt="Profile Picture" class="profile-img">
@@ -128,6 +180,7 @@
         <div class="info-section">
             <strong>Email</strong>
             <a href="mailto:pipathmath@gmail.com">pipathmath@gmail.com</a>            
+            
             <strong>Location</strong>
             Apex, NC
             
