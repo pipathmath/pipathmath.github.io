@@ -28,17 +28,17 @@
         nav a { margin-left: 25px; color: #666; text-decoration: none; font-size: 1rem; }
         nav a:hover { color: #222; }
 
-        /* --- BANNER --- */
+        /* --- BANNER STYLES --- */
         .banner {
             width: 100%;
-            height: 250px; 
-            background-image: url('duke_cherry_blossoms.jpg'); 
+            aspect-ratio: 5 / 1; /* The width will always be 4x the height */
+            min-height: 150px; /* Prevents it from getting too tiny on small phones */
+            background-image: url('Duke_img.jpeg'); 
             background-size: cover;
-            background-position: center;
+            background-position: bottom;
             background-color: #e0e0e0; 
             margin-bottom: 50px;
         }
-
         /* --- PAGE CONTENT & FORM --- */
         .container {
             max-width: 800px;
