@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orlando Ferrer | Resume</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #222;
+            line-height: 1.6;
+            margin: 0;
+            background-color: #ffffff;
+        }
+
+        /* --- HEADER & NAVIGATION --- */
+        header {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 20px;
+        }
+        .header-name { font-size: 1.3rem; font-weight: 700; color: #555; }
+        nav a { margin-left: 25px; color: #666; text-decoration: none; font-size: 1rem; }
+        nav a:hover { color: #222; }
+
+        /* --- BANNER --- */
+        .banner {
+            width: 100%;
+            aspect-ratio: 5 / 1; 
+            min-height: 150px; 
+            background-image: url('Duke_img.jpeg'); 
+            background-size: cover;
+            background-position: bottom;
+            background-color: #e0e0e0; 
+            margin-bottom: 40px; 
+        }
+
+        /* --- PDF CONTAINER --- */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px 50px 20px;
+            text-align: center;
+        }
+        h1 { font-size: 2.5rem; margin-bottom: 20px; font-weight: 700; letter-spacing: -1px; }
+        
+        iframe {
+            width: 100%;
+            height: 800px; /* Makes the viewer nice and tall */
+            border: 1px solid #ccc; /* Adds a clean border around the PDF */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* Soft shadow for a modern look */
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 15px; }
+            iframe { height: 600px; } /* Slightly shorter on mobile phones */
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-name">Orlando Ferrer</div>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="resume.html">Resume</a>
+        <a href="contact.html">Contact Me</a>
+    </nav>
+</header>
+
+<div class="banner"></div>
+
+<div class="container">
+    <h1>Resume</h1>
+    <iframe src="resume.pdf" title="Orlando Ferrer Resume">
+        <p>Your browser does not support viewing PDFs directly. <br>
+        <a href="resume.pdf">Click here to download my Resume.</a></p>
+    </iframe>
+</div>
+
+</body>
+</html>
