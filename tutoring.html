@@ -19,19 +19,34 @@
         .banner { width: 100%; aspect-ratio: 5 / 1; min-height: 150px; background-image: url('Duke_img.jpeg'); background-size: cover; background-position: bottom; background-color: #e0e0e0; margin-bottom: 40px; }
 
         /* --- CONTENT CONTAINER --- */
-        .container { max-width: 800px; margin: 0 auto; padding: 0 20px 50px 20px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px 50px 20px; }
         h1 { font-size: 2.5rem; margin-bottom: 20px; font-weight: 700; letter-spacing: -1px; text-align: center; }
         p.intro { text-align: center; font-size: 1.1rem; color: #444; margin-bottom: 40px; }
         
-        .experience-item { margin-bottom: 35px; background: #f9f9f9; padding: 25px; border-radius: 8px; border: 1px solid #eee; }
-        .experience-title { font-weight: 700; font-size: 1.3rem; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 10px;}
-        .experience-date { font-size: 0.95rem; color: #555; margin-bottom: 15px; }
-        ul { padding-left: 20px; margin-top: 5px; }
-        li { margin-bottom: 10px; }
+        /* --- PILL SHAPED SUBJECT TAGS --- */
+        .subject-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 50px; }
+        .subject-pill { border: 1px solid #444; border-radius: 25px; padding: 6px 18px; font-size: 0.95rem; color: #333; }
+        
+        /* --- TWO COLUMN SERVICES LAYOUT --- */
+        h2.section-title { text-align: center; font-size: 2rem; border-bottom: 2px solid #ddd; padding-bottom: 15px; margin-bottom: 30px; }
+        .services-row { display: flex; gap: 40px; margin-bottom: 35px; }
+        .service-column { flex: 1; background: #f9f9f9; padding: 30px; border-radius: 8px; border: 1px solid #eee; }
+        .service-column h3 { font-size: 1.4rem; margin-top: 0; margin-bottom: 20px; color: #2b3a55; }
+        
+        .tier { margin-bottom: 25px; }
+        .tier-title { font-weight: 700; font-size: 1.1rem; margin: 0 0 5px 0; }
+        .tier-price { font-weight: 600; color: #2b3a55; font-size: 1.05rem; margin: 0 0 10px 0; }
+        .tier-desc { font-size: 0.95rem; color: #555; margin: 0; }
+
+        .note { text-align: center; font-size: 0.9rem; color: #666; font-style: italic; margin-bottom: 30px; }
         a { color: #2b3a55; text-decoration: none; font-weight: 600; }
         a:hover { text-decoration: underline; }
 
-        @media (max-width: 768px) { header { flex-direction: column; gap: 15px; } }
+        /* Makes the columns stack on mobile phones */
+        @media (max-width: 768px) { 
+            header { flex-direction: column; gap: 15px; } 
+            .services-row { flex-direction: column; gap: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -48,36 +63,69 @@
 <div class="banner"></div>
 
 <div class="container">
-    <h1>Tutoring & Teaching Services</h1>
-    <p class="intro">I offer specialized, one-on-one instruction tailored to your specific goals, as well as focused group cohorts for test prep. Whether you need ongoing support for a difficult course, intensive prep for exams, or guidance on your academic career, my goal is to help you succeed!</p>
-
-    <div class="experience-item">
-        <p class="experience-title">Specialty Subjects</p>
-        <ul>
-            <li><strong>Foundational Math:</strong> Elementary and Middle School Math, Pre-Algebra, and fundamental problem-solving skills.</li>
-            <li><strong>High School & AP Math:</strong> AP Calculus (AB & BC), Pre-Calculus, AP Statistics, Algebra, Geometry, Trigonometry.</li>
-            <li><strong>College Level:</strong> Linear Algebra, Discrete Math, Probability, Calculus, Differential Equations, Real Analysis.</li>
-            <li><strong>Programming:</strong> Python and R for data analysis and modeling.</li>
-        </ul>
+    <h1>Subjects</h1>
+    
+    <div class="subject-container">
+        <div class="subject-pill">AP Calculus AB/BC</div>
+        <div class="subject-pill">Calculus 1, 2, & 3</div>
+        <div class="subject-pill">Statistics</div>
+        <div class="subject-pill">Linear Algebra</div>
+        <div class="subject-pill">Geometry</div>
+        <div class="subject-pill">Algebra 1 & 2</div>
+        <div class="subject-pill">College Algebra</div>
+        <div class="subject-pill">Pre-Calculus</div>
+        <div class="subject-pill">Trigonometry</div>
+        <div class="subject-pill">Discrete Mathematics</div>
+        <div class="subject-pill">Probability</div>
+        <div class="subject-pill">Python & R</div>
+        <div class="subject-pill">SAT Math</div>
     </div>
 
-    <div class="experience-item">
-        <p class="experience-title">1-on-1 Mentorship & Coaching Packages</p>
-        <p class="experience-date"><em>Note: All listed rates are for remote Zoom sessions. In-person tutoring within the Apex, NC area is available upon request (<a href="contact.html">contact me</a> for local availability and pricing).</em></p>
-        <ul>
-            <li><strong>Single Session Evaluation:</strong> A comprehensive 60-minute diagnostic session to identify gaps in understanding and map out a customized study plan. <em>$120</em></li>
-            <li><strong>Short-Term Exam Prep (4 Sessions):</strong> A focused, intensive review ideal for mastering a difficult unit or preparing for an upcoming midterm or final exam. <em>$450</em></li>
-            <li><strong>Long-Term Semester Support & Coaching (8 Sessions):</strong> Consistent, weekly guidance to build deep, long-term understanding. <em>Flexible format: These sessions can be used either for help on the coursework, or for coaching for college applications. The coaching includes personal statement feedback, research/program advice, and discussing how to make college applications stronger.</em> <em>$800 (Best Value)</em></li>
-        </ul>
-    </div>
+    <h2 class="section-title">Tutoring Services</h2>
+    <p class="note">All listed rates are for remote Zoom sessions. In-person tutoring within the Apex, NC area is available upon request (<a href="contact.html">contact me</a> for local availability and pricing).</p>
 
-    <div class="experience-item">
-        <p class="experience-title">Upcoming Group Courses (Waitlist Open)</p>
-        <ul>
-            <li><strong>Comprehensive SAT Math Prep (6-Week Cohort):</strong> A structured, intensive deep-dive into the strategies and concepts needed to maximize your SAT Math score. <em>Dates & Pricing TBA.</em> <a href="contact.html">Contact me to join the early-access waitlist!</a></li>
-        </ul>
+    <div class="services-row">
+        
+        <div class="service-column">
+            <h3>One-on-One Tutoring</h3>
+            
+            <div class="tier">
+                <p class="tier-title">Single Session</p>
+                <p class="tier-price">$120 / hr</p>
+                <p class="tier-desc">A flexible, one-time session to conquer a difficult unit, prep for an exam, or get targeted help exactly when you need it.</p>
+            </div>
+
+            <div class="tier">
+                <p class="tier-title">Consistent Support</p>
+                <p class="tier-price">$100 / hr</p>
+                <p class="tier-desc">Discounted rate for students who commit to 2 or more sessions per week. Ideal for building deep, long-term understanding throughout the semester.</p>
+            </div>
+        </div>
+
+        <div class="service-column">
+            <h3>Group Tutoring</h3>
+            
+            <div class="tier">
+                <p class="tier-title">Small Group (2 Students)</p>
+                <p class="tier-price">$65 / hr per student</p>
+                <p class="tier-desc">Perfect for classmates or friends taking the same course who want to study and review material together.</p>
+            </div>
+
+            <div class="tier">
+                <p class="tier-title">Study Group (3+ Students)</p>
+                <p class="tier-price">$50 / hr per student</p>
+                <p class="tier-desc">A highly collaborative and cost-effective way to prepare for major exams and master complex topics as a team.</p>
+            </div>
+
+            <div class="tier">
+                <p class="tier-title">Upcoming SAT Cohort</p>
+                <p class="tier-price">Pricing TBA</p>
+                <p class="tier-desc">A 6-week intensive deep-dive into the strategies needed to maximize your SAT Math score. <a href="contact.html">Contact me to join the waitlist!</a></p>
+            </div>
+        </div>
+
     </div>
-</div>
+    </div>
 
 </body>
 </html>
