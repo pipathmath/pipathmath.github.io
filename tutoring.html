@@ -44,10 +44,21 @@
         a:hover { text-decoration: underline; }
 
         /* Makes the columns stack on mobile phones */
+        /* --- MOBILE PHONE FIXES --- */
         @media (max-width: 768px) { 
+            /* Centers the header and stops links from wrapping */
             header { flex-direction: column; gap: 15px; } 
+            nav { display: flex; justify-content: center; gap: 15px; width: 100%; }
+            nav a { margin-left: 0; white-space: nowrap; font-size: 0.95rem; }
+            
+            /* Stacks columns and stops image bleeding */
+            .container { display: flex; flex-direction: column; }
             .services-row { flex-direction: column; gap: 20px; }
+            .left-column, .right-column { width: 100%; padding: 0; }
+            .profile-img { max-width: 200px; height: auto; margin: 0 auto 20px auto; display: block; }
         }
+
+
     </style>
 </head>
 <body>
