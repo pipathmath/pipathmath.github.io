@@ -95,8 +95,11 @@
         }
         button:hover { background-color: #444; }
 
-        @media (max-width: 768px) {
+          @media (max-width: 768px) {
             header { flex-direction: column; gap: 15px; }
+            nav { display: flex; justify-content: center; gap: 15px; width: 100%; flex-wrap: wrap; }
+            nav a { margin-left: 0; white-space: nowrap; font-size: 0.95rem; }
+        }
         }
     </style>
 
@@ -109,6 +112,7 @@
     <nav>
         <a href="index.html">Home</a>
         <a href="tutoring.html">Tutoring Services</a>
+        <a href="sat_math_bootcamp_page.html">SAT Math Bootcamp</a>
         <a href="contact.html">Contact Me</a>
     </nav>
 </header>
