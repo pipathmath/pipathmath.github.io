@@ -56,11 +56,13 @@
 
         /* Makes the columns stack on mobile phones */
         /* --- MOBILE PHONE FIXES --- */
+
+      /* --- MOBILE PHONE FIXES --- */
         @media (max-width: 768px) { 
-            /* Centers the header and stops links from wrapping */
             header { flex-direction: column; gap: 15px; } 
-            nav { display: flex; justify-content: center; gap: 15px; width: 100%; }
+            nav { display: flex; justify-content: center; gap: 15px; width: 100%; flex-wrap: wrap; }
             nav a { margin-left: 0; white-space: nowrap; font-size: 0.95rem; }
+
             
             /* Stacks columns and stops image bleeding */
             .container { display: flex; flex-direction: column; }
