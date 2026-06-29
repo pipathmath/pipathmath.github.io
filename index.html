@@ -28,14 +28,20 @@
         }
 
         /* --- HEADER & NAVIGATION STYLES --- */
+
+      /* ISSUE 1: Keep the top header name on the left side of the page on desktop */
         header {
-            max-width: 1000px;
-            margin: 0 auto;
+            max-width: none;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 30px 20px;
+            padding: 30px 32px;
         }
+
+
         .header-name {
             font-size: 1.3rem;
             font-weight: 700;
@@ -165,15 +171,13 @@
 
       /* --- MOBILE PHONE FIXES --- */
 
-      @media (max-width: 768px) { 
-      header { flex-direction: column; gap: 15px; } 
-      nav { display: flex; justify-content: center; gap: 15px; width: 100%; flex-wrap: wrap; }
-      nav a { margin-left: 0; white-space: nowrap; font-size: 0.95rem; }
-  
-      .container { 
-          display: flex; 
-          flex-direction: column; 
-          padding: 0 20px 50px 20px;
+      @media (max-width: 768px) {
+          header {
+              flex-direction: column;
+              align-items: center;
+              gap: 15px;
+              padding: 30px 20px;
+          }
       }
   
       .services-row { flex-direction: column; gap: 20px; }
@@ -230,7 +234,8 @@
       }
       
       .youtube-section p {
-          max-width: 820px;
+          max-width: none;
+          width: 100%;
       }
       
       .video-wrapper {
