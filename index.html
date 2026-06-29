@@ -171,38 +171,80 @@
 
       /* --- MOBILE PHONE FIXES --- */
 
-      @media (max-width: 768px) {
-          header {
-              flex-direction: column;
-              align-items: center;
-              gap: 15px;
-              padding: 30px 20px;
-          }
-      }
-  
-      .services-row { flex-direction: column; gap: 20px; }
-  
-      .left-column, .right-column { 
-          width: 100%; 
-          max-width: none;
-          padding: 0; 
-      }
-  
-      .right-column p,
-      .right-column h1,
-      .right-column h2,
-      .right-column h3,
-      .right-column .cta-button {
-          max-width: none;
-      }
-  
-      .profile-img { 
-          max-width: 200px; 
-          height: auto; 
-          margin: 0 auto 20px auto; 
-          display: block; 
-      }
-  }
+      /* MOBILE RESTORE / FIX */
+@media (max-width: 768px) {
+    header {
+        width: auto;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 30px 20px;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        box-sizing: border-box;
+    }
+
+    header nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    header nav a {
+        margin-left: 0;
+        white-space: nowrap;
+        font-size: 0.95rem;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        padding: 0 20px 50px 20px;
+    }
+
+    .left-column,
+    .right-column {
+        flex: none;
+        width: 100%;
+        max-width: none;
+        padding: 0;
+    }
+
+    .profile-img {
+        max-width: 200px;
+        height: auto;
+        margin: 0 auto 20px auto;
+        display: block;
+    }
+
+    .youtube-section {
+        width: 100%;
+        max-width: none;
+        margin: 20px 0 50px 0;
+        padding: 0;
+    }
+
+    .youtube-section p {
+        max-width: none;
+        width: 100%;
+    }
+
+    .video-wrapper {
+        width: 100%;
+        max-width: none;
+    }
+
+    .left-column .cta-button {
+        display: block;
+        text-align: center;
+        width: auto;
+        box-sizing: border-box;
+    }
+}
 
 
 
