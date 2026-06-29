@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAT Math Bootcamp | Orlando Ferrer</title>
     <style>
-        /* --- GLOBAL STYLES --- */
+        /* --- ORIGINAL GLOBAL STYLES FROM INDEX.HTML --- */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
         body {
@@ -28,40 +28,33 @@
 
         /* --- HEADER & NAVIGATION STYLES --- */
         header {
-            width: 100%;
-            box-sizing: border-box;
-            margin: 0;
+            max-width: 1000px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 22px 32px;
+            padding: 30px 20px;
         }
-
         .header-name {
             font-size: 1.3rem;
             font-weight: 700;
             color: #555;
         }
-
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-
         nav a {
+            margin-left: 25px;
             color: #666;
             text-decoration: none;
             font-size: 1rem;
         }
-
         nav a:hover {
             color: #222;
         }
 
+        /* --- BANNER STYLES (Identical to your index.html) --- */
+
         /* --- BOOTCAMP CONTENT STYLES --- */
         .content-container {
-            max-width: 800px;
+            max-width: 800px; /* Centered, single-column width for easy reading */
             margin: 0 auto;
             padding: 0 20px 50px 20px;
         }
@@ -131,51 +124,31 @@
             margin-top: 50px;
         }
 
-        .form-wrapper iframe {
-            max-width: 100%;
-        }
-
         /* --- MOBILE PHONE FIXES --- */
         @media (max-width: 768px) { 
-            header {
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
-                padding: 30px 20px;
-                text-align: center;
-            }
-
-            nav {
-                display: flex;
-                justify-content: center;
-                gap: 15px;
-                width: 100%;
-                flex-wrap: wrap;
-            }
-
-            nav a {
-                white-space: nowrap;
-                font-size: 0.95rem;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
+            header { flex-direction: column; gap: 15px; } 
+            nav { display: flex; justify-content: center; gap: 15px; width: 100%; flex-wrap: wrap; }
+            nav a { margin-left: 0; white-space: nowrap; font-size: 0.95rem; }
+            h1 { font-size: 2rem; }
         }
 
     </style>
 </head>
 <body>
 
+<!-- EXACT MATCH TO YOUR SITE HEADER -->
 <header>
     <div class="header-name">Dr. Orlando Ferrer</div>
     <nav>
         <a href="index.html">Home</a>
         <a href="tutoring.html">Tutoring Services</a>
+        <!-- Highlighting the current page slightly -->
         <a href="sat_math_bootcamp_page.html" style="color: #222; font-weight: 600;">SAT Math Bootcamp</a>
         <a href="contact.html">Contact Me</a>
     </nav>
 </header>
+
+<!-- EXACT MATCH TO YOUR SITE BANNER -->
 
 <div class="content-container">
     <img src="Bootcamp header.png" alt="PiPath's Digital SAT Math Bootcamp" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 25px; display: block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
@@ -204,6 +177,7 @@
     </ul>
     <p><strong>How it works in class:</strong> During our 75-minute live sessions, <strong>all students learn the same core concepts and strategies together.</strong> The differentiation happens entirely in the homework. This ensures that Foundational students are fully supported in keeping up with the exact same topics, while Advanced students are constantly challenged by higher-difficulty applications through homework.</p>
 
+
     <h2>What We Cover</h2>
     <p>Over our 8 sessions, we aggressively target the highest-yield topics across the four main SAT Math domains. Instead of randomly reviewing topics, we follow a progressive, week-by-week syllabus designed for maximum score growth:</p>
     <ul>
@@ -228,13 +202,17 @@
         <li><strong>Timed Problem-Solving Sprints:</strong> Students solve problems in short, timed bursts with live review to build test-day pacing.</li>
         <li><strong>Personalized Homework:</strong> Students complete targeted practice based on their specific struggle areas.</li>
     </ol>
-
     <p style="text-align: center; font-size: 1.15rem; font-weight: 600; color: #00539B; margin-top: 50px; margin-bottom: -20px;">
         Want to enroll? Fill out the interest form below and we will follow up with next steps!
     </p>
 
+    <!-- WRAPPER THAT FORCES THE FORM TO BE CENTERED -->
     <div class="form-wrapper">
+        
+        <!-- PASTE YOUR GOOGLE FORM HTML EMBED CODE BELOW THIS LINE -->
+        
         <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdt0DUPVoIcfJ0jj0zEf_qMD31tXPWPHJiQN7XeJCpN6ysRcw/viewform?embedded=true" width="640" height="1817" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+        
     </div>
 
 </div>
