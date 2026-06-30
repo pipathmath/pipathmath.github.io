@@ -55,6 +55,38 @@ All structured data was validated as well-formed JSON before sign-off. All chang
 
 ---
 
+## Per-page titles, descriptions & target keywords
+
+When a page shows up in Google, the searcher sees the **title** (blue clickable line) and the **description** (grey summary below it) — together called the *search snippet*. Both are tags we control, and both are written below. Keywords are not a separate hidden tag (Google ignores `meta keywords`); they work by appearing naturally in the title, description, and page content. The "target keywords" column lists the searches each page is written to match.
+
+### `index.html` (home)
+- **Title:** `PiPath Academy | Math Tutoring & SAT Prep with Dr. Orlando Ferrer`
+- **Description:** *Online math tutoring and SAT prep from Dr. Orlando Ferrer, Duke Math PhD. Algebra through calculus, statistics, and SAT Math. Based in Apex, NC; available remotely.*
+- **Target keywords:** PiPath Academy · math tutoring · SAT prep · online math tutor · Duke Math PhD tutor · math tutor Apex NC · Dr. Orlando Ferrer
+
+### `tutoring.html`
+- **Title:** `Math Tutoring Services & Rates | PiPath Academy`
+- **Description:** *One-on-one and small-group math tutoring with Dr. Orlando Ferrer, Duke Math PhD: AP Calculus, statistics, linear algebra, SAT Math, and all K-12 math. Remote Zoom sessions; in-person in Apex, NC.*
+- **Target keywords:** math tutoring services · math tutor rates · AP Calculus tutor · statistics tutor · linear algebra tutor · SAT Math tutor · online / remote math tutor · K-12 math tutor · Apex NC
+
+### `sat_math_bootcamp_page.html`
+- **Title:** `Digital SAT Math Bootcamp | 4-Week Online Course | PiPath Academy`
+- **Description:** *A live, 4-week Digital SAT Math Bootcamp led by Dr. Orlando Ferrer, Duke Math PhD. 10 hours of online instruction, Desmos strategies, and personalized homework for $299. Starts July 14.*
+- **Target keywords:** Digital SAT Math Bootcamp · SAT Math course · online SAT Math prep · 4-week SAT bootcamp · SAT Desmos strategies · summer SAT prep
+
+### `contact.html`
+- **Title:** `Contact | PiPath Academy Math Tutoring`
+- **Description:** *Get in touch with Dr. Orlando Ferrer at PiPath Academy about math tutoring or SAT prep. Send your math goals and receive a reply shortly.*
+- **Target keywords:** contact PiPath Academy · math tutor contact · book math tutoring
+
+### `resume.html`
+- **Title:** `Resume | Dr. Orlando Ferrer | PiPath Academy`
+- **Description:** none — set to `noindex` so it stays out of search results (it's a personal résumé, not a marketing page). No keywords targeted.
+
+> **Note on keyword limits:** these snippets seed the right terms, but ranking for competitive phrases (e.g. "SAT Math tutor") ultimately needs *body content* using those words and external trust signals. That's what Round 2 (FAQ + keyword copy) is for. The titles/descriptions here are the foundation, not the whole job.
+
+---
+
 ## The strategy, in plain terms
 
 Two audiences, one foundation.
