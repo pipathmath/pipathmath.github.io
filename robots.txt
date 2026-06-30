@@ -1,0 +1,28 @@
+# PiPath Academy — robots.txt
+# Allow all standard search crawlers
+User-agent: *
+Allow: /
+
+# Explicitly welcome major AI answer-engine crawlers (AEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://www.pipathacademy.com/sitemap.xml
