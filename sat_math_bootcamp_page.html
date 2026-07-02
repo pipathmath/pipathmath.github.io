@@ -140,6 +140,12 @@
             width: 100%;
             margin-top: 50px;
         }
+      .stripe-button-wrapper {
+          display: flex;
+          justify-content: center;
+          width: 100%;
+          margin-top: 24px;
+        }
 
         /* --- MOBILE PHONE FIXES --- */
         @media (max-width: 768px) { 
@@ -270,17 +276,23 @@
         
     </div>
   <section id="reserve-seat" class="payment-section">
-    <h2>Reserve Your Student’s Seat</h2>  
-    <!-- Stripe Buy Button code goes here -->
-          <script async
-          src="https://js.stripe.com/v3/buy-button.js">
-        </script>
-        
-        <stripe-buy-button
-          buy-button-id="buy_btn_1TobudCmZiMegzaXoDQ1teMY"
-          publishable-key="pk_live_51ToZdbCmZiMegzaXWGcwh4htkN8SbghPAXRhAvQUxVGAHD0IW1jdGR9DF6aEc8CHk576n3bDXl83nzggkfsXAJbM00u1W2Dy1J"
-        >
-        </stripe-buy-button>
+    <h2>Enrollment Open: Reserve Your Student’s Seat</h2> 
+  
+    <p>
+      Enrollment is limited. The payment button uses Stripe checkout and will stop
+      accepting payments once all seats have been reserved. If the course is full,
+      Stripe will show that enrollment is closed before any payment is collected.
+    </p>
+  
+    <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+  
+    <div class="stripe-button-wrapper">
+      <stripe-buy-button
+        buy-button-id="buy_btn_1TobudCmZiMegzaXoDQ1teMY"
+        publishable-key="pk_live_51ToZdbCmZiMegzaXWGcwh4htkN8SbghPAXRhAvQUxVGAHD0IW1jdGR9DF6aEc8CHk576n3bDXl83nzggkfsXAJbM00u1W2Dy1J"
+      >
+      </stripe-buy-button>
+    </div>
   </section>
 
 </div>
