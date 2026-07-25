@@ -1,0 +1,51 @@
+---
+interface Props {
+  activePage?: "home" | "tutoring" | "sat" | "contact";
+}
+
+const { activePage = "sat" } = Astro.props;
+
+const navigation = [
+  { key: "home", label: "Home", href: "https://www.pipathacademy.com/" },
+  {
+    key: "tutoring",
+    label: "Tutoring Services",
+    href: "https://www.pipathacademy.com/tutoring.html",
+  },
+  { key: "sat", label: "SAT Math Bootcamp", href: "/sat-math-bootcamp" },
+  {
+    key: "contact",
+    label: "Contact Me",
+    href: "https://www.pipathacademy.com/contact.html",
+  },
+];
+---
+
+<div class="announcement-bar">
+  <div class="site-container announcement-inner">
+    <span class="announcement-label">Now enrolling</span>
+    <span>August 18–September 10 · Live online</span>
+    <a href="#schedule">View the schedule</a>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="site-container header-inner">
+    <a class="brand-lockup" href="https://www.pipathacademy.com/" aria-label="PiPath Academy home">
+      <span>Dr. Orlando Ferrer</span>
+      <small>PiPath Academy</small>
+    </a>
+
+    <nav class="primary-nav" aria-label="Primary navigation">
+      {
+        navigation.map((item) => (
+          <a href={item.href} aria-current={activePage === item.key ? "page" : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <a class="button button-small button-primary header-cta" href="#schedule">View dates</a>
+  </div>
+</header>

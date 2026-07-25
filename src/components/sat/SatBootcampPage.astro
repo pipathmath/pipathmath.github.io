@@ -1,0 +1,289 @@
+---
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import SiteHeader from "../SiteHeader.astro";
+import SiteFooter from "../SiteFooter.astro";
+import CohortCard from "./CohortCard";
+import { augustSatMathCohort } from "../../data/cohorts";
+
+const pageTitle = "Digital SAT Math Bootcamp | PiPath Academy";
+const pageDescription =
+  "A live online Digital SAT Math Bootcamp led by Duke Math Ph.D. Dr. Orlando Ferrer, featuring eight small-group sessions, personalized practice, and focused test strategy.";
+
+const curriculum = [
+  {
+    week: "Week 1",
+    title: "Algebra Foundations",
+    description:
+      "Linear equations, slope and intercepts, systems of equations, and translating word problems into mathematical structure.",
+  },
+  {
+    week: "Week 2",
+    title: "Advanced Math",
+    description:
+      "Quadratic forms, polynomials, exponential growth, radicals, and recognizing equivalent expressions without unnecessary calculation.",
+  },
+  {
+    week: "Week 3",
+    title: "Problem-Solving & Data",
+    description:
+      "Ratios, percent change, multi-step applications, scatterplots, standard deviation intuition, and probability traps.",
+  },
+  {
+    week: "Week 4",
+    title: "Geometry, Trigonometry & Strategy",
+    description:
+      "Triangles, circles, coordinate geometry, trigonometry, mixed-domain practice, pacing, and final test-day decisions.",
+  },
+];
+
+const methodology = [
+  {
+    number: "01",
+    title: "Establish the baseline",
+    description: "A diagnostic or recent score reveals which concepts and habits will create the most meaningful gains.",
+  },
+  {
+    number: "02",
+    title: "Teach the underlying math",
+    description: "Students learn why the method works, not only which shortcut to memorize for one question type.",
+  },
+  {
+    number: "03",
+    title: "Practice under SAT conditions",
+    description: "Timed problem-solving and strategic Desmos use turn understanding into reliable test-day execution.",
+  },
+  {
+    number: "04",
+    title: "Target the follow-up work",
+    description: "Personalized homework focuses each student on the topics that deserve their limited practice time.",
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDescription} canonicalPath="/sat-math-bootcamp">
+  <SiteHeader activePage="sat" />
+
+  <main id="main-content">
+    <section class="hero-section">
+      <div class="site-container hero-grid">
+        <div class="hero-copy">
+          <p class="section-kicker">Live online · Summer 2026</p>
+          <h1>A sharper way to prepare for Digital SAT Math.</h1>
+          <p class="hero-lead">
+            Four focused weeks of concept-building, live problem-solving, and practical test strategy—taught directly by
+            Duke Math Ph.D. Dr. Orlando Ferrer.
+          </p>
+
+          <div class="hero-actions">
+            <a class="button button-primary" href="#schedule">View the August schedule</a>
+            <a class="button button-secondary" href="#approach">See our approach</a>
+          </div>
+
+          <ul class="hero-points" aria-label="Program highlights">
+            <li>Eight live sessions</li>
+            <li>Personalized homework</li>
+            <li>Recordings available</li>
+          </ul>
+        </div>
+
+        <figure class="hero-artwork">
+          <div class="artwork-label">
+            <span>PiPath Academy</span>
+            <strong>Digital SAT Math</strong>
+          </div>
+          <img
+            src="/bootcamp-header.png"
+            alt="PiPath Digital SAT Math Bootcamp artwork"
+            width="1718"
+            height="400"
+          />
+          <figcaption>Small-group instruction built around how each student thinks.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="proof-strip" aria-label="Course facts">
+      <div class="site-container proof-grid">
+        <div><strong>Duke Math Ph.D.</strong><span>Instructor-led throughout</span></div>
+        <div><strong>10 live hours</strong><span>Across eight sessions</span></div>
+        <div><strong>10–15 students</strong><span>A focused group setting</span></div>
+        <div><strong>$299 total</strong><span>Complete four-week program</span></div>
+      </div>
+    </section>
+
+    <section class="section section-schedule" id="schedule">
+      <div class="site-container">
+        <div class="section-heading heading-with-note">
+          <div>
+            <p class="section-kicker">Choose your dates</p>
+            <h2>The next live cohort</h2>
+          </div>
+          <p>One clear schedule now, with room to add future cohorts without turning the page into a calendar maze.</p>
+        </div>
+
+        <CohortCard cohort={augustSatMathCohort} client:load />
+      </div>
+    </section>
+
+    <section class="section section-curriculum" id="curriculum">
+      <div class="site-container">
+        <div class="section-heading">
+          <p class="section-kicker">What we cover</p>
+          <h2>Four weeks, organized around the highest-value SAT Math work.</h2>
+          <p>
+            The public syllabus stays concise and readable. Each block shows parents how the course progresses without
+            asking them to navigate a dense document.
+          </p>
+        </div>
+
+        <div class="curriculum-grid">
+          {
+            curriculum.map((item, index) => (
+              <article class="curriculum-card">
+                <div class="curriculum-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</div>
+                <p>{item.week}</p>
+                <h3>{item.title}</h3>
+                <div class="card-rule" aria-hidden="true"></div>
+                <p>{item.description}</p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-approach" id="approach">
+      <div class="site-container approach-grid">
+        <div class="section-heading approach-intro">
+          <p class="section-kicker">The PiPath approach</p>
+          <h2>Personalized practice without losing the energy of a live class.</h2>
+          <p>
+            Students learn the same high-impact concepts together, while diagnostics and homework direct each student
+            toward the work that matters most for them.
+          </p>
+
+          <aside class="included-note">
+            <strong>Included in the program</strong>
+            <ul>
+              <li>Live instruction and guided problem-solving</li>
+              <li>Digital SAT and Desmos strategy</li>
+              <li>Personalized homework feedback</li>
+              <li>Session recordings when attendance is not possible</li>
+            </ul>
+          </aside>
+        </div>
+
+        <ol class="method-list">
+          {
+            methodology.map((item) => (
+              <li>
+                <span>{item.number}</span>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <section class="section instructor-section">
+      <div class="site-container instructor-grid">
+        <div class="portrait-placeholder" aria-label="Instructor portrait placeholder">
+          <span>OF</span>
+          <small>Approved portrait will be placed here</small>
+        </div>
+        <div class="instructor-copy">
+          <p class="section-kicker">Your instructor</p>
+          <h2>Direct instruction from Dr. Orlando Ferrer.</h2>
+          <p class="instructor-role">Mathematician, data scientist, and educator · Ph.D. in Mathematics, Duke University</p>
+          <p>
+            Orlando’s teaching combines mathematical depth with an understanding of where students lose confidence,
+            time, and points. The goal is not to make students dependent on tricks—it is to help them recognize structure
+            and make better decisions under pressure.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section testimonial-section" aria-labelledby="stories-heading">
+      <div class="site-container">
+        <div class="section-heading compact-heading">
+          <p class="section-kicker">Parent perspectives</p>
+          <h2 id="stories-heading">A reserved space for real family stories.</h2>
+        </div>
+        <div class="testimonial-grid">
+          <article class="testimonial-placeholder">
+            <span>Testimonial placeholder</span>
+            <p>An approved parent testimonial will appear here before launch.</p>
+          </article>
+          <article class="testimonial-placeholder">
+            <span>Testimonial placeholder</span>
+            <p>A second approved family story will appear here before launch.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section faq-section">
+      <div class="site-container faq-grid">
+        <div class="section-heading compact-heading">
+          <p class="section-kicker">Questions parents ask</p>
+          <h2>Clear expectations before you enroll.</h2>
+        </div>
+
+        <div class="faq-list">
+          <details>
+            <summary>What if my student has not taken an SAT or PSAT yet?</summary>
+            <p>That is completely fine. We will use a diagnostic to establish a baseline and identify priority topics.</p>
+          </details>
+          <details>
+            <summary>What happens if a student misses a live class?</summary>
+            <p>Recordings will be available, although live attendance is encouraged for discussion and problem-solving.</p>
+          </details>
+          <details>
+            <summary>Does the course only teach calculator shortcuts?</summary>
+            <p>No. Desmos is used strategically, alongside the underlying algebra, geometry, and data-analysis concepts.</p>
+          </details>
+          <details>
+            <summary>Is homework the same for every student?</summary>
+            <p>Core class topics are shared, but assigned practice can be adjusted to each student’s needs.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section policy-section">
+      <div class="site-container policy-box">
+        <span class="draft-label">Policy draft</span>
+        <div>
+          <h2>Refund and cancellation policy</h2>
+          <p>Final policy language will be added and approved before live enrollment opens.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="enrollment-section" id="enrollment">
+      <div class="site-container enrollment-inner">
+        <div>
+          <p class="section-kicker">August 18–September 10</p>
+          <h2>Ready for a more focused SAT Math plan?</h2>
+          <p>Eight live sessions, personalized practice, and direct instruction from Dr. Orlando Ferrer.</p>
+        </div>
+        <div class="enrollment-action">
+          <span class="enrollment-price">$299</span>
+          <button class="button button-light button-full" type="button" disabled>Stripe checkout coming in Batch 2</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+
+  <a class="mobile-enroll-bar" href="#schedule">
+    <span>August cohort · $299</span>
+    <strong>View dates</strong>
+  </a>
+</SiteLayout>
