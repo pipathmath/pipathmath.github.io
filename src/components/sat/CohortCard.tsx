@@ -1,19 +1,28 @@
 import { useId, useState } from "react";
 import type { Cohort } from "../../data/cohorts";
+import EnrollmentButton from "./EnrollmentButton";
 
 interface Props {
   cohort: Cohort;
-  checkoutUrl?: string;
+  enrollmentEnabled: boolean;
 }
-export default function CohortCard({ cohort, checkoutUrl }: Props) {
+
+const statusLabels: Record<Cohort["status"], string> = {
+  enrolling: "Enrollment open",
+  waitlist: "Join the waitlist",
+  closed: "Enrollment closed",
+};
+
+export default function CohortCard({ cohort, enrollmentEnabled }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
   const sessionListId = useId();
+  const [startMonth, startDay] = cohort.sessions[0].shortDate.split(" ");
 
   return (
     <article className="cohort-card" id={cohort.id}>
       <div className="cohort-date-block" aria-hidden="true">
-        <span>AUG</span>
-        <strong>18</strong>
+        <span>{startMonth.toUpperCase()}</span>
+        <strong>{startDay}</strong>
         <small>Starts</small>
       </div>
 
@@ -68,20 +77,18 @@ export default function CohortCard({ cohort, checkoutUrl }: Props) {
       </div>
 
       <div className="cohort-enrollment">
-        <span className="status-chip">Enrollment open</span>
+        <span className="status-chip">{statusLabels[cohort.status]}</span>
         <p className="cohort-price">
           <span>Complete program</span>
           <strong>${cohort.price}</strong>
         </p>
-        {checkoutUrl ? (
-          <a className="button button-primary button-full" href={checkoutUrl}>
-            Enroll — ${cohort.price}
-          </a>
-        ) : (
-          <button className="button button-primary button-full" type="button" disabled>
-            Enrollment opening soon
-          </button>
-        )}
+        <EnrollmentButton
+          cohortId={cohort.id}
+          price={cohort.price}
+          enabled={enrollmentEnabled && cohort.status === "enrolling"}
+          className="button button-primary button-full"
+          idleLabel={`Enroll — $${cohort.price}`}
+        />
         <small>Secure checkout powered by Stripe.</small>
       </div>
     </article>

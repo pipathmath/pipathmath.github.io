@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pipath-academy-preview",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-07-26",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pipath-enrollment-preview",
+      "database_id": "replace-with-preview-d1-database-id",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "SITE_URL": "https://replace-with-preview-hostname.pages.dev",
+    "OWNER_EMAIL": "pipathmath@gmail.com",
+    "EMAIL_FROM": "PiPath Academy <enrollment@pipathacademy.com>",
+    "GA4_MEASUREMENT_ID": "G-EXV4N60WP8"
+  }
+}

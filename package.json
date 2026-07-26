@@ -4,20 +4,34 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build",
-    "check": "astro check",
-    "preview": "astro preview"
+    "dev:review": "npm run d1:local:migrate && npm run build:site && wrangler pages dev",
+    "d1:local:migrate": "wrangler d1 migrations apply DB --local",
+    "d1:local:tables": "wrangler d1 execute DB --local --command \"SELECT name FROM sqlite_schema WHERE type='table' ORDER BY name;\"",
+    "dev:pages": "npm run build:site && wrangler pages dev dist",
+    "build": "npm run build:site && npm run functions:build",
+    "build:site": "astro check && astro build && node scripts/copy-legacy-static.mjs",
+    "functions:build": "wrangler pages functions build --outdir .wrangler/functions-build",
+    "functions:check": "tsc -p functions/tsconfig.json",
+    "check": "astro check && npm run functions:check",
+    "preview": "astro preview",
+    "test": "vitest run",
+    "verify": "npm run test && npm run build"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.1",
     "astro": "^7.1.3",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "stripe": "^22.3.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
+    "@cloudflare/workers-types": "^5.20260726.1",
+    "@types/node": "^26.1.1",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.114.0"
   }
 }

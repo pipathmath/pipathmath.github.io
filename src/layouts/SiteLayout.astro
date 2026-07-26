@@ -5,11 +5,24 @@ interface Props {
   title: string;
   description: string;
   canonicalPath: string;
+  structuredData?: Record<string, unknown>;
+  robots?: string;
+  referrerPolicy?: string;
+  analyticsEnabled?: boolean;
 }
 
-const { title, description, canonicalPath } = Astro.props;
+const {
+  title,
+  description,
+  canonicalPath,
+  structuredData,
+  robots,
+  referrerPolicy,
+  analyticsEnabled = true,
+} = Astro.props;
 const canonicalUrl = new URL(canonicalPath, Astro.site);
 const socialImageUrl = new URL("/bootcamp-header.png", Astro.site);
+const analyticsId = "G-EXV4N60WP8";
 ---
 
 <!doctype html>
@@ -19,7 +32,10 @@ const socialImageUrl = new URL("/bootcamp-header.png", Astro.site);
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#00539b" />
+    {robots && <meta name="robots" content={robots} />}
+    {referrerPolicy && <meta name="referrer" content={referrerPolicy} />}
     <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -29,6 +45,20 @@ const socialImageUrl = new URL("/bootcamp-header.png", Astro.site);
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImageUrl} />
+    {structuredData && <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
+    {
+      analyticsEnabled && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${analyticsId}`}></script>
+          <script is:inline>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { window.dataLayer.push(arguments); }
+            gtag("js", new Date());
+            gtag("config", "G-EXV4N60WP8");
+          </script>
+        </>
+      )
+    }
     <title>{title}</title>
   </head>
   <body>
