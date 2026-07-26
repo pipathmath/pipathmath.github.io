@@ -8,6 +8,8 @@ import { augustSatMathCohort } from "../../data/cohorts";
 const pageTitle = "Digital SAT Math Bootcamp | PiPath Academy";
 const pageDescription =
   "A live online Digital SAT Math Bootcamp led by Duke Math Ph.D. Dr. Orlando Ferrer, featuring eight small-group sessions, personalized practice, and focused test strategy.";
+const stripeCheckoutUrl: string | undefined = undefined;
+const consultationUrl = "https://calendly.com/pipathmath/free-15-minute-tutoring-consultation";
 
 const curriculum = [
   {
@@ -68,7 +70,7 @@ const methodology = [
       <div class="site-container hero-grid">
         <div class="hero-copy">
           <p class="section-kicker">Live online · Summer 2026</p>
-          <h1>A sharper way to prepare for Digital SAT Math.</h1>
+          <h1>A path to math is never standardized.</h1>
           <p class="hero-lead">
             Four focused weeks of concept-building, live problem-solving, and practical test strategy—taught directly by
             Duke Math Ph.D. Dr. Orlando Ferrer.
@@ -91,13 +93,12 @@ const methodology = [
             <span>PiPath Academy</span>
             <strong>Digital SAT Math</strong>
           </div>
-          <img
-            src="/bootcamp-header.png"
-            alt="PiPath Digital SAT Math Bootcamp artwork"
-            width="1718"
-            height="400"
-          />
-          <figcaption>Small-group instruction built around how each student thinks.</figcaption>
+          <div class="video-placeholder" role="img" aria-label="Course overview video placeholder">
+            <span class="video-play" aria-hidden="true">▶</span>
+            <strong>Course overview</strong>
+            <small>Video with Dr. Orlando Ferrer coming soon</small>
+          </div>
+          <figcaption>Meet the instructor and learn how the SAT Math course works.</figcaption>
         </figure>
       </div>
     </section>
@@ -113,15 +114,14 @@ const methodology = [
 
     <section class="section section-schedule" id="schedule">
       <div class="site-container">
-        <div class="section-heading heading-with-note">
+        <div class="section-heading">
           <div>
             <p class="section-kicker">Choose your dates</p>
             <h2>The next live cohort</h2>
           </div>
-          <p>One clear schedule now, with room to add future cohorts without turning the page into a calendar maze.</p>
         </div>
 
-        <CohortCard cohort={augustSatMathCohort} client:load />
+        <CohortCard cohort={augustSatMathCohort} checkoutUrl={stripeCheckoutUrl} client:load />
       </div>
     </section>
 
@@ -255,26 +255,27 @@ const methodology = [
       </div>
     </section>
 
-    <section class="section policy-section">
-      <div class="site-container policy-box">
-        <span class="draft-label">Policy draft</span>
-        <div>
-          <h2>Refund and cancellation policy</h2>
-          <p>Final policy language will be added and approved before live enrollment opens.</p>
-        </div>
-      </div>
-    </section>
-
     <section class="enrollment-section" id="enrollment">
       <div class="site-container enrollment-inner">
-        <div>
+        <div class="enrollment-copy">
           <p class="section-kicker">August 18–September 10</p>
           <h2>Ready for a more focused SAT Math plan?</h2>
           <p>Eight live sessions, personalized practice, and direct instruction from Dr. Orlando Ferrer.</p>
         </div>
         <div class="enrollment-action">
           <span class="enrollment-price">$299</span>
-          <button class="button button-light button-full" type="button" disabled>Stripe checkout coming in Batch 2</button>
+          {
+            stripeCheckoutUrl ? (
+              <a class="button button-light button-full" href={stripeCheckoutUrl}>Enroll now — $299</a>
+            ) : (
+              <button class="button button-light button-full" type="button" disabled>Enrollment opening soon</button>
+            )
+          }
+          <p class="enrollment-security">Secure checkout powered by Stripe.</p>
+          <div class="consultation-option">
+            <span>Still deciding?</span>
+            <a href={consultationUrl} target="_blank" rel="noreferrer">Book a free 15-minute consultation</a>
+          </div>
         </div>
       </div>
     </section>
@@ -282,8 +283,8 @@ const methodology = [
 
   <SiteFooter />
 
-  <a class="mobile-enroll-bar" href="#schedule">
+  <a class="mobile-enroll-bar" href={stripeCheckoutUrl ?? "#schedule"}>
     <span>August cohort · $299</span>
-    <strong>View dates</strong>
+    <strong>{stripeCheckoutUrl ? "Enroll now" : "View dates"}</strong>
   </a>
 </SiteLayout>
