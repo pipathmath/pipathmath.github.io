@@ -1,0 +1,34 @@
+---
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import EnrollmentConfirmation from "../../components/sat/EnrollmentConfirmation";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+const title = "Enrollment Confirmation | PiPath Academy";
+const description =
+  "Secure enrollment confirmation and student onboarding for PiPath Academy's Digital SAT Math Bootcamp.";
+---
+
+<SiteLayout
+  title={title}
+  description={description}
+  canonicalPath="/sat-math-bootcamp/enrollment-confirmed"
+  robots="noindex, nofollow"
+  referrerPolicy="no-referrer"
+  analyticsEnabled={false}
+>
+  <SiteHeader
+    activePage="sat"
+    showAnnouncement={false}
+    ctaHref="/sat-math-bootcamp"
+    ctaLabel="Course details"
+  />
+
+  <main id="main-content" class="confirmation-section">
+    <div class="site-container confirmation-shell">
+      <EnrollmentConfirmation client:load />
+    </div>
+  </main>
+
+  <SiteFooter />
+</SiteLayout>

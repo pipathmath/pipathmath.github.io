@@ -1,15 +1,23 @@
 ---
 interface Props {
   activePage?: "home" | "tutoring" | "sat" | "contact";
+  showAnnouncement?: boolean;
+  ctaHref?: string;
+  ctaLabel?: string;
 }
 
-const { activePage = "sat" } = Astro.props;
+const {
+  activePage = "sat",
+  showAnnouncement = true,
+  ctaHref = "#schedule",
+  ctaLabel = "View dates",
+} = Astro.props;
 
 const navigation = [
   { key: "home", label: "Home", href: "https://www.pipathacademy.com/" },
   {
     key: "tutoring",
-    label: "Tutoring Services",
+    label: "Math Tutoring",
     href: "https://www.pipathacademy.com/tutoring.html",
   },
   { key: "sat", label: "SAT Math Bootcamp", href: "/sat-math-bootcamp" },
@@ -21,6 +29,8 @@ const navigation = [
 ];
 ---
 
+{
+  showAnnouncement && (
 <div class="announcement-bar">
   <div class="site-container announcement-inner">
     <span class="announcement-label">Now enrolling</span>
@@ -28,6 +38,8 @@ const navigation = [
     <a href="#schedule">View the schedule</a>
   </div>
 </div>
+  )
+}
 
 <header class="site-header">
   <div class="site-container header-inner">
@@ -46,6 +58,6 @@ const navigation = [
       }
     </nav>
 
-    <a class="button button-small button-primary header-cta" href="#schedule">View dates</a>
+    <a class="button button-small button-primary header-cta" href={ctaHref}>{ctaLabel}</a>
   </div>
 </header>

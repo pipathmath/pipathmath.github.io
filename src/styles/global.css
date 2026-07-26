@@ -29,6 +29,10 @@ html {
   scroll-behavior: smooth;
 }
 
+main [id] {
+  scroll-margin-top: 64px;
+}
+
 body {
   margin: 0;
   background: var(--color-white);
@@ -646,6 +650,26 @@ a {
   font-size: 0.69rem;
   line-height: 1.45;
   text-align: center;
+}
+
+.checkout-error {
+  display: block;
+  margin-top: 10px;
+  color: #9a2f2f;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.cohort-enrollment .checkout-error {
+  text-align: center;
+}
+
+.enrollment-action .checkout-error {
+  color: #fff2d4;
+}
+
+.mobile-checkout-error {
+  display: none;
 }
 
 .section-curriculum {
@@ -1321,6 +1345,35 @@ a {
     text-decoration: none;
   }
 
+  button.mobile-enroll-bar {
+    width: 100%;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    font: inherit;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  button.mobile-enroll-bar:disabled {
+    cursor: wait;
+    opacity: 1;
+  }
+
+  .mobile-checkout-error {
+    position: fixed;
+    right: 12px;
+    bottom: 74px;
+    left: 12px;
+    z-index: 51;
+    display: block;
+    padding: 10px 12px;
+    border: 1px solid #f0b8b8;
+    background: #fff0f0;
+    color: #7e2424;
+    font-size: 0.78rem;
+  }
+
   .mobile-enroll-bar span {
     font-size: 0.78rem;
   }
@@ -1340,5 +1393,194 @@ a {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+.confirmation-section {
+  min-height: 70vh;
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-paper);
+}
+
+.confirmation-shell {
+  max-width: 900px;
+  padding-block: 72px 96px;
+}
+
+.confirmation-card {
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-medium);
+  padding: clamp(28px, 6vw, 58px);
+  background: var(--color-white);
+  box-shadow: var(--shadow-offset);
+}
+
+.confirmation-status {
+  max-width: 720px;
+}
+
+.confirmation-status h1 {
+  margin: 18px 0 0;
+  font-size: clamp(2.3rem, 6vw, 4rem);
+  letter-spacing: -0.05em;
+  line-height: 1.03;
+}
+
+.confirmation-status > p {
+  margin: 22px 0 0;
+  color: var(--color-text);
+  font-size: 1.02rem;
+}
+
+.confirmation-status > .button {
+  margin-top: 28px;
+}
+
+.status-chip-neutral {
+  border-color: var(--color-line);
+  background: var(--color-paper);
+  color: var(--color-text);
+}
+
+.status-progress {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 5px;
+  margin-top: 32px;
+  background: var(--color-paper-deep);
+}
+
+.status-progress::after {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 58%;
+  background: var(--color-blue);
+  content: "";
+}
+
+.confirmation-next {
+  margin-block: 30px;
+  padding: 24px 26px;
+  border-left: 4px solid var(--color-blue);
+  background: var(--color-sky-soft);
+}
+
+.confirmation-next ol {
+  margin: 12px 0 0;
+  padding-left: 20px;
+  color: var(--color-text);
+}
+
+.confirmation-next li + li {
+  margin-top: 7px;
+}
+
+.onboarding-intro {
+  max-width: 700px;
+  margin-top: 52px;
+  padding-top: 44px;
+  border-top: 1px solid var(--color-line);
+}
+
+.onboarding-intro h2 {
+  margin: 0;
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+}
+
+.onboarding-intro > p:last-child {
+  margin: 16px 0 0;
+  color: var(--color-text);
+}
+
+.onboarding-form {
+  display: grid;
+  gap: 24px;
+  margin-top: 34px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.form-field {
+  display: grid;
+  gap: 8px;
+}
+
+.form-field > span {
+  color: var(--color-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  border: 1px solid #9c9d98;
+  border-radius: var(--radius-small);
+  padding: 12px 13px;
+  background: var(--color-white);
+  color: var(--color-ink);
+  font: inherit;
+  line-height: 1.4;
+}
+
+.form-field input,
+.form-field select {
+  min-height: 48px;
+}
+
+.form-field textarea {
+  resize: vertical;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: var(--color-blue);
+  outline: 3px solid rgba(114, 204, 254, 0.45);
+  outline-offset: 1px;
+}
+
+.form-field small {
+  color: var(--color-muted);
+  font-size: 0.76rem;
+}
+
+.form-error {
+  margin: 0;
+  border-left: 4px solid #a43333;
+  padding: 12px 14px;
+  background: #fff0f0;
+  color: #7e2424;
+  font-size: 0.86rem;
+}
+
+.onboarding-form > .button {
+  justify-self: start;
+}
+
+@media (max-width: 640px) {
+  .confirmation-shell {
+    padding-block: 44px 72px;
+  }
+
+  .confirmation-card {
+    padding: 28px 22px 34px;
+    box-shadow: 5px 5px 0 rgba(114, 204, 254, 0.55);
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .onboarding-form > .button {
+    width: 100%;
   }
 }

@@ -3,12 +3,13 @@ import SiteLayout from "../../layouts/SiteLayout.astro";
 import SiteHeader from "../SiteHeader.astro";
 import SiteFooter from "../SiteFooter.astro";
 import CohortCard from "./CohortCard";
+import EnrollmentButton from "./EnrollmentButton";
 import { augustSatMathCohort } from "../../data/cohorts";
 
 const pageTitle = "Digital SAT Math Bootcamp | PiPath Academy";
 const pageDescription =
   "A live online Digital SAT Math Bootcamp led by Duke Math Ph.D. Dr. Orlando Ferrer, featuring eight small-group sessions, personalized practice, and focused test strategy.";
-const stripeCheckoutUrl: string | undefined = undefined;
+const enrollmentEnabled = import.meta.env.PUBLIC_ENROLLMENT_ENABLED === "true";
 const consultationUrl = "https://calendly.com/pipathmath/free-15-minute-tutoring-consultation";
 
 const curriculum = [
@@ -60,9 +61,93 @@ const methodology = [
     description: "Personalized homework focuses each student on the topics that deserve their limited practice time.",
   },
 ];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Course",
+      "@id": "https://www.pipathacademy.com/sat-math-bootcamp#course",
+      name: "Digital SAT Math Bootcamp",
+      description: pageDescription,
+      url: "https://www.pipathacademy.com/sat-math-bootcamp",
+      inLanguage: "en",
+      educationalLevel: "High school",
+      provider: {
+        "@type": "EducationalOrganization",
+        name: "PiPath Academy",
+        url: "https://www.pipathacademy.com/",
+      },
+      hasCourseInstance: {
+        "@type": "CourseInstance",
+        name: augustSatMathCohort.title,
+        courseMode: "Online",
+        startDate: "2026-08-18",
+        endDate: "2026-09-10",
+        instructor: {
+          "@type": "Person",
+          name: "Dr. Orlando Ferrer",
+          honorificSuffix: "Ph.D.",
+          alumniOf: {
+            "@type": "CollegeOrUniversity",
+            name: "Duke University",
+          },
+        },
+      },
+      offers: {
+        "@type": "Offer",
+        price: augustSatMathCohort.price.toString(),
+        priceCurrency: "USD",
+        availability:
+          augustSatMathCohort.status === "enrolling"
+            ? "https://schema.org/InStock"
+            : "https://schema.org/SoldOut",
+        url: "https://www.pipathacademy.com/sat-math-bootcamp#schedule",
+      },
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://www.pipathacademy.com/sat-math-bootcamp#faq",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "What if my student has not taken an SAT or PSAT yet?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "That is completely fine. We will use a diagnostic to establish a baseline and identify priority topics.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What happens if a student misses a live class?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Recordings will be available, although live attendance is encouraged for discussion and problem-solving.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Does the course only teach calculator shortcuts?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "No. Desmos is used strategically, alongside the underlying algebra, geometry, and data-analysis concepts.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Is homework the same for every student?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Core class topics are shared, but assigned practice can be adjusted to each student's needs.",
+          },
+        },
+      ],
+    },
+  ],
+};
 ---
 
-<SiteLayout title={pageTitle} description={pageDescription} canonicalPath="/sat-math-bootcamp">
+<SiteLayout title={pageTitle} description={pageDescription} canonicalPath="/sat-math-bootcamp" structuredData={structuredData}>
   <SiteHeader activePage="sat" />
 
   <main id="main-content">
@@ -121,7 +206,7 @@ const methodology = [
           </div>
         </div>
 
-        <CohortCard cohort={augustSatMathCohort} checkoutUrl={stripeCheckoutUrl} client:load />
+        <CohortCard cohort={augustSatMathCohort} enrollmentEnabled={enrollmentEnabled} client:load />
       </div>
     </section>
 
@@ -131,8 +216,8 @@ const methodology = [
           <p class="section-kicker">What we cover</p>
           <h2>Four weeks, organized around the highest-value SAT Math work.</h2>
           <p>
-            The public syllabus stays concise and readable. Each block shows parents how the course progresses without
-            asking them to navigate a dense document.
+            Each week builds deliberately from core algebra through test-day strategy, so families can see what students
+            will practice, how the course progresses, and why each topic matters.
           </p>
         </div>
 
@@ -264,13 +349,14 @@ const methodology = [
         </div>
         <div class="enrollment-action">
           <span class="enrollment-price">$299</span>
-          {
-            stripeCheckoutUrl ? (
-              <a class="button button-light button-full" href={stripeCheckoutUrl}>Enroll now — $299</a>
-            ) : (
-              <button class="button button-light button-full" type="button" disabled>Enrollment opening soon</button>
-            )
-          }
+          <EnrollmentButton
+            cohortId={augustSatMathCohort.id}
+            price={augustSatMathCohort.price}
+            enabled={enrollmentEnabled}
+            className="button button-light button-full"
+            idleLabel="Enroll now — $299"
+            client:load
+          />
           <p class="enrollment-security">Secure checkout powered by Stripe.</p>
           <div class="consultation-option">
             <span>Still deciding?</span>
@@ -283,8 +369,22 @@ const methodology = [
 
   <SiteFooter />
 
-  <a class="mobile-enroll-bar" href={stripeCheckoutUrl ?? "#schedule"}>
-    <span>August cohort · $299</span>
-    <strong>{stripeCheckoutUrl ? "Enroll now" : "View dates"}</strong>
-  </a>
+  {
+    enrollmentEnabled ? (
+      <EnrollmentButton
+        cohortId={augustSatMathCohort.id}
+        price={augustSatMathCohort.price}
+        enabled={true}
+        className="mobile-enroll-bar"
+        idleLabel="Enroll now"
+        mobile={true}
+        client:load
+      />
+    ) : (
+      <a class="mobile-enroll-bar" href="#schedule">
+        <span>August cohort · $299</span>
+        <strong>View dates</strong>
+      </a>
+    )
+  }
 </SiteLayout>

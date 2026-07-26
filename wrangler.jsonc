@@ -1,0 +1,22 @@
+{
+  // Local review configuration with a non-deployable placeholder D1 ID.
+  // Replace it only at the approved Cloudflare preview/production setup gate.
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pipath-academy-local-review",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-07-26",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pipath-enrollment-local",
+      "database_id": "00000000-0000-0000-0000-000000000001",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "SITE_URL": "http://localhost:8788",
+    "OWNER_EMAIL": "pipathmath@gmail.com",
+    "EMAIL_FROM": "PiPath Academy <enrollment@pipathacademy.com>",
+    "GA4_MEASUREMENT_ID": "G-EXV4N60WP8"
+  }
+}

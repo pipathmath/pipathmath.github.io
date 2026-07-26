@@ -1,0 +1,4 @@
+interface:
+  display_name: "PiPath Backend Operations"
+  short_description: "Operate PiPath D1, Stripe, and Pages backend"
+  default_prompt: "Use $manage-pipath-backend to inspect or safely change the PiPath enrollment backend."
