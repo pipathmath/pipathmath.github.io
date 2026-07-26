@@ -3,8 +3,9 @@ import type { Cohort } from "../../data/cohorts";
 
 interface Props {
   cohort: Cohort;
+  checkoutUrl?: string;
 }
-export default function CohortCard({ cohort }: Props) {
+export default function CohortCard({ cohort, checkoutUrl }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
   const sessionListId = useId();
 
@@ -72,10 +73,16 @@ export default function CohortCard({ cohort }: Props) {
           <span>Complete program</span>
           <strong>${cohort.price}</strong>
         </p>
-        <a className="button button-primary button-full" href="#enrollment">
-          Enroll — ${cohort.price}
-        </a>
-        <small>Secure Stripe checkout will be connected in Batch 2.</small>
+        {checkoutUrl ? (
+          <a className="button button-primary button-full" href={checkoutUrl}>
+            Enroll — ${cohort.price}
+          </a>
+        ) : (
+          <button className="button button-primary button-full" type="button" disabled>
+            Enrollment opening soon
+          </button>
+        )}
+        <small>Secure checkout powered by Stripe.</small>
       </div>
     </article>
   );

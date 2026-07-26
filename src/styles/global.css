@@ -84,6 +84,9 @@ a {
 }
 
 .announcement-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   border-bottom: 1px solid #b7def2;
   background: var(--color-sky-soft);
   color: var(--color-blue-dark);
@@ -328,11 +331,39 @@ a {
   box-shadow: var(--shadow-offset);
 }
 
-.hero-artwork img {
-  width: 100%;
+.video-placeholder {
+  display: grid;
+  aspect-ratio: 16 / 9;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
   border-top: 1px solid var(--color-line);
   border-bottom: 1px solid var(--color-line);
   background: var(--color-paper-deep);
+  text-align: center;
+}
+
+.video-play {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 8px;
+  place-items: center;
+  border: 1px solid var(--color-blue-dark);
+  border-radius: 50%;
+  background: var(--color-blue);
+  color: var(--color-white);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.video-placeholder strong {
+  font-size: 1.05rem;
+}
+
+.video-placeholder small {
+  color: var(--color-muted);
+  font-size: 0.76rem;
 }
 
 .artwork-label {
@@ -575,8 +606,7 @@ a {
   background: var(--color-paper);
 }
 
-.status-chip,
-.draft-label {
+.status-chip {
   align-self: flex-start;
   border: 1px solid #9dc6a8;
   border-radius: var(--radius-pill);
@@ -889,39 +919,6 @@ a {
   font-size: 0.92rem;
 }
 
-.policy-section {
-  padding-top: 0;
-  background: var(--color-white);
-}
-
-.policy-box {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: start;
-  gap: 24px;
-  padding: 28px 32px;
-  border: 1px solid var(--color-line);
-  border-left: 5px solid #8a897b;
-  background: var(--color-paper);
-}
-
-.draft-label {
-  border-color: #c3bcae;
-  background: #ece8df;
-  color: #5d5548;
-}
-
-.policy-box h2 {
-  font-size: 1.25rem;
-  letter-spacing: -0.02em;
-}
-
-.policy-box p {
-  margin: 6px 0 0;
-  color: var(--color-muted);
-  font-size: 0.88rem;
-}
-
 .enrollment-section {
   padding-block: 74px;
   background: var(--color-blue);
@@ -943,7 +940,7 @@ a {
   max-width: 680px;
 }
 
-.enrollment-inner p:last-child {
+.enrollment-copy > p:last-child {
   margin: 18px 0 0;
   color: rgba(255, 255, 255, 0.82);
 }
@@ -961,6 +958,34 @@ a {
   font-weight: 700;
   letter-spacing: -0.06em;
   line-height: 1;
+}
+
+.enrollment-security {
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+.consultation-option {
+  display: grid;
+  gap: 4px;
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+  text-align: center;
+}
+
+.consultation-option span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.76rem;
+}
+
+.consultation-option a {
+  color: var(--color-white);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-underline-offset: 4px;
 }
 
 .site-footer {
@@ -1268,10 +1293,6 @@ a {
 
   .portrait-placeholder {
     min-height: 300px;
-  }
-
-  .policy-box {
-    grid-template-columns: 1fr;
   }
 
   .footer-inner {
