@@ -11,7 +11,7 @@ Last updated: 2026-07-27
 - A private local D1 database and Pages/Functions review server remain available; neither is connected to Cloudflare.
 - A real Stripe test-mode checkout still requires sandbox credentials and deliberate local enrollment activation.
 - The redesigned Home and SAT hero refinements are implemented, verified, and owner-approved for this `croquette` commit/push.
-- Next gate: configure Stripe sandbox credentials, inspect the real hosted Checkout, and complete the local webhook/onboarding test flow.
+- Next gate: configure Stripe sandbox credentials, inspect the real hosted Checkout, and verify lead promotion through the paid webhook.
 - No reviewed work is to be merged to `main` or connected to Cloudflare at this gate.
 - One August SAT cohort is in scope. Multiple cohorts remain a later task.
 
@@ -29,17 +29,16 @@ Last updated: 2026-07-27
 
 ## Batch 2 approved behavior
 
-- Payment is the enrollment event.
-- There is no registration form before Stripe Checkout.
-- The server verifies that the one supported cohort is open and has capacity.
-- Stripe collects the parent or guardian name, email, phone, and payment details.
+- The parent chooses the cohort and completes a short PiPath family form before payment.
+- Parent name, student name, parent email, and parent phone are required. SAT/PSAT Math score and an additional note are optional.
+- A valid submission saves the lead and creates a 30-minute seat hold before Stripe Checkout is created.
+- Stripe Checkout receives the parent's email for prefill and collects payment details on Stripe's hosted page.
 - PiPath never receives or stores card details.
-- Stripe metadata carries the cohort ID and marketing attribution.
-- A verified Stripe webhook creates exactly one paid enrollment in D1.
-- The confirmation page says "You're enrolled" before requesting academic information.
-- Post-payment onboarding collects the current Google Form questions and can be completed immediately or later.
+- Stripe metadata carries the cohort ID, checkout reference, and marketing attribution.
+- A verified Stripe webhook promotes the saved lead into exactly one parent, student, payment, and active enrollment in D1.
+- The confirmation page says "You're enrolled" without asking the family to repeat the information already submitted.
 - Orlando is notified at `pipathmath@gmail.com`; the parent receives confirmation and next steps.
-- The successful paid webhook, not an enroll-button click, is the primary purchase conversion.
+- The successful paid webhook, not an enroll-button click, is the primary purchase conversion. `generate_lead` and `begin_checkout` occur only after a secure Checkout URL is returned.
 - August capacity is technically capped at 15.
 
 ## Batch 2 technical safeguards
@@ -49,7 +48,7 @@ Last updated: 2026-07-27
 - Webhook signatures are verified from the raw request body.
 - Stripe event IDs and Checkout Session IDs are unique in D1 for idempotency.
 - Capacity reservations expire and cannot oversell the cohort under concurrent checkout starts.
-- Onboarding links use non-guessable tokens and private pages are no-index.
+- Enrollment-detail links use non-guessable tokens and private pages are no-index. The legacy onboarding endpoint remains available only for older incomplete records.
 - Only the minimum useful student information is collected.
 - Logs do not contain card data, Stripe secrets, or full onboarding responses.
 - Database migrations are versioned in the repository.

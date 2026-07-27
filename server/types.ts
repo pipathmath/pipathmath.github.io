@@ -27,6 +27,12 @@ export interface Attribution {
 
 export interface CheckoutRequest {
   cohortId: string;
+  parentName: string;
+  parentEmail: string;
+  parentPhone: string;
+  studentName: string;
+  studentMathScore: number | null;
+  additionalNotes: string | null;
   attribution: Attribution;
 }
 
@@ -67,6 +73,12 @@ export interface CheckoutAttemptRow {
   status: "held" | "checkout_created" | "completed" | "expired" | "failed";
   reservation_expires_at: number;
   ga_client_id: string | null;
+  parent_name: string | null;
+  parent_email: string | null;
+  parent_phone: string | null;
+  student_name: string | null;
+  student_math_score: number | null;
+  additional_notes: string | null;
 }
 
 export interface EnrollmentStatusRow {

@@ -18,7 +18,7 @@ Then open:
 
 Use the trailing slash in the SAT URLs. Wrangler redirects the no-slash form, but the slash form is the clearest review URL.
 
-The default build deliberately shows enrollment as being set up. This allows safe review of layout, responsive behavior, navigation, dates, selling points, disabled enrollment messaging, and the confirmation-page recovery state without accepting a payment.
+The default build keeps the family form fillable and makes every cohort enrollment action scroll to it, while deliberately disabling only the final payment button. This allows safe review of the complete intake layout, responsive behavior, navigation, dates, selling points, payment-availability messaging, and the confirmation-page recovery state without accepting a payment.
 
 Review each page at minimum at 390px mobile, 768px tablet, and 1440px desktop widths. Confirm that:
 
@@ -48,9 +48,10 @@ Inspect the cohort and recent records:
 
 ```powershell
 npx wrangler d1 execute DB --local --command "SELECT id, name, status, capacity, price_cents, starts_at, ends_at FROM cohorts;"
+npx wrangler d1 execute DB --local --command "SELECT id, cohort_id, status, parent_name, parent_email, parent_phone, student_name, student_math_score, additional_notes, created_at FROM checkout_attempts ORDER BY created_at DESC LIMIT 20;"
 npx wrangler d1 execute DB --local --command "SELECT id, cohort_id, status, created_at FROM enrollments ORDER BY created_at DESC LIMIT 20;"
 npx wrangler d1 execute DB --local --command "SELECT enrollment_id, status, amount_cents, refunded_cents, currency, created_at FROM payments ORDER BY created_at DESC LIMIT 20;"
-npx wrangler d1 execute DB --local --command "SELECT id, parent_id, first_name, last_name, grade, score_range, onboarding_completed_at, updated_at FROM students ORDER BY updated_at DESC LIMIT 20;"
+npx wrangler d1 execute DB --local --command "SELECT s.id, s.parent_id, s.display_name, ca.student_math_score, s.checkout_attempt_id, s.score_range, s.onboarding_completed_at, s.updated_at FROM students s LEFT JOIN checkout_attempts ca ON ca.id = s.checkout_attempt_id ORDER BY s.updated_at DESC LIMIT 20;"
 npx wrangler d1 execute DB --local --command "SELECT event_id, event_type, status, processed_at, error_code, created_at FROM stripe_events ORDER BY created_at DESC LIMIT 20;"
 npx wrangler d1 execute DB --local --command "SELECT enrollment_id, kind, recipient, status, attempts, provider_message_id, last_error, updated_at FROM email_deliveries ORDER BY updated_at DESC LIMIT 20;"
 ```
@@ -80,9 +81,9 @@ This is a separate review gate. Keep enrollment disabled until all test-only val
    npm run dev:review
    ```
 
-6. Open the SAT page, choose Enroll, and use a Stripe test card. Stripe's standard successful Visa test number is `4242 4242 4242 4242`, with any future expiration date and any three-digit CVC.
-7. Complete the post-payment student onboarding form.
-8. Use the D1 inspection commands above to confirm the checkout attempt, parent, enrollment, payment, access token, student, Stripe event, and email-delivery records.
+6. Open the SAT page, choose Enroll, complete the family form, and continue to Stripe. Confirm the parent email is prefilled, then use a Stripe test card. Stripe's standard successful Visa test number is `4242 4242 4242 4242`, with any future expiration date and any three-digit CVC.
+7. After payment, confirm the success page does not ask for the same family information again.
+8. Use the D1 inspection commands above to confirm the lead exists on the checkout attempt before payment, then confirm the parent, student, enrollment, payment, access token, Stripe event, and email-delivery records after the webhook.
 
 ## Payment-flow test matrix
 
@@ -90,15 +91,16 @@ Run these with Stripe test-mode data only. Use a fresh browser session when chec
 
 | Scenario | Action | Expected result |
 | --- | --- | --- |
-| Successful card | Complete Checkout with `4242 4242 4242 4242` | Redirect to confirmation, then show the onboarding form after the webhook is processed |
+| Required lead fields | Leave each required family field blank in turn | Inline browser validation prevents checkout creation and focuses the missing field |
+| Optional lead fields | Leave score and notes blank | Checkout opens normally; both values are stored as empty/null |
+| Successful card | Submit the family form, then complete Checkout with `4242 4242 4242 4242` | Lead exists before Stripe; redirect confirms enrollment after the webhook without repeating the form |
 | Declined card | Use Stripe's generic-decline test card | Stay in Stripe Checkout; no paid enrollment is created |
-| Cancelled checkout | Use the Checkout back link | Return to the SAT schedule with cancellation guidance; the hold remains only until expiry |
-| Double click | Click Enroll repeatedly while it is opening | One browser request; the button remains disabled while pending |
+| Cancelled checkout | Use the Checkout back link | Return to the enrollment form with the entered values restored and cancellation guidance; the hold remains only until expiry |
+| Double click | Submit repeatedly while Checkout is opening | One browser request; the submit button remains disabled while pending |
 | Duplicate webhook | Resend the completed event from Stripe CLI/dashboard | No duplicate enrollment, payment, email delivery, or analytics transaction |
 | Expired session | Expire a test Checkout session | Attempt becomes `expired`; its seat becomes available |
 | Full cohort | Temporarily fill all 15 test seats/holds | The next checkout receives the friendly unavailable response and no Stripe session is created |
 | Wrong amount/config | Point the test environment at a non-$299 Price without completing payment | Checkout exposes the mismatch visually; stop the test and fix configuration. If completed accidentally, the webhook rejects fulfillment and the payment needs a refund |
-| Onboarding retry | Submit the academic profile twice | One student remains attached; the second submission updates rather than duplicates it |
 | Partial refund | Refund part of the test PaymentIntent | Payment becomes `partially_refunded`; enrollment remains active/paid |
 | Full refund | Refund the complete test payment | Payment and enrollment become `refunded`; onboarding access becomes unavailable |
 | Email outage | Omit Resend configuration | Payment remains recorded; failed/skipped email delivery is visible for retry |

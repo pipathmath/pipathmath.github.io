@@ -16,6 +16,7 @@ export async function createStripeCheckoutSession(
     cohort: CohortRow;
     priceId: string;
     expiresAt: number;
+    parentEmail: string;
   },
 ): Promise<Stripe.Checkout.Session> {
   const stripe = getStripeClient(env);
@@ -31,12 +32,14 @@ export async function createStripeCheckoutSession(
     line_items: [{ price: input.priceId, quantity: 1 }],
     payment_method_types: ["card"],
     customer_creation: "always",
-    phone_number_collection: { enabled: true },
-    name_collection: {
-      individual: { enabled: true },
-    },
+    customer_email: input.parentEmail,
     billing_address_collection: "auto",
     submit_type: "book",
+    custom_text: {
+      submit: {
+        message: "Your family information is saved. Complete payment to reserve the student's place.",
+      },
+    },
     metadata,
     payment_intent_data: {
       description: input.cohort.name,
@@ -45,7 +48,7 @@ export async function createStripeCheckoutSession(
     expires_at: input.expiresAt,
     success_url:
       `${siteOrigin}/sat-math-bootcamp/enrollment-confirmed?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${siteOrigin}/sat-math-bootcamp?checkout=cancelled#schedule`,
+    cancel_url: `${siteOrigin}/sat-math-bootcamp?checkout=cancelled#enrollment`,
   });
 }
 

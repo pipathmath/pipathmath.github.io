@@ -11,6 +11,9 @@ export interface FulfilledEnrollment {
   parentEmail: string;
   parentName: string;
   parentPhone: string | null;
+  studentName: string;
+  studentMathScore: number | null;
+  additionalNotes: string | null;
   cohort: CohortRow;
   onboardingToken: string;
   gaClientId: string | null;
@@ -37,6 +40,24 @@ function stripeObjectId(
 
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
+}
+
+function splitStudentName(displayName: string): { firstName: string; lastName: string } {
+  const parts = displayName.trim().split(/\s+/u);
+  return {
+    firstName: parts[0] ?? displayName,
+    lastName: parts.slice(1).join(" "),
+  };
+}
+
+function scoreRange(
+  score: number | null,
+): "baseline_needed" | "under_500" | "500_600" | "600_700" | "700_plus" {
+  if (score === null) return "baseline_needed";
+  if (score < 500) return "under_500";
+  if (score <= 600) return "500_600";
+  if (score <= 700) return "600_700";
+  return "700_plus";
 }
 
 function paidAtFromSession(session: Stripe.Checkout.Session): string {
@@ -176,12 +197,13 @@ export async function fulfillPaidCheckout(
     throw new Error("stripe_session_amount_mismatch");
   }
 
-  const parentEmail = normalizeEmail(session.customer_details?.email ?? "");
-  const parentName = session.customer_details?.name?.trim() ?? "";
-  const parentPhone = session.customer_details?.phone?.trim() || null;
+  const parentEmail = normalizeEmail(attempt.parent_email ?? "");
+  const parentName = attempt.parent_name?.trim() ?? "";
+  const parentPhone = attempt.parent_phone?.trim() || null;
+  const studentName = attempt.student_name?.trim() ?? "";
 
-  if (!parentEmail || !parentName) {
-    throw new Error("stripe_customer_details_missing");
+  if (!parentEmail || !parentName || !parentPhone || !studentName) {
+    throw new Error("checkout_lead_details_missing");
   }
 
   const stripeCustomerId = stripeObjectId(session.customer, "customer");
@@ -215,22 +237,67 @@ export async function fulfillPaidCheckout(
     throw new Error("parent_upsert_failed");
   }
 
+  const { firstName: studentFirstName, lastName: studentLastName } =
+    splitStudentName(studentName);
+  const studentCandidateId = crypto.randomUUID();
+  const student = await env.DB.prepare(
+    `INSERT INTO students (
+       id,
+       parent_id,
+       first_name,
+       last_name,
+       display_name,
+       checkout_attempt_id,
+       grade,
+       score_range,
+       target_and_challenges,
+       onboarding_completed_at
+     ) VALUES (?, ?, ?, ?, ?, ?, 'other', ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+     ON CONFLICT(checkout_attempt_id) DO UPDATE SET
+       parent_id = excluded.parent_id,
+       first_name = excluded.first_name,
+       last_name = excluded.last_name,
+       display_name = excluded.display_name,
+       score_range = excluded.score_range,
+       target_and_challenges = excluded.target_and_challenges,
+       onboarding_completed_at = excluded.onboarding_completed_at,
+       updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+     RETURNING id`,
+  )
+    .bind(
+      studentCandidateId,
+      parent.id,
+      studentFirstName,
+      studentLastName,
+      studentName,
+      attemptId,
+      scoreRange(attempt.student_math_score),
+      attempt.additional_notes ?? "",
+    )
+    .first<{ id: string }>();
+
+  if (!student?.id) {
+    throw new Error("student_upsert_failed");
+  }
+
   const enrollmentCandidateId = crypto.randomUUID();
   await env.DB.prepare(
     `INSERT OR IGNORE INTO enrollments (
        id,
        cohort_id,
        parent_id,
+       student_id,
        checkout_attempt_id,
        stripe_checkout_session_id,
        status,
        paid_at
-     ) VALUES (?, ?, ?, ?, ?, 'paid', ?)`,
+     ) VALUES (?, ?, ?, ?, ?, ?, 'active', ?)`,
   )
     .bind(
       enrollmentCandidateId,
       cohort.id,
       parent.id,
+      student.id,
       attemptId,
       session.id,
       paidAtFromSession(session),
@@ -254,6 +321,13 @@ export async function fulfillPaidCheckout(
   const paymentCandidateId = crypto.randomUUID();
 
   await env.DB.batch([
+    env.DB.prepare(
+      `UPDATE enrollments
+       SET student_id = ?,
+           status = 'active',
+           updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+       WHERE id = ?`,
+    ).bind(student.id, enrollment.id),
     env.DB.prepare(
       `UPDATE checkout_attempts
        SET status = 'completed',
@@ -319,6 +393,9 @@ export async function fulfillPaidCheckout(
     parentEmail,
     parentName,
     parentPhone,
+    studentName,
+    studentMathScore: attempt.student_math_score,
+    additionalNotes: attempt.additional_notes,
     cohort,
     onboardingToken,
     gaClientId: attempt.ga_client_id,

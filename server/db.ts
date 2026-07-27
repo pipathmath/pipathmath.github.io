@@ -17,6 +17,12 @@ INSERT INTO checkout_attempts (
   status,
   reservation_expires_at,
   request_fingerprint,
+  parent_name,
+  parent_email,
+  parent_phone,
+  student_name,
+  student_math_score,
+  additional_notes,
   ga_client_id,
   utm_source,
   utm_medium,
@@ -31,6 +37,12 @@ SELECT
   ?,
   ?,
   'held',
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
   ?,
   ?,
   ?,
@@ -109,6 +121,12 @@ export async function reserveSeat(
     cohortId: string;
     reservationExpiresAt: number;
     requestFingerprint: string;
+    parentName: string;
+    parentEmail: string;
+    parentPhone: string;
+    studentName: string;
+    studentMathScore: number | null;
+    additionalNotes: string | null;
     attribution: Attribution;
   },
 ): Promise<void> {
@@ -119,6 +137,12 @@ export async function reserveSeat(
       input.cohortId,
       input.reservationExpiresAt,
       input.requestFingerprint,
+      input.parentName,
+      input.parentEmail,
+      input.parentPhone,
+      input.studentName,
+      input.studentMathScore,
+      input.additionalNotes,
       attribution.gaClientId,
       attribution.utmSource,
       attribution.utmMedium,
@@ -185,7 +209,8 @@ export async function findCheckoutAttempt(
   attemptId: string,
 ): Promise<CheckoutAttemptRow | null> {
   return env.DB.prepare(
-    `SELECT id, cohort_id, stripe_checkout_session_id, status, reservation_expires_at, ga_client_id
+    `SELECT id, cohort_id, stripe_checkout_session_id, status, reservation_expires_at, ga_client_id,
+            parent_name, parent_email, parent_phone, student_name, student_math_score, additional_notes
      FROM checkout_attempts
      WHERE id = ?`,
   )

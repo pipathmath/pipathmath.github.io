@@ -104,6 +104,11 @@ export default function EnrollmentConfirmation() {
         }
 
         if (payload.state === "enrolled") {
+          try {
+            window.sessionStorage.removeItem("pipath_enrollment_draft");
+          } catch {
+            // Confirmation does not depend on browser storage.
+          }
           setView(
             payload.onboardingComplete
               ? { name: "complete" }

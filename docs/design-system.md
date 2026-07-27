@@ -43,7 +43,7 @@ Approved shared labels:
 
 The header action is contextual:
 
-- SAT page: View dates or Enroll.
+- SAT page: Enroll now, leading directly to the family enrollment form.
 - Home and Math Tutoring: Book a consultation.
 - Contact: Send an inquiry.
 
