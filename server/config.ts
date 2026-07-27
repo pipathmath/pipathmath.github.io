@@ -7,13 +7,11 @@ export const CHECKOUT_RATE_WINDOW_MINUTES = 15;
 export const ONBOARDING_TOKEN_VALID_DAYS_AFTER_COHORT = 120;
 
 const requiredCheckoutKeys = [
-  "STRIPE_SECRET_KEY",
-  "STRIPE_PRICE_ID_AUGUST_2026",
+  "STRIPE_PAYMENT_LINK_URL_AUGUST_2026",
   "RATE_LIMIT_SALT",
 ] as const;
 
 const requiredWebhookKeys = [
-  "STRIPE_SECRET_KEY",
   "STRIPE_WEBHOOK_SECRET",
   "ONBOARDING_TOKEN_SECRET",
 ] as const;
@@ -26,12 +24,12 @@ export function missingWebhookConfig(env: Env): string[] {
   return requiredWebhookKeys.filter((key) => !env[key]?.trim());
 }
 
-export function getStripePriceId(env: Env, cohortId: string): string | null {
+export function getStripePaymentLinkUrl(env: Env, cohortId: string): string | null {
   if (cohortId !== AUGUST_COHORT_ID) {
     return null;
   }
 
-  return env.STRIPE_PRICE_ID_AUGUST_2026?.trim() || null;
+  return env.STRIPE_PAYMENT_LINK_URL_AUGUST_2026?.trim() || null;
 }
 
 export function getSiteOrigin(request: Request, env: Env): string {

@@ -2,9 +2,9 @@
 
 ## The important distinction
 
-PiPath does not have one permanent Stripe payment link in the page source. The browser asks the PiPath backend to create a new, short-lived Stripe Checkout Session for the selected cohort. Stripe returns a unique hosted checkout URL, and the browser redirects the parent there.
+PiPath uses a hybrid flow: its own backend captures the family lead and checks capacity first, then redirects the parent to a reusable Stripe Payment Link. The configured link is not sent to the browser until the lead has passed validation and a temporary seat hold has been created.
 
-This is preferable to a pasted link because PiPath can check cohort status, rate limits, price configuration, and remaining capacity before a payment session exists.
+The Payment Link is deliberately simpler than creating a new Checkout Session through Stripe's API for every parent. PiPath adds a unique `client_reference_id` and locked, validated parent email to the link so the signed payment webhook can reconcile the payment with the saved lead.
 
 ## End-to-end flow
 
@@ -12,13 +12,13 @@ This is preferable to a pasted link because PiPath can check cohort status, rate
 2. The form sends those fields, the cohort ID, and optional marketing attribution to `POST /api/checkout`.
 3. The endpoint rejects cross-origin requests, invalid JSON, missing configuration, unknown cohorts, closed cohorts, and rate-limited clients.
 4. A single conditional D1 insert saves the lead and reserves a seat for 30 minutes. Paid enrollments plus unexpired holds cannot exceed the technical capacity.
-5. Only after that insert succeeds does the server create a card-only Stripe Checkout Session using the configured Stripe Price ID. The parent's email is prefilled; Stripe securely collects the payment details.
-6. The parent pays on Stripe's hosted page. The browser redirect is only a user-experience step; it is not trusted as proof of payment. If the parent returns without paying, the entered form values are restored in that browser and the hold expires normally.
-7. Stripe signs and sends a `checkout.session.completed` webhook. PiPath verifies that signature, checks the payment status, cohort reference, checkout reference, amount, and currency, then promotes the saved lead into the parent, student, enrollment, payment, and hashed enrollment credential.
+5. Only after that insert succeeds does the server append the lead reference, locked email, and available UTM attribution to the configured Stripe Payment Link.
+6. The parent pays on Stripe's hosted page. The browser redirect is only a user-experience step; it is not trusted as proof of payment. If the parent returns without paying, the entered form values remain in that browser and the hold expires normally.
+7. Stripe signs and sends a `checkout.session.completed` webhook containing the `client_reference_id`. PiPath verifies that signature, checks the payment status, saved cohort, checkout reference, amount, and currency, then promotes the saved lead into the parent, student, enrollment, payment, and hashed enrollment credential.
 8. PiPath records each Stripe event by event ID so Stripe retries do not normally create duplicate business records. Database uniqueness constraints provide another idempotency layer.
 9. The confirmation page polls `GET /api/enrollment-status`. When the webhook has finished, it confirms enrollment without asking the family to re-enter the pre-checkout information. Only a masked parent email is returned.
 
-Checkout expiry and payment failure release the checkout attempt. Partial and full refunds update payment state; a full refund also revokes the enrollment state used by onboarding.
+Unpaid D1 holds stop counting toward capacity after 30 minutes. Partial and full refunds update payment state; a full refund also revokes the enrollment state used by onboarding.
 
 ## Where data lives
 
@@ -30,6 +30,7 @@ Resend and server-side GA4 are optional downstream integrations. Their missing c
 
 - The price and currency are checked again when the signed payment webhook arrives.
 - Capacity is reserved atomically in D1, including unexpired checkout holds.
+- The permanent August Payment Link must also be configured in Stripe with a 15-completed-payment limit. D1 prevents the website from issuing new checkout links when full, but a copied reusable link can bypass the website check.
 - Raw IP addresses are not stored; rate limiting uses an HMAC fingerprint of IP plus user agent.
 - Checkout and legacy onboarding writes require the request's `Origin` to match the site origin.
 - Request bodies, text fields, enum values, and attribution lengths are bounded and sanitized.
@@ -45,7 +46,7 @@ The transactional core is sensibly designed for a small cohort launch, but it is
 
 Before enabling enrollment publicly:
 
-1. Verify that the configured Stripe Price is exactly $299 USD. A wrong Price would be collected by Stripe and then rejected by PiPath's webhook amount check, requiring a refund and manual recovery.
+1. Create a clean August Payment Link, verify that its Price is exactly $299 USD, and set its completed-payment limit to 15. A wrong Price would be collected by Stripe and then rejected by PiPath's webhook amount check, requiring a refund and manual recovery.
 2. Run required-field, optional-field, successful, declined, cancelled, expired, duplicate-webhook, sold-out, partial-refund, and full-refund tests.
 3. Configure and verify webhook delivery alerts in Stripe. The confirmation page depends on the webhook, not the redirect alone.
 4. Configure Resend, verify the sending domain, and prove both parent and owner emails. Add an operational retry procedure for failed deliveries.
@@ -56,6 +57,6 @@ Before enabling enrollment publicly:
 
 ## What can be tested without secrets
 
-The site build, responsive layouts, fillable family form, disabled payment handoff, navigation, confirmation-page recovery state, database migration, request validation, token helpers, and capacity behavior are testable locally without Stripe credentials.
+The site build, responsive layouts, fillable family form, Payment Link URL construction, navigation, confirmation-page recovery state, database migration, request validation, token helpers, and D1 capacity behavior are testable locally without a Stripe API secret key.
 
-An actual hosted Checkout URL cannot be inspected until Stripe test credentials and the test Price ID are placed in the ignored `.dev.vars` file. The Stripe CLI is also needed locally to forward signed webhook events. Never commit or paste those secrets into source, documentation, screenshots, or chat.
+The temporary July Payment Link is live-mode and is included only for visual handoff testing; do not submit a real payment through it. A complete safe payment test requires a new Stripe test-mode Payment Link and the Stripe CLI to forward signed webhook events. Never commit or paste webhook or application secrets into source, documentation, screenshots, or chat.

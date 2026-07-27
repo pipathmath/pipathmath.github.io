@@ -164,16 +164,11 @@ export async function fulfillPaidCheckout(
 
   const attemptId =
     session.metadata?.registration_id ?? session.client_reference_id;
-  const cohortId = session.metadata?.cohort_id;
+  if (!attemptId) throw new Error("stripe_session_reference_missing");
 
-  if (!attemptId || !cohortId) {
-    throw new Error("stripe_session_metadata_missing");
-  }
-
-  const [attempt, cohort] = await Promise.all([
-    findCheckoutAttempt(env, attemptId),
-    getCohort(env, cohortId),
-  ]);
+  const attempt = await findCheckoutAttempt(env, attemptId);
+  const cohortId = session.metadata?.cohort_id ?? attempt?.cohort_id;
+  const cohort = cohortId ? await getCohort(env, cohortId) : null;
 
   if (!attempt || attempt.cohort_id !== cohortId || !cohort) {
     throw new Error("stripe_session_reference_invalid");

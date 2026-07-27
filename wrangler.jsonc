@@ -15,6 +15,7 @@
   ],
   "vars": {
     "SITE_URL": "http://localhost:8788",
+    "STRIPE_PAYMENT_LINK_URL_AUGUST_2026": "https://buy.stripe.com/dRmeVcbzcgMf8rd3kG9MY00",
     "OWNER_EMAIL": "pipathmath@gmail.com",
     "EMAIL_FROM": "PiPath Academy <enrollment@pipathacademy.com>",
     "GA4_MEASUREMENT_ID": "G-EXV4N60WP8"

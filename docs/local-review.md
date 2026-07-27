@@ -58,17 +58,14 @@ npx wrangler d1 execute DB --local --command "SELECT enrollment_id, kind, recipi
 
 The planned owner dashboard will replace most routine command-line inspection before live operations begin.
 
-## Enable a real Stripe test-mode checkout locally
+## Review the Payment Link handoff locally
 
-This is a separate review gate. Keep enrollment disabled until all test-only values below are ready.
+The supplied July Payment Link is configured temporarily so the family-form-to-Stripe navigation can be inspected without a Stripe API key. It is a live-mode link: do not enter payment details or complete a charge during visual review.
 
-1. In Stripe test mode, create or select the $299 SAT Bootcamp Price.
-2. Copy `.dev.vars.example` to the ignored `.dev.vars` file.
-3. In `.dev.vars`, replace the examples with:
-   - the Stripe test secret key (`sk_test_...`);
-   - the $299 test Price ID (`price_...`);
-   - two different, strong random values for `ONBOARDING_TOKEN_SECRET` and `RATE_LIMIT_SALT`.
-4. Run the Stripe CLI listener in a separate terminal:
+1. Copy `.dev.vars.example` to the ignored `.dev.vars` file.
+2. Keep the temporary July URL for visual testing, or replace `STRIPE_PAYMENT_LINK_URL_AUGUST_2026` with a new Stripe test-mode Payment Link before testing payment.
+3. In `.dev.vars`, set two different, strong random values for `ONBOARDING_TOKEN_SECRET` and `RATE_LIMIT_SALT`.
+4. For a full test-mode payment, run the Stripe CLI listener in a separate terminal:
 
    ```powershell
    stripe listen --events checkout.session.completed,checkout.session.expired,payment_intent.payment_failed,charge.refunded --forward-to http://localhost:8788/api/stripe-webhook
@@ -81,13 +78,13 @@ This is a separate review gate. Keep enrollment disabled until all test-only val
    npm run dev:review
    ```
 
-6. Open the SAT page, choose Enroll, complete the family form, and continue to Stripe. Confirm the parent email is prefilled, then use a Stripe test card. Stripe's standard successful Visa test number is `4242 4242 4242 4242`, with any future expiration date and any three-digit CVC.
+6. Open the SAT page, choose Enroll, complete the family form, and continue to Stripe. Confirm that the hosted page opens and the validated parent email is locked. Only use Stripe test-card data when the configured URL is visibly a test-mode Payment Link.
 7. After payment, confirm the success page does not ask for the same family information again.
 8. Use the D1 inspection commands above to confirm the lead exists on the checkout attempt before payment, then confirm the parent, student, enrollment, payment, access token, Stripe event, and email-delivery records after the webhook.
 
 ## Payment-flow test matrix
 
-Run these with Stripe test-mode data only. Use a fresh browser session when checking rate limits or first-touch attribution.
+Run payment scenarios with a newly created Stripe test-mode Payment Link only. Use a fresh browser session when checking rate limits or first-touch attribution. The temporary July live-mode link is for visual navigation review, not payment submission.
 
 | Scenario | Action | Expected result |
 | --- | --- | --- |
@@ -98,9 +95,10 @@ Run these with Stripe test-mode data only. Use a fresh browser session when chec
 | Cancelled checkout | Use the Checkout back link | Return to the enrollment form with the entered values restored and cancellation guidance; the hold remains only until expiry |
 | Double click | Submit repeatedly while Checkout is opening | One browser request; the submit button remains disabled while pending |
 | Duplicate webhook | Resend the completed event from Stripe CLI/dashboard | No duplicate enrollment, payment, email delivery, or analytics transaction |
-| Expired session | Expire a test Checkout session | Attempt becomes `expired`; its seat becomes available |
-| Full cohort | Temporarily fill all 15 test seats/holds | The next checkout receives the friendly unavailable response and no Stripe session is created |
-| Wrong amount/config | Point the test environment at a non-$299 Price without completing payment | Checkout exposes the mismatch visually; stop the test and fix configuration. If completed accidentally, the webhook rejects fulfillment and the payment needs a refund |
+| Expired hold | Wait beyond the 30-minute D1 hold without paying | The unpaid attempt no longer counts against website capacity |
+| Full cohort | Temporarily fill all 15 test seats/holds | The next website checkout receives the friendly unavailable response and no Payment Link is returned |
+| Copied-link cap | Configure the clean test Payment Link with a 15-payment limit and reach it | Stripe deactivates the link so direct or copied-link purchases cannot exceed 15 |
+| Wrong amount/config | Point the test environment at a non-$299 Payment Link without completing payment | Checkout exposes the mismatch visually; stop the test and fix configuration. If completed accidentally, the webhook rejects fulfillment and the payment needs a refund |
 | Partial refund | Refund part of the test PaymentIntent | Payment becomes `partially_refunded`; enrollment remains active/paid |
 | Full refund | Refund the complete test payment | Payment and enrollment become `refunded`; onboarding access becomes unavailable |
 | Email outage | Omit Resend configuration | Payment remains recorded; failed/skipped email delivery is visible for retry |
@@ -126,6 +124,6 @@ The remote preview environment is deliberately separate from local review. At th
 1. create a non-production D1 database in Cloudflare;
 2. replace the placeholder database ID with the preview ID;
 3. apply the same versioned migrations remotely;
-4. configure preview-only Stripe, webhook, token, email, and analytics secrets in Cloudflare;
+4. configure the preview Payment Link plus preview-only webhook, token, email, and analytics secrets in Cloudflare;
 5. deploy the `croquette` preview only after the branch review and push are approved;
 6. repeat payment, webhook retry, refund, email, mobile, desktop, and accessibility QA before any production cutover.

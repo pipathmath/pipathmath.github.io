@@ -1,13 +1,12 @@
 import {
   CHECKOUT_HOLD_SECONDS,
-  getStripePriceId,
+  getStripePaymentLinkUrl,
   missingCheckoutConfig,
 } from "../../server/config";
 import {
   assertCheckoutRateLimit,
   getCohort,
   markCheckoutAttempt,
-  markCheckoutCreated,
   reserveSeat,
 } from "../../server/db";
 import {
@@ -18,17 +17,12 @@ import {
   readJsonBody,
 } from "../../server/http";
 import { createRequestFingerprint } from "../../server/security";
-import {
-  createStripeCheckoutSession,
-  expireStripeCheckoutSession,
-} from "../../server/stripe";
+import { buildPaymentLinkUrl } from "../../server/payment-link";
 import type { Env } from "../../server/types";
 import { parseCheckoutRequest } from "../../server/validation";
-import type Stripe from "stripe";
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   let attemptId: string | null = null;
-  let stripeSession: Stripe.Checkout.Session | null = null;
 
   try {
     assertSameOrigin(request);
@@ -45,9 +39,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
     const input = parseCheckoutRequest(await readJsonBody(request));
     const cohort = await getCohort(env, input.cohortId);
-    const priceId = getStripePriceId(env, input.cohortId);
+    const paymentLinkUrl = getStripePaymentLinkUrl(env, input.cohortId);
 
-    if (!cohort || cohort.status !== "enrolling" || !priceId) {
+    if (!cohort || cohort.status !== "enrolling" || !paymentLinkUrl) {
       throw new ApiError(
         409,
         "cohort_unavailable",
@@ -75,33 +69,16 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       attribution: input.attribution,
     });
 
-    stripeSession = await createStripeCheckoutSession(request, env, {
+    const checkoutUrl = buildPaymentLinkUrl(paymentLinkUrl, {
       attemptId,
-      cohort,
-      priceId,
-      expiresAt,
       parentEmail: input.parentEmail,
+      attribution: input.attribution,
     });
 
-    if (!stripeSession.url) {
-      throw new Error("stripe_checkout_url_missing");
-    }
+    await markCheckoutAttempt(env, attemptId, "checkout_created");
 
-    await markCheckoutCreated(env, attemptId, stripeSession.id);
-
-    return jsonResponse({ url: stripeSession.url });
+    return jsonResponse({ url: checkoutUrl });
   } catch (error) {
-    if (stripeSession) {
-      try {
-        await expireStripeCheckoutSession(env, stripeSession.id);
-      } catch (expirationError) {
-        console.error(
-          "Could not expire orphaned Stripe session",
-          expirationError instanceof Error ? expirationError.message : "unknown",
-        );
-      }
-    }
-
     if (attemptId) {
       try {
         await markCheckoutAttempt(env, attemptId, "failed");

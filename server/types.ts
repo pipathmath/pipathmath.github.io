@@ -1,8 +1,7 @@
 export interface Env {
   DB: D1Database;
-  STRIPE_SECRET_KEY: string;
   STRIPE_WEBHOOK_SECRET: string;
-  STRIPE_PRICE_ID_AUGUST_2026: string;
+  STRIPE_PAYMENT_LINK_URL_AUGUST_2026: string;
   ONBOARDING_TOKEN_SECRET: string;
   RATE_LIMIT_SALT: string;
   SITE_URL?: string;
