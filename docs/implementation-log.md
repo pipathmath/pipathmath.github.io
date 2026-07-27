@@ -267,3 +267,74 @@ Status: owner approved committing and pushing the reviewed Batch 1 closeout and 
 - Pre-commit `npm run verify` passed: 3 test files and 12 tests, zero Astro errors/warnings/hints, two static routes, and a successful Pages Functions Worker build.
 - Local `.wrangler`, `dist`, `node_modules`, and secret files remain excluded.
 - This authorization does not include `main`, production, Cloudflare deployment/bindings, a remote D1 database, Stripe activation, Resend activation, or live analytics secrets.
+
+## 2026-07-26 - Home marketing redesign
+
+Status: implemented, visually reviewed, and approved for commit and push to `croquette`.
+
+### Marketing and information architecture
+
+- Replaced the résumé-first Home experience with a family-facing promise: clearer math instruction built around the student.
+- Made the free 15-minute consultation the primary Home conversion and kept service exploration secondary.
+- Ordered the page as promise, needs-based wayfinder, service paths, learning progression, instructor credibility, FAQs, and consultation close.
+- Added three direct starting points for families: current-class support, SAT preparation, and a free consultation when the right path is unclear.
+- Presented Math Tutoring and the Digital SAT Math Bootcamp as two clear choices instead of asking families to infer services from Orlando's biography.
+- Added concrete SAT value on Home: eight sessions, 10 live hours, August dates, and targeted practice.
+- Kept the Duke Math Ph.D. credential prominent while making PiPath's teaching approach and student fit the primary story.
+- Did not add testimonials, score guarantees, or a claimed monetary value because approved evidence is not yet available.
+
+### Imagery and credibility
+
+- Removed the Duke campus image from the built Home route.
+- Used the existing genuine Orlando portrait in the hero and optimized it through Astro from approximately 596 KB to 35 KB WebP output.
+- Added the existing PiPath Math YouTube lesson as genuine teaching content using the privacy-enhanced YouTube embed domain and lazy loading.
+- Kept the current portrait source file unchanged; later approved tutoring/classroom photography can supplement or replace it.
+
+### Navigation and interaction
+
+- Updated the shared header to use relative internal routes so Home, Math Tutoring, Contact, and SAT interactions remain inside localhost/preview instead of jumping to production.
+- Made the announcement content/link configurable so Home can promote the August SAT program while keeping consultation as its header action.
+- Changed shared mobile navigation from a horizontally clipped row to a complete two-by-two layout with 44-pixel targets; the SAT page inherits the same improvement.
+- Added a mobile consultation bar that remains hidden and unfocusable while the hero consultation button is visible, then appears through `IntersectionObserver` after that action leaves view.
+- Retained semantic native `<details>` FAQ interactions and visible keyboard focus behavior.
+
+### Technical migration
+
+- Added `src/pages/index.astro` and `src/components/home/HomePage.astro`; Astro now owns the built `/` route.
+- Added `src/styles/home.css` using the SAT-era color, type, spacing, card, border, shadow, button, and responsive tokens.
+- Removed `index.html` from `scripts/copy-legacy-static.mjs` so the legacy Home can no longer overwrite Astro's built Home. The legacy source file remains in Git and production remains unchanged.
+- Extended `SiteLayout.astro` with a per-page social image so Home uses Orlando's image instead of the SAT course graphic.
+- Added canonical Home metadata and EducationalOrganization, Person, and FAQ structured data.
+- Preserved the seven required legacy pages/assets for Math Tutoring, Contact, Resume, SAT fallback, and existing images.
+
+### Verification
+
+- `npm run verify`: 3 test files and 12 tests passed.
+- Astro check: 35 files, 0 errors, 0 warnings, and 0 hints.
+- Static build: Home, SAT Bootcamp, and enrollment-confirmation routes built; Pages Functions Worker compiled successfully.
+- Local Chromium review passed at 1200/1440 desktop widths and 390 mobile width with no page errors, console errors, or horizontal overflow.
+- Confirmed one H1, complete image alt text, iframe title, non-empty link text, canonical metadata, Home social image, and Organization/Person/FAQ structured data.
+- Confirmed the FAQ opens, the mobile consultation bar changes its ARIA/focus state correctly, and all four navigation items remain within the mobile viewport.
+- Confirmed Home, SAT, Math Tutoring, Contact, and Resume local routes return 200.
+- Confirmed the SAT route has no mobile navigation regression.
+- Confirmed the built Home has no Duke-image reference and is not the legacy résumé page.
+- `git diff --check`: passed.
+
+### Repository and deployment state
+
+- The Home redesign and reviewed SAT refinements are approved for commit and push to `croquette`.
+- Nothing is merged to `main`, deployed, or connected to Cloudflare during this gate.
+- Stripe, D1 preview/production, Resend, and analytics-secret state did not change.
+- Next gate: configure Stripe test resources and review the real sandbox checkout before any public enrollment activation.
+
+## 2026-07-27 - Home approval and SAT hero refinement
+
+Status: owner approved the reviewed Home page and requested a `croquette` commit/push.
+
+- Kept the approved Home design without further implementation changes.
+- Replaced the SAT hero's video placeholder with the supplied PiPath YouTube overview using a responsive privacy-enhanced embed.
+- Kept the explanatory caption inside the video card and placed the schedule and consultation actions below, outside the card.
+- Added a clear canceled-checkout return notice above the schedule.
+- Added a plain-language backend architecture document and expanded local review with responsive and Stripe test matrices.
+- Confirmed the legacy SAT page contained a Google interest form rather than a reusable Stripe Payment Link.
+- Verified 12 automated tests, zero Astro/TypeScript diagnostics, a successful Cloudflare Functions build, and desktop/mobile layouts without horizontal overflow.

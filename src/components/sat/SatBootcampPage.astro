@@ -161,11 +161,6 @@ const structuredData = {
             Duke Math Ph.D. Dr. Orlando Ferrer.
           </p>
 
-          <div class="hero-actions">
-            <a class="button button-primary" href="#schedule">View the August schedule</a>
-            <a class="button button-secondary" href="#approach">See our approach</a>
-          </div>
-
           <ul class="hero-points" aria-label="Program highlights">
             <li>Eight live sessions</li>
             <li>Personalized homework</li>
@@ -173,18 +168,31 @@ const structuredData = {
           </ul>
         </div>
 
-        <figure class="hero-artwork">
-          <div class="artwork-label">
-            <span>PiPath Academy</span>
-            <strong>Digital SAT Math</strong>
+        <div class="hero-media-column">
+          <figure class="hero-artwork">
+            <div class="artwork-label">
+              <span>PiPath Academy</span>
+              <strong>Digital SAT Math</strong>
+            </div>
+            <div class="course-video-frame">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/1IGzsRyCwHU?rel=0"
+                title="Digital SAT Math Bootcamp overview with Dr. Orlando Ferrer"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+              ></iframe>
+            </div>
+            <figcaption>Meet the instructor and learn how the SAT Math course works.</figcaption>
+          </figure>
+          <div class="hero-video-actions" aria-label="Next steps">
+            <a class="button button-primary" href="#schedule">View the August schedule</a>
+            <a class="button button-secondary" href={consultationUrl} target="_blank" rel="noreferrer">
+              Book a free consultation
+            </a>
           </div>
-          <div class="video-placeholder" role="img" aria-label="Course overview video placeholder">
-            <span class="video-play" aria-hidden="true">▶</span>
-            <strong>Course overview</strong>
-            <small>Video with Dr. Orlando Ferrer coming soon</small>
-          </div>
-          <figcaption>Meet the instructor and learn how the SAT Math course works.</figcaption>
-        </figure>
+        </div>
       </div>
     </section>
 
@@ -199,6 +207,10 @@ const structuredData = {
 
     <section class="section section-schedule" id="schedule">
       <div class="site-container">
+        <div class="checkout-cancelled-notice" role="status" hidden>
+          <strong>Checkout canceled.</strong>
+          <span>No payment was made. Your place is not reserved, and you can try again whenever you are ready.</span>
+        </div>
         <div class="section-heading">
           <div>
             <p class="section-kicker">Choose your dates</p>
@@ -387,4 +399,13 @@ const structuredData = {
       </a>
     )
   }
+
+  <script>
+    const checkoutNotice = document.querySelector(".checkout-cancelled-notice");
+    const checkoutState = new URLSearchParams(window.location.search).get("checkout");
+
+    if (checkoutState === "cancelled" && checkoutNotice instanceof HTMLElement) {
+      checkoutNotice.hidden = false;
+    }
+  </script>
 </SiteLayout>

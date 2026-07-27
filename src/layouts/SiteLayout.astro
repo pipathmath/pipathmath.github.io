@@ -9,6 +9,7 @@ interface Props {
   robots?: string;
   referrerPolicy?: string;
   analyticsEnabled?: boolean;
+  socialImagePath?: string;
 }
 
 const {
@@ -19,9 +20,10 @@ const {
   robots,
   referrerPolicy,
   analyticsEnabled = true,
+  socialImagePath = "/bootcamp-header.png",
 } = Astro.props;
 const canonicalUrl = new URL(canonicalPath, Astro.site);
-const socialImageUrl = new URL("/bootcamp-header.png", Astro.site);
+const socialImageUrl = new URL(socialImagePath, Astro.site);
 const analyticsId = "G-EXV4N60WP8";
 ---
 

@@ -14,11 +14,22 @@ Then open:
 
 - `http://localhost:8788/sat-math-bootcamp/`
 - `http://localhost:8788/sat-math-bootcamp/enrollment-confirmed/`
-- `http://localhost:8788/` for the unchanged legacy Home page
+- `http://localhost:8788/` for the redesigned Home page
 
 Use the trailing slash in the SAT URLs. Wrangler redirects the no-slash form, but the slash form is the clearest review URL.
 
 The default build deliberately shows enrollment as being set up. This allows safe review of layout, responsive behavior, navigation, dates, selling points, disabled enrollment messaging, and the confirmation-page recovery state without accepting a payment.
+
+Review each page at minimum at 390px mobile, 768px tablet, and 1440px desktop widths. Confirm that:
+
+- no content scrolls horizontally;
+- keyboard focus is visible and follows the visual order;
+- the SAT overview video retains a 16:9 ratio;
+- both SAT video actions remain directly below the video;
+- the schedule jump lands with the heading visible;
+- external consultation and YouTube links open correctly;
+- the mobile enrollment/consultation bar appears only after the main call to action leaves the viewport;
+- YouTube's unavailable state does not obscure the surrounding actions.
 
 ## What the private local D1 database is
 
@@ -72,6 +83,27 @@ This is a separate review gate. Keep enrollment disabled until all test-only val
 6. Open the SAT page, choose Enroll, and use a Stripe test card. Stripe's standard successful Visa test number is `4242 4242 4242 4242`, with any future expiration date and any three-digit CVC.
 7. Complete the post-payment student onboarding form.
 8. Use the D1 inspection commands above to confirm the checkout attempt, parent, enrollment, payment, access token, student, Stripe event, and email-delivery records.
+
+## Payment-flow test matrix
+
+Run these with Stripe test-mode data only. Use a fresh browser session when checking rate limits or first-touch attribution.
+
+| Scenario | Action | Expected result |
+| --- | --- | --- |
+| Successful card | Complete Checkout with `4242 4242 4242 4242` | Redirect to confirmation, then show the onboarding form after the webhook is processed |
+| Declined card | Use Stripe's generic-decline test card | Stay in Stripe Checkout; no paid enrollment is created |
+| Cancelled checkout | Use the Checkout back link | Return to the SAT schedule with cancellation guidance; the hold remains only until expiry |
+| Double click | Click Enroll repeatedly while it is opening | One browser request; the button remains disabled while pending |
+| Duplicate webhook | Resend the completed event from Stripe CLI/dashboard | No duplicate enrollment, payment, email delivery, or analytics transaction |
+| Expired session | Expire a test Checkout session | Attempt becomes `expired`; its seat becomes available |
+| Full cohort | Temporarily fill all 15 test seats/holds | The next checkout receives the friendly unavailable response and no Stripe session is created |
+| Wrong amount/config | Point the test environment at a non-$299 Price without completing payment | Checkout exposes the mismatch visually; stop the test and fix configuration. If completed accidentally, the webhook rejects fulfillment and the payment needs a refund |
+| Onboarding retry | Submit the academic profile twice | One student remains attached; the second submission updates rather than duplicates it |
+| Partial refund | Refund part of the test PaymentIntent | Payment becomes `partially_refunded`; enrollment remains active/paid |
+| Full refund | Refund the complete test payment | Payment and enrollment become `refunded`; onboarding access becomes unavailable |
+| Email outage | Omit Resend configuration | Payment remains recorded; failed/skipped email delivery is visible for retry |
+
+For a plain-language system walkthrough and the current launch risks, see `docs/enrollment-backend.md`.
 
 Do not paste secret keys into project documents, source files, Git, screenshots, or chat. Add them only to the ignored `.dev.vars` file or an approved secret manager.
 

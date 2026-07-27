@@ -1,6 +1,6 @@
 # PiPath Academy design system
 
-Status: Adopted for the SAT experience. The Home, Math Tutoring, and Contact pages will migrate to this system after Batch 2 is reviewed and pushed to `croquette`.
+Status: Adopted for the SAT experience and Home. Math Tutoring and Contact remain on the legacy system until their approved migration gates.
 
 ## Design goals
 
@@ -100,17 +100,29 @@ The default marketing-page order is:
 
 ## Home redesign direction
 
-The Home redesign is the first marketing redesign after Batch 2 review and the approved `croquette` push.
+The Home implementation:
 
-It will:
+- removes the Duke campus banner and uses Orlando's genuine existing portrait;
+- uses a dark editorial hero so Home is visually distinct from the SAT course page;
+- leads with the family's need for clearer, personalized math instruction;
+- makes a free consultation the primary conversion;
+- provides a three-way needs guide for course support, SAT preparation, or an unsure family;
+- presents Math Tutoring and the Digital SAT Math Bootcamp as two distinct paths;
+- gives the SAT pathway concrete dates, live hours, and targeted practice;
+- explains the PiPath learning progression before presenting instructor credentials;
+- pairs Orlando's Duke credential with genuine PiPath YouTube teaching content rather than a campus image;
+- avoids fabricated testimonials, guarantees, or unsupported monetary-value claims;
+- uses Organization, Person, and FAQ structured data plus Home-specific social metadata;
+- uses the shared header/footer, relative internal navigation, responsive two-by-two mobile navigation, and a consultation bar that appears only after the hero action leaves view.
 
-- remove the Duke campus banner;
-- lead with PiPath's student/family value proposition;
-- introduce Math Tutoring and SAT Math Bootcamp as clear pathways;
-- use the SAT page's color, type, spacing, cards, header, and footer;
-- keep Dr. Ferrer's credential visible without reading like a resume;
-- use genuine teaching imagery when approved;
-- make consultation the primary Home conversion;
-- improve the order and prominence of proof, services, process, and next steps.
+The content order is:
 
-No Home implementation begins before the Batch 2 review gate.
+1. family-centered promise and consultation action;
+2. needs-based starting-point guide;
+3. Math Tutoring and SAT pathways;
+4. learning progression;
+5. instructor credibility and genuine teaching content;
+6. family decision FAQs;
+7. consultation close and email alternative.
+
+The current portrait is suitable for local review. Genuine classroom/tutoring imagery may supplement or replace it later when owner-approved assets exist.
