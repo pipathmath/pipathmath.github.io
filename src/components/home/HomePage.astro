@@ -1,0 +1,300 @@
+---
+import { Image } from "astro:assets";
+import orlandoPortrait from "../../../Orlando.png";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import SiteHeader from "../SiteHeader.astro";
+import SiteFooter from "../SiteFooter.astro";
+import "../../styles/home.css";
+
+const consultationUrl = "https://calendly.com/pipathmath/free-15-minute-tutoring-consultation";
+const pageTitle = "Personalized Math Tutoring & SAT Prep | PiPath Academy";
+const pageDescription =
+  "Personalized online and Apex-area math tutoring plus live Digital SAT Math preparation, taught by Duke Math Ph.D. Dr. Orlando Ferrer.";
+
+const startingPoints = [
+  {
+    prompt: "The class feels stuck",
+    description: "Get focused help with the course, homework, or an upcoming school exam.",
+    href: "/tutoring.html",
+    label: "Explore tutoring",
+  },
+  {
+    prompt: "The SAT is coming",
+    description: "Compare individualized SAT support with the next live small-group bootcamp.",
+    href: "/sat-math-bootcamp",
+    label: "See SAT preparation",
+  },
+  {
+    prompt: "We are not sure yet",
+    description: "Talk through the student's goals and leave with a sensible next step.",
+    href: consultationUrl,
+    label: "Book a free consultation",
+    external: true,
+  },
+];
+
+const pathways = [
+  {
+    eyebrow: "Individual and small-group support",
+    title: "Math Tutoring",
+    description:
+      "Build understanding, work through difficult coursework, and prepare for exams with instruction shaped around the student's class, pace, and goals.",
+    details: ["K–12 through college math", "One-on-one or small-group format", "Online; Apex-area in person by request"],
+    href: "/tutoring.html",
+    label: "Explore math tutoring",
+  },
+  {
+    eyebrow: "Four-week live online program",
+    title: "Digital SAT Math Bootcamp",
+    description:
+      "Strengthen the underlying math, practice strategic Desmos use, and turn a diagnostic into focused preparation for the Digital SAT.",
+    details: ["Eight live sessions · 10 total hours", "August 18–September 10", "Targeted practice included"],
+    href: "/sat-math-bootcamp",
+    label: "View the August bootcamp",
+  },
+];
+
+const principles = [
+  {
+    label: "Notice",
+    title: "Find the actual obstacle.",
+    description: "A missed concept, a rushed habit, and a confidence problem need different responses. We begin by telling them apart.",
+  },
+  {
+    label: "Explain",
+    title: "Make the structure visible.",
+    description: "Ideas come before recipes, so students can see why a method works and recognize when to use it again.",
+  },
+  {
+    label: "Transfer",
+    title: "Practice toward independence.",
+    description: "Guided work becomes targeted follow-up, better self-checking, and stronger decisions without constant prompting.",
+  },
+];
+
+const faqs = [
+  {
+    question: "What levels and subjects does PiPath support?",
+    answer:
+      "PiPath supports K–12 math through college-level subjects, including Algebra, Geometry, Precalculus, AP Calculus, multivariable Calculus, Linear Algebra, Differential Equations, Statistics, and SAT Math.",
+  },
+  {
+    question: "Are sessions online or in person?",
+    answer:
+      "Remote tutoring is available through Zoom. In-person tutoring in the Apex, North Carolina area may be available by request; contact PiPath to discuss scheduling and pricing.",
+  },
+  {
+    question: "How do we know whether tutoring or the SAT Bootcamp is the better fit?",
+    answer:
+      "Tutoring is the flexible path for course support, exam preparation, or individualized SAT work. The Bootcamp is a scheduled small-group program for students who want a four-week Digital SAT Math plan. A free consultation can help you choose.",
+  },
+  {
+    question: "What happens during the free consultation?",
+    answer:
+      "You will discuss the student's current course or test, goals, timing, and the kind of support that may fit. It is a short planning conversation, not a commitment to purchase.",
+  },
+];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "EducationalOrganization",
+      "@id": "https://www.pipathacademy.com/#organization",
+      name: "PiPath Academy",
+      url: "https://www.pipathacademy.com/",
+      email: "pipathmath@gmail.com",
+      areaServed: ["Apex, North Carolina", "United States"],
+      founder: { "@id": "https://www.pipathacademy.com/#orlando-ferrer" },
+      sameAs: ["https://www.linkedin.com/in/orlando-ferrer/", "https://www.youtube.com/@PiPathMath"],
+    },
+    {
+      "@type": "Person",
+      "@id": "https://www.pipathacademy.com/#orlando-ferrer",
+      name: "Dr. Orlando Ferrer",
+      honorificSuffix: "Ph.D.",
+      jobTitle: "Mathematician, data scientist, and educator",
+      alumniOf: [
+        { "@type": "CollegeOrUniversity", name: "Duke University" },
+        { "@type": "CollegeOrUniversity", name: "Wake Forest University" },
+        { "@type": "CollegeOrUniversity", name: "University of North Carolina at Chapel Hill" },
+      ],
+      worksFor: { "@id": "https://www.pipathacademy.com/#organization" },
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://www.pipathacademy.com/#faq",
+      mainEntity: faqs.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<SiteLayout title={pageTitle} description={pageDescription} canonicalPath="/" socialImagePath="/Orlando.png" structuredData={structuredData}>
+  <SiteHeader
+    activePage="home"
+    announcementLabel="August SAT cohort"
+    announcementText="August 18–September 10 · Live online"
+    announcementHref="/sat-math-bootcamp#schedule"
+    announcementLinkLabel="View the program"
+    ctaHref={consultationUrl}
+    ctaLabel="Book consultation"
+  />
+
+  <main id="main-content">
+    <section class="home-hero">
+      <div class="site-container home-hero-grid">
+        <div class="hero-copy home-hero-copy">
+          <p class="section-kicker">Personalized math instruction</p>
+          <h1>Math starts making sense when the teaching fits the student.</h1>
+          <p class="hero-lead">
+            PiPath helps students move from “I don't get it” to a clear next move—with live, concept-first instruction from
+            Duke Math Ph.D. Dr. Orlando Ferrer.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-light" href={consultationUrl} target="_blank" rel="noreferrer">Book a free consultation</a>
+            <a class="button home-button-outline" href="#start-here">Find the right starting point</a>
+          </div>
+          <p class="home-availability">Online nationwide <span aria-hidden="true">·</span> In person near Apex, North Carolina</p>
+        </div>
+
+        <div class="home-hero-visual">
+          <figure class="home-portrait-card">
+            <div class="home-portrait-frame">
+              <Image
+                src={orlandoPortrait}
+                alt="Dr. Orlando Ferrer, founder and math instructor at PiPath Academy"
+                width={720}
+                format="webp"
+                quality={86}
+                loading="eager"
+              />
+              <div class="home-portrait-badge"><span>Direct instruction</span><strong>Duke Math Ph.D.</strong></div>
+            </div>
+            <figcaption><span>Dr. Orlando Ferrer</span><small>Mathematician · Data scientist · Educator</small></figcaption>
+          </figure>
+          <aside class="home-belief-card"><span>What PiPath believes</span><strong>A path to math is never standardized.</strong></aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="home-wayfinder" id="start-here" aria-labelledby="start-heading">
+      <div class="site-container">
+        <div class="home-wayfinder-heading">
+          <p class="section-kicker">Start with today's need</p>
+          <h2 id="start-heading">What brought you here?</h2>
+        </div>
+        <div class="home-wayfinder-grid">
+          {startingPoints.map((item) => (
+            <a class="home-wayfinder-card" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined}>
+              <strong>{item.prompt}</strong>
+              <span>{item.description}</span>
+              <small>{item.label}<span aria-hidden="true">→</span></small>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section home-pathways" id="learning-paths">
+      <div class="site-container">
+        <div class="section-heading home-pathways-heading">
+          <div><p class="section-kicker">Two ways to work with PiPath</p><h2>Personal when it should be. Structured when it helps.</h2></div>
+          <p>Both paths are taught live and grounded in the same idea: understand the mathematics, then practice with purpose.</p>
+        </div>
+        <div class="home-pathway-grid">
+          {pathways.map((pathway, index) => (
+            <article class="home-pathway-card">
+              <div class="home-pathway-index" aria-hidden="true">0{index + 1}</div>
+              <p class="home-card-eyebrow">{pathway.eyebrow}</p>
+              <h3>{pathway.title}</h3>
+              <p>{pathway.description}</p>
+              <ul>{pathway.details.map((detail) => <li>{detail}</li>)}</ul>
+              <a class="home-card-link" href={pathway.href}>{pathway.label}<span aria-hidden="true">→</span></a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section home-method" id="approach">
+      <div class="site-container">
+        <div class="section-heading home-method-intro">
+          <p class="section-kicker">How learning changes</p>
+          <h2>From stuck to self-directed.</h2>
+          <p>Strong tutoring is more than answering the question on the page. It helps a student notice structure, choose a strategy, and carry that judgment into the next problem.</p>
+        </div>
+        <div class="home-principle-grid">
+          {principles.map((item, index) => (
+            <article class="home-principle-card">
+              <div class="home-principle-marker" aria-hidden="true">{index + 1}</div>
+              <p>{item.label}</p>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section home-instructor">
+      <div class="site-container home-instructor-grid">
+        <div class="home-instructor-copy">
+          <p class="section-kicker">Depth made understandable</p>
+          <h2>A mathematician who chose teaching for the human part.</h2>
+          <p>Orlando's doctoral work at Duke connected graph theory with biology, statistics, and machine learning. His teaching brings that same curiosity to the moment a student says, “I don't get it”—and turns that moment into something to examine, not avoid.</p>
+          <div class="home-credentials" aria-label="Dr. Ferrer's education">
+            <div><strong>Ph.D. Mathematics</strong><span>Duke University</span></div>
+            <div><strong>M.A. Mathematics</strong><span>Wake Forest University</span></div>
+            <div><strong>B.S. Mathematics</strong><span>UNC–Chapel Hill</span></div>
+          </div>
+        </div>
+        <div class="home-video-card">
+          <div class="home-video-heading"><span>See PiPath teach</span><a href="https://www.youtube.com/@PiPathMath" target="_blank" rel="noreferrer">Visit YouTube</a></div>
+          <div class="home-video-frame">
+            <iframe src="https://www.youtube-nocookie.com/embed/88TobExZ2FY?rel=0" title="PiPath Academy math lesson with Dr. Orlando Ferrer" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          </div>
+          <p>Visual explanations and problem-solving from the PiPath Math channel.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section faq-section home-faq" id="faq">
+      <div class="site-container faq-grid">
+        <div class="section-heading compact-heading"><p class="section-kicker">Before we begin</p><h2>Questions families usually need answered first.</h2></div>
+        <div class="faq-list">{faqs.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+      </div>
+    </section>
+
+    <section class="home-consultation" id="consultation">
+      <div class="site-container home-consultation-inner">
+        <div><p class="section-kicker">A low-pressure first step</p><h2>Tell us what feels stuck. We'll map the next move.</h2><p>Bring the current course, upcoming test, timeline, or question. The first conversation is free and takes 15 minutes.</p></div>
+        <div class="home-consultation-actions">
+          <a class="button button-light button-full" href={consultationUrl} target="_blank" rel="noreferrer">Book the free consultation</a>
+          <a href="mailto:pipathmath@gmail.com">Or email pipathmath@gmail.com</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+  <a class="home-mobile-cta" href={consultationUrl} target="_blank" rel="noreferrer" aria-hidden="true" tabindex="-1"><span>Not sure where to start?</span><strong>Book consultation</strong></a>
+
+  <script>
+    const heroConsultation = document.querySelector(".home-hero .button-light");
+    const mobileConsultation = document.querySelector(".home-mobile-cta");
+    if (heroConsultation instanceof HTMLElement && mobileConsultation instanceof HTMLAnchorElement) {
+      const setMobileConsultationVisibility = (visible: boolean) => {
+        mobileConsultation.classList.toggle("is-visible", visible);
+        mobileConsultation.setAttribute("aria-hidden", visible ? "false" : "true");
+        mobileConsultation.tabIndex = visible ? 0 : -1;
+      };
+      const observer = new IntersectionObserver(([entry]) => setMobileConsultationVisibility(!entry.isIntersecting), { threshold: 0.05 });
+      observer.observe(heroConsultation);
+    }
+  </script>
+</SiteLayout>

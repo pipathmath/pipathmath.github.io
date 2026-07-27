@@ -4,6 +4,10 @@ interface Props {
   showAnnouncement?: boolean;
   ctaHref?: string;
   ctaLabel?: string;
+  announcementLabel?: string;
+  announcementText?: string;
+  announcementHref?: string;
+  announcementLinkLabel?: string;
 }
 
 const {
@@ -11,20 +15,24 @@ const {
   showAnnouncement = true,
   ctaHref = "#schedule",
   ctaLabel = "View dates",
+  announcementLabel = "Now enrolling",
+  announcementText = "August 18–September 10 · Live online",
+  announcementHref = "#schedule",
+  announcementLinkLabel = "View the schedule",
 } = Astro.props;
 
 const navigation = [
-  { key: "home", label: "Home", href: "https://www.pipathacademy.com/" },
+  { key: "home", label: "Home", href: "/" },
   {
     key: "tutoring",
     label: "Math Tutoring",
-    href: "https://www.pipathacademy.com/tutoring.html",
+    href: "/tutoring.html",
   },
   { key: "sat", label: "SAT Math Bootcamp", href: "/sat-math-bootcamp" },
   {
     key: "contact",
     label: "Contact Me",
-    href: "https://www.pipathacademy.com/contact.html",
+    href: "/contact.html",
   },
 ];
 ---
@@ -33,9 +41,9 @@ const navigation = [
   showAnnouncement && (
 <div class="announcement-bar">
   <div class="site-container announcement-inner">
-    <span class="announcement-label">Now enrolling</span>
-    <span>August 18–September 10 · Live online</span>
-    <a href="#schedule">View the schedule</a>
+    <span class="announcement-label">{announcementLabel}</span>
+    <span>{announcementText}</span>
+    <a href={announcementHref}>{announcementLinkLabel}</a>
   </div>
 </div>
   )
@@ -43,7 +51,7 @@ const navigation = [
 
 <header class="site-header">
   <div class="site-container header-inner">
-    <a class="brand-lockup" href="https://www.pipathacademy.com/" aria-label="PiPath Academy home">
+    <a class="brand-lockup" href="/" aria-label="PiPath Academy home">
       <span>PiPath Academy</span>
       <small>Dr. Orlando Ferrer</small>
     </a>

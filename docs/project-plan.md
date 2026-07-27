@@ -1,17 +1,17 @@
 # PiPath Academy project plan
 
-Last updated: 2026-07-26
+Last updated: 2026-07-27
 
 ## Current state
 
 - Active branch: `croquette`.
 - Active local workspace: `C:\Users\SerenaLi\Projects\PiPath\pipathmath.github.io`.
 - Production remains on the legacy site.
-- Batch 1 closeout and Batch 2 local implementation are complete and verified.
-- A private local D1 database and Pages/Functions review server are available for Batch 2 review; neither is connected to Cloudflare.
+- Batch 1 closeout and Batch 2 were committed and pushed to `croquette` in `a98d50d`.
+- A private local D1 database and Pages/Functions review server remain available; neither is connected to Cloudflare.
 - A real Stripe test-mode checkout still requires sandbox credentials and deliberate local enrollment activation.
-- Batch 2 review is approved for commit and push to the `croquette` branch.
-- Next product gate: begin the Home redesign after the `croquette` push is confirmed.
+- The redesigned Home and SAT hero refinements are implemented, verified, and owner-approved for this `croquette` commit/push.
+- Next gate: configure Stripe sandbox credentials, inspect the real hosted Checkout, and complete the local webhook/onboarding test flow.
 - No reviewed work is to be merged to `main` or connected to Cloudflare at this gate.
 - One August SAT cohort is in scope. Multiple cohorts remain a later task.
 
@@ -20,9 +20,9 @@ Last updated: 2026-07-26
 1. **Complete:** finish and verify the Batch 1 closeout.
 2. **Complete locally:** implement Batch 2 checkout, D1 enrollment, verified webhook, onboarding, confirmation, email adapter, attribution, and purchase analytics.
 3. **Complete:** review Batch 2 behavior, external setup, launch blockers, and local verification.
-4. **Approved now:** commit and push the reviewed work to `croquette` only.
-5. Redesign Home using the SAT design system; remove the Duke campus image.
-6. Review the Home design and interactions before implementation expands to Math Tutoring and Contact.
+4. **Complete:** commit and push reviewed Batch 2 work to `croquette` only (`a98d50d`).
+5. **Complete:** redesign and review Home using the shared design system while making it visually distinct from the SAT page.
+6. **Complete:** add and review the SAT overview video with schedule and consultation actions outside the video card.
 7. Build and review a protected owner dashboard before live enrollment operations depend on raw D1 queries.
 8. Continue private syllabus/resources and the remaining full-site migration.
 9. Complete launch QA, approve policies/content, merge to `main`, and wire Cloudflare only at the final cutover gate.
