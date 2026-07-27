@@ -34,10 +34,11 @@ function cleanRequiredString(
   fieldName: string,
   minLength: number,
   maxLength: number,
+  errorCode = "invalid_onboarding",
 ): string {
   const cleaned = cleanOptionalString(value, maxLength);
   if (!cleaned || cleaned.length < minLength) {
-    throw new ApiError(400, "invalid_onboarding", `Please enter ${fieldName}.`);
+    throw new ApiError(400, errorCode, `Please enter ${fieldName}.`);
   }
 
   return cleaned;
@@ -69,8 +70,38 @@ export function parseCheckoutRequest(value: unknown): CheckoutRequest {
     throw new ApiError(400, "invalid_checkout", "Choose a valid cohort.");
   }
 
+  const parentName = cleanRequiredString(value.parentName, "the parent or guardian's name", 2, 120, "invalid_checkout");
+  const parentEmail = cleanRequiredString(value.parentEmail, "the parent or guardian's email", 3, 254, "invalid_checkout").toLowerCase();
+  const parentPhone = cleanRequiredString(value.parentPhone, "the parent or guardian's phone number", 7, 30, "invalid_checkout");
+  const studentName = cleanRequiredString(value.studentName, "the student's name", 1, 120, "invalid_checkout");
+  const studentMathScoreRaw = cleanOptionalString(value.studentMathScore, 4);
+  const additionalNotes = cleanOptionalString(value.additionalNotes, 1_000);
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(parentEmail)) {
+    throw new ApiError(400, "invalid_checkout", "Enter a valid parent or guardian email address.");
+  }
+
+  const phoneDigits = parentPhone.replace(/\D/gu, "");
+  if (phoneDigits.length < 7 || phoneDigits.length > 15) {
+    throw new ApiError(400, "invalid_checkout", "Enter a valid parent or guardian phone number.");
+  }
+
+  let studentMathScore: number | null = null;
+  if (studentMathScoreRaw) {
+    studentMathScore = Number(studentMathScoreRaw);
+    if (!Number.isInteger(studentMathScore) || studentMathScore < 160 || studentMathScore > 800) {
+      throw new ApiError(400, "invalid_checkout", "Enter a SAT or PSAT Math score from 160 to 800, or leave it blank.");
+    }
+  }
+
   return {
     cohortId,
+    parentName,
+    parentEmail,
+    parentPhone,
+    studentName,
+    studentMathScore,
+    additionalNotes,
     attribution: parseAttribution(value.attribution),
   };
 }

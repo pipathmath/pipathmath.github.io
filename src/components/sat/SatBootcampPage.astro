@@ -3,7 +3,7 @@ import SiteLayout from "../../layouts/SiteLayout.astro";
 import SiteHeader from "../SiteHeader.astro";
 import SiteFooter from "../SiteFooter.astro";
 import CohortCard from "./CohortCard";
-import EnrollmentButton from "./EnrollmentButton";
+import EnrollmentForm from "./EnrollmentForm";
 import { augustSatMathCohort } from "../../data/cohorts";
 
 const pageTitle = "Digital SAT Math Bootcamp | PiPath Academy";
@@ -207,10 +207,6 @@ const structuredData = {
 
     <section class="section section-schedule" id="schedule">
       <div class="site-container">
-        <div class="checkout-cancelled-notice" role="status" hidden>
-          <strong>Checkout canceled.</strong>
-          <span>No payment was made. Your place is not reserved, and you can try again whenever you are ready.</span>
-        </div>
         <div class="section-heading">
           <div>
             <p class="section-kicker">Choose your dates</p>
@@ -218,7 +214,7 @@ const structuredData = {
           </div>
         </div>
 
-        <CohortCard cohort={augustSatMathCohort} enrollmentEnabled={enrollmentEnabled} client:load />
+        <CohortCard cohort={augustSatMathCohort} client:load />
       </div>
     </section>
 
@@ -353,27 +349,33 @@ const structuredData = {
     </section>
 
     <section class="enrollment-section" id="enrollment">
+      <div class="site-container">
+        <div class="checkout-cancelled-notice" role="status" hidden>
+          <strong>Checkout canceled.</strong>
+          <span>Your family information is saved, but no payment was made and enrollment is not confirmed. Continue below whenever you are ready.</span>
+        </div>
+      </div>
       <div class="site-container enrollment-inner">
         <div class="enrollment-copy">
-          <p class="section-kicker">August 18–September 10</p>
-          <h2>Ready for a more focused SAT Math plan?</h2>
-          <p>Eight live sessions, personalized practice, and direct instruction from Dr. Orlando Ferrer.</p>
+          <p class="section-kicker">August enrollment</p>
+          <h2>Reserve your student's place.</h2>
+          <p>Complete the short family form to continue to secure payment for the August Digital SAT Math Bootcamp.</p>
+          <dl class="enrollment-summary">
+            <div><dt>Dates</dt><dd>August 18–September 10</dd></div>
+            <div><dt>Schedule</dt><dd>Tuesdays & Thursdays · 7:00–8:15 PM ET</dd></div>
+            <div><dt>Format</dt><dd>8 live online sessions · 10 total hours</dd></div>
+            <div><dt>Tuition</dt><dd>$299 for the complete program</dd></div>
+          </dl>
+          <a class="enrollment-consultation-link" href={consultationUrl} target="_blank" rel="noreferrer">Not ready to enroll? Book a free consultation</a>
         </div>
         <div class="enrollment-action">
-          <span class="enrollment-price">$299</span>
-          <EnrollmentButton
+          <EnrollmentForm
             cohortId={augustSatMathCohort.id}
             price={augustSatMathCohort.price}
             enabled={enrollmentEnabled}
-            className="button button-light button-full"
-            idleLabel="Enroll now — $299"
+            consultationUrl={consultationUrl}
             client:load
           />
-          <p class="enrollment-security">Secure checkout powered by Stripe.</p>
-          <div class="consultation-option">
-            <span>Still deciding?</span>
-            <a href={consultationUrl} target="_blank" rel="noreferrer">Book a free 15-minute consultation</a>
-          </div>
         </div>
       </div>
     </section>
@@ -381,24 +383,10 @@ const structuredData = {
 
   <SiteFooter />
 
-  {
-    enrollmentEnabled ? (
-      <EnrollmentButton
-        cohortId={augustSatMathCohort.id}
-        price={augustSatMathCohort.price}
-        enabled={true}
-        className="mobile-enroll-bar"
-        idleLabel="Enroll now"
-        mobile={true}
-        client:load
-      />
-    ) : (
-      <a class="mobile-enroll-bar" href="#schedule">
-        <span>August cohort · $299</span>
-        <strong>View dates</strong>
-      </a>
-    )
-  }
+  <a class="mobile-enroll-bar" href="#enrollment">
+    <span>August cohort · $299</span>
+    <strong>Enroll now</strong>
+  </a>
 
   <script>
     const checkoutNotice = document.querySelector(".checkout-cancelled-notice");
@@ -406,6 +394,17 @@ const structuredData = {
 
     if (checkoutState === "cancelled" && checkoutNotice instanceof HTMLElement) {
       checkoutNotice.hidden = false;
+    }
+
+    const enrollmentSection = document.querySelector("#enrollment");
+    const mobileEnrollmentBar = document.querySelector(".mobile-enroll-bar");
+
+    if (enrollmentSection instanceof HTMLElement && mobileEnrollmentBar instanceof HTMLElement) {
+      const enrollmentObserver = new IntersectionObserver(([entry]) => {
+        mobileEnrollmentBar.classList.toggle("is-hidden", entry.isIntersecting);
+      }, { threshold: 0.05 });
+
+      enrollmentObserver.observe(enrollmentSection);
     }
   </script>
 </SiteLayout>

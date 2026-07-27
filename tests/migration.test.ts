@@ -3,8 +3,12 @@ import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { RESERVE_SEAT_SQL } from "../server/db";
 
-const migration = readFileSync(
+const initialMigration = readFileSync(
   new URL("../migrations/0001_enrollment.sql", import.meta.url),
+  "utf8",
+);
+const leadMigration = readFileSync(
+  new URL("../migrations/0002_precheckout_leads.sql", import.meta.url),
   "utf8",
 );
 const cohortId = "august-2026";
@@ -16,6 +20,12 @@ function reservationValues(id: string, expiry = futureExpiry) {
     cohortId,
     expiry,
     `fingerprint-${id}`,
+    "Test Parent",
+    "parent@example.com",
+    "919-555-0123",
+    "Test Student",
+    620,
+    "Needs help with geometry.",
     null,
     null,
     null,
@@ -37,7 +47,8 @@ describe("enrollment migration and atomic seat reservation", () => {
 
   beforeEach(() => {
     db = new DatabaseSync(":memory:");
-    db.exec(migration);
+    db.exec(initialMigration);
+    db.exec(leadMigration);
   });
 
   afterEach(() => {
@@ -69,6 +80,25 @@ describe("enrollment migration and atomic seat reservation", () => {
     }
 
     expect(reserve("attempt-16")).toBeUndefined();
+  });
+
+  it("stores lead details before a Stripe session is completed", () => {
+    expect(reserve("lead-attempt")).toEqual({ id: "lead-attempt" });
+    expect(
+      db.prepare(
+        `SELECT parent_name, parent_email, parent_phone, student_name,
+                student_math_score, additional_notes, status
+         FROM checkout_attempts WHERE id = ?`,
+      ).get("lead-attempt"),
+    ).toEqual({
+      parent_name: "Test Parent",
+      parent_email: "parent@example.com",
+      parent_phone: "919-555-0123",
+      student_name: "Test Student",
+      student_math_score: 620,
+      additional_notes: "Needs help with geometry.",
+      status: "held",
+    });
   });
 
   it("releases expired holds back into inventory", () => {

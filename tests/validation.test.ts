@@ -3,8 +3,19 @@ import { ApiError } from "../server/http";
 import { parseCheckoutRequest, parseOnboardingRequest } from "../server/validation";
 
 describe("checkout request validation", () => {
+  const validCheckout = {
+    cohortId: "august-2026",
+    parentName: " Grace Hopper ",
+    studentName: " Ada Lovelace ",
+    parentEmail: " Parent@Example.com ",
+    parentPhone: " (919) 555-0123 ",
+    studentMathScore: "620",
+    additionalNotes: " Geometry is the main concern. ",
+  };
+
   it("sanitizes attribution and applies server-side length limits", () => {
     const result = parseCheckoutRequest({
+      ...validCheckout,
       cohortId: " august-2026\u0000 ",
       attribution: {
         utmSource: "google\nads",
@@ -13,9 +24,36 @@ describe("checkout request validation", () => {
     });
 
     expect(result.cohortId).toBe("august-2026");
+    expect(result.parentName).toBe("Grace Hopper");
+    expect(result.studentName).toBe("Ada Lovelace");
+    expect(result.parentEmail).toBe("parent@example.com");
+    expect(result.studentMathScore).toBe(620);
     expect(result.attribution.utmSource).toBe("google ads");
     expect(result.attribution.utmCampaign).toHaveLength(200);
     expect(result.attribution.gaClientId).toBeNull();
+  });
+
+  it("accepts blank optional academic information", () => {
+    const result = parseCheckoutRequest({
+      ...validCheckout,
+      studentMathScore: "",
+      additionalNotes: "",
+    });
+
+    expect(result.studentMathScore).toBeNull();
+    expect(result.additionalNotes).toBeNull();
+  });
+
+  it("rejects invalid parent contact information and scores", () => {
+    expect(() => parseCheckoutRequest({ ...validCheckout, parentEmail: "not-an-email" })).toThrow(
+      "Enter a valid parent or guardian email address.",
+    );
+    expect(() => parseCheckoutRequest({ ...validCheckout, parentPhone: "123" })).toThrow(
+      "Please enter the parent or guardian's phone number.",
+    );
+    expect(() => parseCheckoutRequest({ ...validCheckout, studentMathScore: "900" })).toThrow(
+      "Enter a SAT or PSAT Math score from 160 to 800",
+    );
   });
 
   it("rejects requests without a cohort", () => {

@@ -99,7 +99,7 @@ Status: implementation complete and locally verified; awaiting owner review.
 ### User-visible behavior
 
 - Replaced placeholder checkout URLs with one server-created checkout action used by the cohort card, final enrollment section, and mobile enrollment bar.
-- Kept `PUBLIC_ENROLLMENT_ENABLED` off by default. The review build therefore shows "Enrollment setup in progress" and the mobile "View dates" fallback until the environment is intentionally enabled.
+- Kept `PUBLIC_ENROLLMENT_ENABLED` off by default. This original disabled presentation was superseded by the July 27 refinement: the family form is now fillable and reachable from every enrollment action, while only its payment button remains gated until the environment is intentionally enabled.
 - Preserved the approved no-registration-before-payment flow. Stripe Checkout collects the parent or guardian name, email, phone, and payment details.
 - Added `/sat-math-bootcamp/enrollment-confirmed` with a payment-finalizing state, a clear "You're enrolled" state, and post-payment onboarding.
 - Added onboarding fields for student first and last name, grade, recent SAT/PSAT Math score range, and target score/challenging topics. Parent contact fields are not asked twice.
@@ -338,3 +338,19 @@ Status: owner approved the reviewed Home page and requested a `croquette` commit
 - Added a plain-language backend architecture document and expanded local review with responsive and Stripe test matrices.
 - Confirmed the legacy SAT page contained a Google interest form rather than a reusable Stripe Payment Link.
 - Verified 12 automated tests, zero Astro/TypeScript diagnostics, a successful Cloudflare Functions build, and desktop/mobile layouts without horizontal overflow.
+
+## 2026-07-27 - Lead-first enrollment flow
+
+Status: implemented locally; real Stripe sandbox payment remains pending test credentials.
+
+- Replaced the direct-to-Stripe enrollment control with a short family form before checkout.
+- Made parent name, student name, parent email, and parent phone required; SAT/PSAT Math score and additional notes are optional.
+- Persisted the lead atomically with the 30-minute capacity hold before creating a Stripe Checkout Session.
+- Prefilled the saved parent email in Stripe and removed duplicate name/phone collection from Checkout.
+- Restored the form draft after a canceled checkout and added clear two-step progress, inline validation, loading, and failure states.
+- Updated webhook fulfillment to promote the saved lead into one parent, student, payment, and active enrollment without a second family-information form.
+- Preserved the legacy onboarding endpoint for earlier paid records that do not yet have a student attached.
+- Updated confirmation and owner emails to use the saved family/student details.
+- Added validation and migration coverage for lead persistence and verified the form handoff with a mocked Checkout response on desktop and mobile.
+- Applied migration `0002_precheckout_leads.sql` to the private local D1 database only. No remote database, Stripe account, deployment, or production system was changed.
+- Refined the public enrollment presentation after owner review: the cohort action now always leads to the form, fields remain fillable in the safe review build, only the payment action is gated, and internal step/setup language was replaced with concise program facts and client-facing copy.

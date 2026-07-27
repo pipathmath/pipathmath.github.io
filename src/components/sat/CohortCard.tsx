@@ -1,10 +1,8 @@
 import { useId, useState } from "react";
 import type { Cohort } from "../../data/cohorts";
-import EnrollmentButton from "./EnrollmentButton";
 
 interface Props {
   cohort: Cohort;
-  enrollmentEnabled: boolean;
 }
 
 const statusLabels: Record<Cohort["status"], string> = {
@@ -13,7 +11,7 @@ const statusLabels: Record<Cohort["status"], string> = {
   closed: "Enrollment closed",
 };
 
-export default function CohortCard({ cohort, enrollmentEnabled }: Props) {
+export default function CohortCard({ cohort }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
   const sessionListId = useId();
   const [startMonth, startDay] = cohort.sessions[0].shortDate.split(" ");
@@ -82,14 +80,16 @@ export default function CohortCard({ cohort, enrollmentEnabled }: Props) {
           <span>Complete program</span>
           <strong>${cohort.price}</strong>
         </p>
-        <EnrollmentButton
-          cohortId={cohort.id}
-          price={cohort.price}
-          enabled={enrollmentEnabled && cohort.status === "enrolling"}
-          className="button button-primary button-full"
-          idleLabel={`Enroll — $${cohort.price}`}
-        />
-        <small>Secure checkout powered by Stripe.</small>
+        {cohort.status === "enrolling" ? (
+          <a className="button button-primary button-full" href="#enrollment">
+            Enroll now — ${cohort.price}
+          </a>
+        ) : (
+          <button className="button button-primary button-full" type="button" disabled>
+            {statusLabels[cohort.status]}
+          </button>
+        )}
+        <small>Complete the short family form, then continue to secure payment.</small>
       </div>
     </article>
   );

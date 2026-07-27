@@ -42,18 +42,17 @@ function parentMessage(
     subject: `You're enrolled: ${enrollment.cohort.name}`,
     html: `<p>Hi ${safeName},</p>
 <p>Your student's place in <strong>${safeCohort}</strong> is confirmed.</p>
-<p>The next step is a short academic profile so Dr. Ferrer can prepare the diagnostic and targeted practice.</p>
-<p><a href="${escapeHtml(url)}">Complete student onboarding</a></p>
-<p>You can use the same secure link later if you do not have the details ready now.</p>
+<p>We received the family and student information you shared before checkout. Dr. Ferrer will use it to prepare the diagnostic and targeted practice.</p>
+<p><a href="${escapeHtml(url)}">Review enrollment details</a></p>
 <p>PiPath Academy<br>Dr. Orlando Ferrer</p>`,
     text: `Hi ${firstName(enrollment.parentName)},
 
 Your student's place in ${enrollment.cohort.name} is confirmed.
 
-Complete the short academic profile here:
-${url}
+We received the family and student information you shared before checkout.
 
-You can use the same secure link later if you do not have the details ready now.
+Review enrollment details here:
+${url}
 
 PiPath Academy
 Dr. Orlando Ferrer`,
@@ -77,18 +76,24 @@ function ownerMessage(
 <li>Parent: ${escapeHtml(enrollment.parentName)}</li>
 <li>Email: ${escapeHtml(enrollment.parentEmail)}</li>
 <li>Phone: ${escapeHtml(enrollment.parentPhone || "Not provided")}</li>
+<li>Student: ${escapeHtml(enrollment.studentName)}</li>
+<li>Recent SAT/PSAT Math score: ${escapeHtml(enrollment.studentMathScore?.toString() || "Not provided")}</li>
+<li>Additional notes: ${escapeHtml(enrollment.additionalNotes || "None provided")}</li>
 <li>Amount: $${(enrollment.amountCents / 100).toFixed(2)} ${escapeHtml(enrollment.currency.toUpperCase())}</li>
 </ul>
-<p><a href="${escapeHtml(onboardingState)}">Open the onboarding link</a></p>`,
+<p><a href="${escapeHtml(onboardingState)}">Open enrollment details</a></p>`,
     text: `A new paid enrollment was recorded.
 
 Cohort: ${enrollment.cohort.name}
 Parent: ${enrollment.parentName}
 Email: ${enrollment.parentEmail}
 Phone: ${enrollment.parentPhone || "Not provided"}
+Student: ${enrollment.studentName}
+Recent SAT/PSAT Math score: ${enrollment.studentMathScore ?? "Not provided"}
+Additional notes: ${enrollment.additionalNotes || "None provided"}
 Amount: $${(enrollment.amountCents / 100).toFixed(2)} ${enrollment.currency.toUpperCase()}
 
-Onboarding link: ${onboardingState}`,
+Enrollment details: ${onboardingState}`,
   };
 }
 

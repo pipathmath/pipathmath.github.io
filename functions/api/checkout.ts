@@ -66,6 +66,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       cohortId: cohort.id,
       reservationExpiresAt: expiresAt,
       requestFingerprint,
+      parentName: input.parentName,
+      parentEmail: input.parentEmail,
+      parentPhone: input.parentPhone,
+      studentName: input.studentName,
+      studentMathScore: input.studentMathScore,
+      additionalNotes: input.additionalNotes,
       attribution: input.attribution,
     });
 
@@ -74,6 +80,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       cohort,
       priceId,
       expiresAt,
+      parentEmail: input.parentEmail,
     });
 
     if (!stripeSession.url) {
