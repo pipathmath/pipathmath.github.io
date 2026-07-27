@@ -1729,6 +1729,16 @@ a {
   font-size: 0.76rem;
 }
 
+.form-field > .form-field-error {
+  color: #a51d1d;
+  font-weight: 600;
+}
+
+.form-field input[aria-invalid="true"] {
+  border-color: #a51d1d;
+  box-shadow: 0 0 0 2px rgba(165, 29, 29, 0.1);
+}
+
 .form-error {
   margin: 0;
   border-left: 4px solid #a43333;

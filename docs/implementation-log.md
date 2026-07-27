@@ -354,3 +354,15 @@ Status: implemented locally; real Stripe sandbox payment remains pending test cr
 - Added validation and migration coverage for lead persistence and verified the form handoff with a mocked Checkout response on desktop and mobile.
 - Applied migration `0002_precheckout_leads.sql` to the private local D1 database only. No remote database, Stripe account, deployment, or production system was changed.
 - Refined the public enrollment presentation after owner review: the cohort action now always leads to the form, fields remain fillable in the safe review build, only the payment action is gated, and internal step/setup language was replaced with concise program facts and client-facing copy.
+
+## 2026-07-27 - Payment Link hybrid simplification
+
+Status: implemented locally with the supplied July live-mode link for visual handoff testing only.
+
+- Replaced per-parent Stripe Checkout Session creation with a reusable Stripe Payment Link handoff.
+- Kept the lead-first D1 insert, request rate limit, and atomic 15-seat website capacity check before returning the payment destination.
+- Added the checkout-attempt ID as Stripe's `client_reference_id`, locked the validated parent email, and preserved available UTM attribution on the Payment Link.
+- Updated webhook fulfillment to recover the cohort from the saved checkout attempt because a static Payment Link does not carry the previous dynamic cohort metadata.
+- Removed the Stripe API secret key and Price ID from the checkout configuration; automatic fulfillment still requires the Stripe webhook signing secret.
+- Added immediate accessible email validation on blur while retaining native browser and server-side email validation.
+- Added Payment Link URL-construction tests. The clean live August Payment Link must be configured in Stripe with its own 15-completed-payment limit because a copied reusable link bypasses the website's D1 gate.

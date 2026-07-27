@@ -168,27 +168,6 @@ export async function reserveSeat(
   }
 }
 
-export async function markCheckoutCreated(
-  env: Env,
-  attemptId: string,
-  stripeCheckoutSessionId: string,
-): Promise<void> {
-  const result = await env.DB.prepare(
-    `UPDATE checkout_attempts
-     SET status = 'checkout_created',
-         stripe_checkout_session_id = ?,
-         updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
-     WHERE id = ?
-       AND status = 'held'`,
-  )
-    .bind(stripeCheckoutSessionId, attemptId)
-    .run();
-
-  if (!result.success || result.meta.changes !== 1) {
-    throw new Error("checkout_attempt_update_failed");
-  }
-}
-
 export async function markCheckoutAttempt(
   env: Env,
   attemptId: string,

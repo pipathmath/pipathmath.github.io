@@ -3,6 +3,7 @@ import {
   useId,
   useState,
   type ChangeEvent,
+  type FocusEvent,
   type SubmitEvent as ReactSubmitEvent,
 } from "react";
 
@@ -114,6 +115,21 @@ function trackCheckoutStart(cohortId: string, price: number): void {
   });
 }
 
+function emailValidationMessage(input: HTMLInputElement): string {
+  if (input.validity.valueMissing) {
+    return "Enter the parent or guardian's email address.";
+  }
+
+  if (
+    input.validity.typeMismatch ||
+    (input.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(input.value.trim()))
+  ) {
+    return "Enter a valid email address, such as name@example.com.";
+  }
+
+  return "";
+}
+
 async function responseMessage(response: Response): Promise<string> {
   try {
     const payload = (await response.json()) as { message?: string };
@@ -127,8 +143,10 @@ export default function EnrollmentForm({ cohortId, price, enabled, consultationU
   const [values, setValues] = useState<FormValues>(emptyForm);
   const [isStarting, setIsStarting] = useState(false);
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const errorId = useId();
   const availabilityId = useId();
+  const emailErrorId = useId();
 
   useEffect(() => {
     try {
@@ -149,6 +167,15 @@ export default function EnrollmentForm({ cohortId, price, enabled, consultationU
       }
       return nextValues;
     });
+  }
+
+  function updateEmail(event: ChangeEvent<HTMLInputElement>) {
+    updateValue(event);
+    if (emailError) setEmailError(emailValidationMessage(event.currentTarget));
+  }
+
+  function validateEmail(event: FocusEvent<HTMLInputElement>) {
+    setEmailError(emailValidationMessage(event.currentTarget));
   }
 
   async function startCheckout(event: ReactSubmitEvent<HTMLFormElement>) {
@@ -217,7 +244,20 @@ export default function EnrollmentForm({ cohortId, price, enabled, consultationU
           <div className="form-grid">
             <label className="form-field">
               <span>Parent or guardian email *</span>
-              <input name="parentEmail" type="email" autoComplete="email" maxLength={254} value={values.parentEmail} onChange={updateValue} required />
+              <input
+                name="parentEmail"
+                type="email"
+                autoComplete="email"
+                maxLength={254}
+                value={values.parentEmail}
+                onChange={updateEmail}
+                onBlur={validateEmail}
+                onInvalid={(event) => setEmailError(emailValidationMessage(event.currentTarget))}
+                aria-invalid={emailError ? "true" : undefined}
+                aria-describedby={emailError ? emailErrorId : undefined}
+                required
+              />
+              {emailError && <small className="form-field-error" id={emailErrorId} role="alert">{emailError}</small>}
             </label>
             <label className="form-field">
               <span>Parent or guardian phone *</span>

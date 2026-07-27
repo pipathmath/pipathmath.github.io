@@ -9,9 +9,9 @@ Last updated: 2026-07-27
 - Production remains on the legacy site.
 - Batch 1 closeout and Batch 2 were committed and pushed to `croquette` in `a98d50d`.
 - A private local D1 database and Pages/Functions review server remain available; neither is connected to Cloudflare.
-- A real Stripe test-mode checkout still requires sandbox credentials and deliberate local enrollment activation.
+- The supplied July Payment Link is wired for visual handoff testing only; a real safe payment test still requires a new test-mode Payment Link and deliberate local enrollment activation.
 - The redesigned Home and SAT hero refinements are implemented, verified, and owner-approved for this `croquette` commit/push.
-- Next gate: configure Stripe sandbox credentials, inspect the real hosted Checkout, and verify lead promotion through the paid webhook.
+- Next gate: create clean test/live August Payment Links, set the live link's completed-payment limit to 15, and verify lead promotion through the test webhook.
 - No reviewed work is to be merged to `main` or connected to Cloudflare at this gate.
 - One August SAT cohort is in scope. Multiple cohorts remain a later task.
 
@@ -31,10 +31,10 @@ Last updated: 2026-07-27
 
 - The parent chooses the cohort and completes a short PiPath family form before payment.
 - Parent name, student name, parent email, and parent phone are required. SAT/PSAT Math score and an additional note are optional.
-- A valid submission saves the lead and creates a 30-minute seat hold before Stripe Checkout is created.
-- Stripe Checkout receives the parent's email for prefill and collects payment details on Stripe's hosted page.
+- A valid submission saves the lead and creates a 30-minute seat hold before the Stripe Payment Link is returned.
+- The Payment Link receives a unique lead reference and locked parent email; Stripe collects payment details on its hosted page.
 - PiPath never receives or stores card details.
-- Stripe metadata carries the cohort ID, checkout reference, and marketing attribution.
+- The Payment Link carries the checkout reference and available UTM attribution; the saved D1 lead supplies the cohort and family details.
 - A verified Stripe webhook promotes the saved lead into exactly one parent, student, payment, and active enrollment in D1.
 - The confirmation page says "You're enrolled" without asking the family to repeat the information already submitted.
 - Orlando is notified at `pipathmath@gmail.com`; the parent receives confirmation and next steps.
@@ -43,11 +43,11 @@ Last updated: 2026-07-27
 
 ## Batch 2 technical safeguards
 
-- Stripe secrets and webhook secrets exist only in Cloudflare secrets/local development variables.
+- Stripe webhook and application secrets exist only in Cloudflare secrets/local development variables. The Payment Link URL is non-secret configuration.
 - Checkout price and cohort eligibility are determined server-side, never trusted from browser input.
 - Webhook signatures are verified from the raw request body.
 - Stripe event IDs and Checkout Session IDs are unique in D1 for idempotency.
-- Capacity reservations expire and cannot oversell the cohort under concurrent checkout starts.
+- D1 capacity reservations expire and prevent the website from issuing more checkout links when its 15 seats are paid or temporarily held. The live Payment Link must separately have a Stripe limit of 15 completed payments to prevent copied-link bypass.
 - Enrollment-detail links use non-guessable tokens and private pages are no-index. The legacy onboarding endpoint remains available only for older incomplete records.
 - Only the minimum useful student information is collected.
 - Logs do not contain card data, Stripe secrets, or full onboarding responses.
@@ -56,8 +56,8 @@ Last updated: 2026-07-27
 ## Inputs or external setup needed before a complete live test
 
 - Cloudflare D1 preview database and binding; the private local D1 review database is already available.
-- Stripe test secret key.
-- Stripe test Price ID for the $299 bootcamp.
+- Clean Stripe test and live Payment Links for the $299 August bootcamp.
+- A 15-completed-payment restriction on the live August Payment Link.
 - Stripe preview webhook endpoint and signing secret.
 - Strong onboarding-token and checkout-rate-limit secrets for each preview/production environment.
 - Resend account, verified domain/sender, and API key, or an approved replacement mail provider.
