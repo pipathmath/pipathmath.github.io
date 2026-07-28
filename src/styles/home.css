@@ -22,34 +22,45 @@
 .home-hero-grid {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(370px, 0.92fr);
-  align-items: center;
-  gap: 92px;
-  padding-block: 88px 100px;
+  grid-template-areas:
+    "copy portrait"
+    "video credentials";
+  grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
+  align-items: start;
+  gap: 34px 80px;
+  padding-block: 56px 70px;
 }
 
 .home-hero-copy {
   position: relative;
   z-index: 2;
-}
-
-.home-hero-copy .section-kicker {
-  color: var(--color-sky);
+  grid-area: copy;
+  padding-top: 8px;
 }
 
 .home-hero-copy h1 {
-  max-width: 720px;
+  max-width: 650px;
   margin: 0;
   color: var(--color-white);
-  font-size: clamp(3rem, 5.8vw, 5.35rem);
+  font-size: clamp(2.7rem, 4.8vw, 4.35rem);
   font-weight: 700;
-  letter-spacing: -0.065em;
-  line-height: 0.98;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.home-hero-name {
+  white-space: nowrap;
 }
 
 .home-hero-copy .hero-lead {
-  max-width: 650px;
+  max-width: 620px;
+  margin: 22px 0 0;
   color: rgba(255, 255, 255, 0.82);
+  font-size: 1rem;
+}
+
+.home-hero-copy .hero-lead + .hero-lead {
+  margin-top: 14px;
 }
 
 .home-button-outline {
@@ -62,26 +73,16 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-.home-availability {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 30px 0 0;
-  color: rgba(255, 255, 255, 0.64);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
 .home-hero-visual {
   position: relative;
   z-index: 1;
+  grid-area: portrait;
   padding-bottom: 38px;
 }
 
 .home-portrait-card {
   position: relative;
-  width: min(100%, 445px);
+  width: min(100%, 390px);
   margin: 0 0 0 auto;
   border: 1px solid var(--color-ink);
   border-radius: var(--radius-medium);
@@ -147,14 +148,8 @@
 .home-portrait-card figcaption {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 18px;
+  justify-content: flex-end;
   padding: 16px 18px;
-}
-
-.home-portrait-card figcaption span {
-  font-size: 0.88rem;
-  font-weight: 700;
 }
 
 .home-portrait-card figcaption small {
@@ -165,22 +160,106 @@
 
 .home-belief-card {
   position: absolute;
-  bottom: 0;
-  left: -54px;
+  bottom: 56px;
+  left: -52px;
   z-index: 3;
-  width: 250px;
-  border: 1px solid var(--color-ink);
-  padding: 18px 20px 20px;
+  width: 245px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  padding: 16px 18px;
   background: var(--color-blue);
-  box-shadow: 6px 6px 0 var(--color-white);
+  box-shadow: 5px 5px 0 var(--color-white);
+  color: var(--color-white);
+}
+
+.home-belief-card span,
+.home-belief-card strong {
+  display: block;
+}
+
+.home-belief-card span {
+  color: #cdeeff;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .home-belief-card strong {
-  display: block;
-  margin-top: 7px;
-  color: var(--color-white);
-  font-size: 1.02rem;
-  line-height: 1.38;
+  margin-top: 6px;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.home-hero-video-card {
+  grid-area: video;
+  width: min(100%, 580px);
+  overflow: hidden;
+  border: 1px solid var(--color-white);
+  border-radius: var(--radius-medium);
+  background: var(--color-white);
+  box-shadow: 7px 7px 0 rgba(114, 204, 254, 0.72);
+  color: var(--color-ink);
+}
+
+.home-hero-video-heading {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 16px;
+}
+
+.home-hero-video-heading strong {
+  font-size: 0.86rem;
+}
+
+.home-hero-video-heading a {
+  flex: none;
+  color: var(--color-blue);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
+.home-hero-credentials {
+  grid-area: credentials;
+  width: min(100%, 390px);
+  margin-left: auto;
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-small);
+  padding: 20px 22px;
+  background: var(--color-white);
+  box-shadow: 6px 6px 0 rgba(0, 51, 102, 0.34);
+  color: var(--color-ink);
+}
+
+.home-hero-credentials > p {
+  margin: 0 0 10px;
+  color: var(--color-blue);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.home-hero-credentials > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  padding-block: 10px;
+  border-top: 1px solid var(--color-line);
+}
+
+.home-hero-credentials strong {
+  font-size: 0.78rem;
+}
+
+.home-hero-credentials span {
+  color: var(--color-blue);
+  font-size: 0.72rem;
+  text-align: right;
 }
 
 .home-wayfinder {
@@ -404,149 +483,12 @@
   transform: translateX(4px);
 }
 
-.home-method {
-  border-block: 1px solid var(--color-line);
-  background: var(--color-white);
-}
-
-.home-method-intro {
-  max-width: 760px;
-}
-
-.home-principle-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.home-principle-card {
-  position: relative;
-  min-height: 330px;
-  overflow: hidden;
-  border: 1px solid var(--color-line);
-  padding: 34px 30px;
-  background: var(--color-paper);
-}
-
-.home-principle-card:nth-child(2) {
-  transform: translateY(18px);
-}
-
-.home-principle-marker {
-  position: absolute;
-  right: -8px;
-  bottom: -36px;
-  color: rgba(0, 83, 155, 0.08);
-  font-size: 11rem;
-  font-weight: 700;
-  letter-spacing: -0.12em;
-  line-height: 1;
-}
-
-.home-principle-card > p:first-of-type {
-  margin: 0 0 34px;
-  color: var(--color-blue);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.home-principle-card h3 {
-  position: relative;
-  margin: 0;
-  font-size: 1.45rem;
-  letter-spacing: -0.035em;
-  line-height: 1.18;
-}
-
-.home-principle-card > p:last-child {
-  position: relative;
-  margin: 18px 0 0;
-  color: var(--color-text);
-  font-size: 0.9rem;
-}
-
-.home-instructor {
-  border-bottom: 1px solid var(--color-line);
-  background: var(--color-sky-soft);
-}
-
-.home-instructor-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
-  align-items: center;
-  gap: 88px;
-}
-
-.home-instructor-copy h2,
 .home-consultation h2 {
   margin: 0;
   font-size: clamp(2rem, 3.7vw, 3.25rem);
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 1.12;
-}
-
-.home-instructor-copy > p:last-of-type {
-  margin: 24px 0 0;
-  color: var(--color-text);
-}
-
-.home-credentials {
-  display: grid;
-  margin-top: 36px;
-  border-top: 1px solid rgba(0, 51, 102, 0.26);
-}
-
-.home-credentials > div {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 24px;
-  padding-block: 14px;
-  border-bottom: 1px solid rgba(0, 51, 102, 0.2);
-}
-
-.home-credentials strong {
-  font-size: 0.86rem;
-}
-
-.home-credentials span {
-  color: var(--color-blue);
-  font-size: 0.78rem;
-  text-align: right;
-}
-
-.home-video-card {
-  overflow: hidden;
-  border: 1px solid var(--color-ink);
-  border-radius: var(--radius-medium);
-  background: var(--color-white);
-  color: var(--color-ink);
-  box-shadow: 8px 8px 0 var(--color-blue-dark);
-}
-
-.home-video-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 15px 18px;
-}
-
-.home-video-heading span {
-  color: var(--color-blue);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.home-video-heading a {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-underline-offset: 3px;
 }
 
 .home-video-frame {
@@ -564,15 +506,14 @@
   border: 0;
 }
 
-.home-video-card > p {
-  margin: 0;
-  padding: 16px 18px 18px;
-  color: var(--color-muted);
-  font-size: 0.8rem;
-}
-
 .home-faq {
   background: var(--color-white);
+}
+
+.home-faq .faq-list p a {
+  color: var(--color-blue);
+  font-weight: 700;
+  text-underline-offset: 3px;
 }
 
 .home-consultation {
@@ -618,21 +559,14 @@
 
 @media (max-width: 1040px) {
   .home-hero-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(330px, 0.8fr);
-    gap: 58px;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
+    gap: 32px 52px;
   }
 
   .home-hero-copy h1 {
-    font-size: clamp(3rem, 6.4vw, 4.6rem);
+    font-size: clamp(2.65rem, 5.6vw, 3.9rem);
   }
 
-  .home-belief-card {
-    left: -28px;
-  }
-
-  .home-instructor-grid {
-    gap: 60px;
-  }
 }
 
 @media (max-width: 860px) {
@@ -644,19 +578,39 @@
 
   .home-hero-grid,
   .home-pathways-heading,
-  .home-instructor-grid,
   .home-consultation-inner {
     grid-template-columns: 1fr;
   }
 
   .home-hero-grid,
-  .home-instructor-grid,
   .home-consultation-inner {
     gap: 52px;
   }
 
   .home-hero-visual {
     width: min(100%, 560px);
+  }
+
+  .home-belief-card {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    width: min(100%, 390px);
+    margin-top: 12px;
+  }
+
+  .home-hero-grid {
+    grid-template-areas:
+      "copy"
+      "portrait"
+      "credentials"
+      "video";
+  }
+
+  .home-hero-video-card,
+  .home-hero-credentials {
+    width: min(100%, 560px);
+    margin-left: 0;
   }
 
   .home-portrait-card {
@@ -689,17 +643,6 @@
     min-height: 440px;
   }
 
-  .home-principle-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .home-principle-card,
-  .home-principle-card:nth-child(2) {
-    min-height: 250px;
-    transform: none;
-  }
-
-  .home-video-card,
   .home-consultation-actions {
     max-width: 560px;
   }
@@ -712,32 +655,11 @@
   }
 
   .home-hero-copy h1 {
-    font-size: clamp(2.65rem, 13vw, 3.65rem);
-  }
-
-  .home-availability {
-    display: grid;
-    gap: 2px;
-  }
-
-  .home-availability span {
-    display: none;
+    font-size: clamp(1.85rem, 9.3vw, 2.45rem);
   }
 
   .home-hero-visual {
-    padding-bottom: 66px;
-  }
-
-  .home-portrait-card figcaption,
-  .home-credentials > div {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .home-portrait-card figcaption small,
-  .home-credentials span {
-    text-align: left;
+    padding-bottom: 0;
   }
 
   .home-portrait-badge {
@@ -745,13 +667,6 @@
     bottom: 12px;
     min-width: 170px;
     padding: 12px 13px;
-  }
-
-  .home-belief-card {
-    right: 12px;
-    bottom: 0;
-    left: 12px;
-    width: auto;
   }
 
   .home-wayfinder {
@@ -787,16 +702,14 @@
     margin-bottom: 42px;
   }
 
-  .home-principle-card {
-    padding: 28px 24px;
+  .home-hero-credentials > div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
   }
 
-  .home-instructor {
-    padding-block: 72px 80px;
-  }
-
-  .home-video-card {
-    box-shadow: 5px 5px 0 var(--color-blue-dark);
+  .home-hero-credentials span {
+    text-align: left;
   }
 
   .home-consultation {

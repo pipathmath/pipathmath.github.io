@@ -486,3 +486,15 @@ Status: implemented and verified locally; awaiting owner-run Apps Script setup a
 - Temporary browser screenshots used for local review were removed after inspection and were not added to the repository.
 - Simplified the Contact review copy to one direct headline, one Zoom consultation action, and the inquiry form. Removed redundant kickers, commitment/location/storage explanations, and the split-background divider that could visually collide with the consultation card at intermediate widths. Updated the shared footer location to “Based in North Carolina.”
 - Simplified the Math Tutoring review page and reordered it as curriculum, three service blocks, the SAT Bootcamp pathway, family needs, and final consultation/inquiry actions. Removed the slogan-led hero, format/location/credential strip, duplicate availability language, mobile sticky action, and filler marketing headings. Restored Admissions Coaching as a distinct service and contact-form inquiry type.
+
+## July 27, 2026 — Home hierarchy and shared navigation refinement
+
+- Combined the shared cohort announcement and primary navigation into one sticky unit so both remain available while families scroll, including when the mobile announcement wraps to two lines.
+- Standardized the August SAT cohort promotion across Home, Math Tutoring, SAT Math Bootcamp, and Contact as “August SAT cohort,” “August 18–September 10 · Live online,” and “View the program.”
+- Simplified the Home hero by removing the generic instruction kicker and availability line and reducing the headline scale, while preserving Orlando's full teaching philosophy and the “What PiPath believes” positioning statement.
+- Moved the PiPath teaching video into the lower-left of the hero and paired it directly with “Want to see his teaching style in action?”
+- Added Orlando's Ph.D., M.A., and B.S. education beneath his portrait and removed the separate learning-progression and instructor/video sections.
+- Added a direct SAT Math Bootcamp link to the bootcamp FAQ and a Contact link to the online/in-person FAQ; updated local wording to the RTP, North Carolina area.
+- Preserved the concise needs guide, service pathways, FAQ, and final consultation routes while reducing the Home page's overall scroll length.
+- Compacted the sticky header from a two-row mobile tab grid to a single-row four-tab layout and reduced desktop header spacing; browser checks confirmed no horizontal overflow down to 320px.
+- Restored the hero portrait's staggered badge hierarchy: the Lead Educator badge leads, while the PiPath belief card steps lower and left. Removed the duplicate Orlando name beneath the portrait, retained the educator descriptor, and kept “Dr. Orlando Ferrer.” together as one typographic unit in the headline.
