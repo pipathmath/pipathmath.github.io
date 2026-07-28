@@ -1,18 +1,9 @@
 {
-  // Local review configuration with a non-deployable placeholder D1 ID.
-  // Replace it only at the approved Cloudflare preview/production setup gate.
+  // Local review configuration. Secrets stay in the ignored `.dev.vars` file.
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "pipath-academy-local-review",
   "pages_build_output_dir": "./dist",
   "compatibility_date": "2026-07-26",
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "pipath-enrollment-local",
-      "database_id": "00000000-0000-0000-0000-000000000001",
-      "migrations_dir": "migrations"
-    }
-  ],
   "vars": {
     "SITE_URL": "http://localhost:8788",
     "STRIPE_PAYMENT_LINK_URL_AUGUST_2026": "https://buy.stripe.com/dRmeVcbzcgMf8rd3kG9MY00",

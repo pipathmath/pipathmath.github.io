@@ -157,6 +157,17 @@ export default function EnrollmentForm({ cohortId, price, enabled, consultationU
     }
   }, []);
 
+  useEffect(() => {
+    function resetCheckoutNavigationState(): void {
+      // Browsers can restore this React tree from the back-forward cache after
+      // Stripe navigation. Loading is transient and must not keep the form locked.
+      setIsStarting(false);
+    }
+
+    window.addEventListener("pageshow", resetCheckoutNavigationState);
+    return () => window.removeEventListener("pageshow", resetCheckoutNavigationState);
+  }, []);
+
   function updateValue(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setValues((current) => {
       const nextValues = { ...current, [event.target.name]: event.target.value };
