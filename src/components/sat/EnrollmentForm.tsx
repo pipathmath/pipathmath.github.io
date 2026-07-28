@@ -247,7 +247,7 @@ export default function EnrollmentForm({ cohortId, price, enabled, consultationU
               <input name="parentName" type="text" autoComplete="name" maxLength={120} value={values.parentName} onChange={updateValue} required />
             </label>
             <label className="form-field">
-              <span>Student's full name *</span>
+              <span>Student's name *</span>
               <input name="studentName" type="text" autoComplete="off" maxLength={120} value={values.studentName} onChange={updateValue} required />
             </label>
           </div>
