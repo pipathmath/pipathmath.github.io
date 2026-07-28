@@ -556,3 +556,13 @@ Status: implemented and verified locally; awaiting owner-run Apps Script setup a
 - Kept the existing lead-before-Stripe behavior unchanged and replaced only the checkout button's transient label with “Opening secure checkout… Please don’t refresh.” so families understand the short wait.
 - The owner-confirmed $10 Stripe sandbox payment remains an external test fact; test-webhook setup and Stripe-to-Sheet reconciliation remain pending.
 - Rollback verification passed with 31 tests, the opt-in external test skipped, 0 Astro/TypeScript diagnostics, five built routes, successful Apps Script syntax validation and Pages Functions compilation, and a clean `git diff --check` result.
+
+## July 28, 2026 — Contact recovery and email alerts
+
+- Made the Contact form message optional in the browser, Cloudflare validation, type contract, Google receiver, Sheet storage, and notification email.
+- Fixed the Contact success-state display: the form's grid rule had overridden its `hidden` attribute, leaving a successfully submitted form and disabled button visible above the success message. The hidden form now disappears, and the button is also defensively re-enabled after success.
+- Added `pipathmath@gmail.com` alerts for newly saved SAT enrollment leads as well as Contact inquiries. Notification failure does not discard a saved record or prevent checkout.
+- Added the owner-run Apps Script function `testNotificationEmail`, which requests MailApp authorization, checks available recipient quota, and sends a real notification test.
+- Changed inquiry notification failures to record a sanitized failure reason in `notification_status` and the Apps Script execution log.
+- Verification passed with 32 tests and one opt-in external test skipped, zero Astro/TypeScript diagnostics, five built routes, successful Apps Script syntax validation and Pages Functions compilation, and a clean `git diff --check` result.
+- Changes are local. The owner must copy the revised `Code.gs`, run `testNotificationEmail`, approve the send-mail permission, and publish a new Apps Script deployment version before retesting alerts.

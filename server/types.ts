@@ -52,7 +52,7 @@ export interface InquiryRequest {
   phone: string | null;
   inquiryType: InquiryType;
   studentCourse: string | null;
-  message: string;
+  message: string | null;
   website: string | null;
   attribution: Attribution;
 }

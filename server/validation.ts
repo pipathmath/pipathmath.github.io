@@ -138,13 +138,7 @@ export function parseInquiryRequest(value: unknown): InquiryRequest {
   const phone = cleanOptionalString(value.phone, 30);
   const inquiryType = cleanOptionalString(value.inquiryType, 30) as InquiryType | null;
   const studentCourse = cleanOptionalString(value.studentCourse, 160);
-  const message = cleanRequiredString(
-    value.message,
-    "a short message",
-    5,
-    1_500,
-    "invalid_inquiry",
-  );
+  const message = cleanOptionalString(value.message, 1_500);
   const website = cleanOptionalString(value.website, 200);
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(email)) {

@@ -54,6 +54,24 @@ describe("contact inquiry Function", () => {
     expect(body.inquiry.inquiryId).toMatch(/^[0-9a-f-]{36}$/u);
   });
 
+  it("accepts an inquiry without an optional message", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({ ok: true, result: "inquiry_created" }),
+    );
+    const request = inquiryRequest();
+    const requestWithoutMessage = new Request(request.url, {
+      method: "POST",
+      headers: request.headers,
+      body: JSON.stringify({ ...form, message: "" }),
+    });
+
+    const response = await callInquiry(requestWithoutMessage);
+    expect(response.status).toBe(200);
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body));
+    expect(body.inquiry.message).toBeNull();
+  });
+
   it("rejects cross-origin submissions before contacting Google", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch");
     const request = inquiryRequest();
