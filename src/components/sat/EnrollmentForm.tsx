@@ -278,13 +278,13 @@ export default function EnrollmentForm({ cohortId, price, enabled, consultationU
 
           <label className="form-field form-field-score">
             <span>Recent SAT or PSAT Math score <small>Optional</small></span>
-            <input name="studentMathScore" type="number" inputMode="numeric" min={160} max={800} step={1} placeholder="For example, 620" value={values.studentMathScore} onChange={updateValue} />
+            <input name="studentMathScore" type="number" inputMode="numeric" min={160} max={800} step={1} placeholder="For example, 700" value={values.studentMathScore} onChange={updateValue} />
             <small>Enter the Math section score from the most recent SAT or PSAT, if available.</small>
           </label>
 
           <label className="form-field">
             <span>Anything else we should know? <small>Optional</small></span>
-            <textarea name="additionalNotes" rows={4} maxLength={1000} placeholder="Share goals, challenging topics, scheduling context, or questions for Dr. Ferrer." value={values.additionalNotes} onChange={updateValue} />
+            <textarea name="additionalNotes" rows={4} maxLength={1000} placeholder="Your message to us" value={values.additionalNotes} onChange={updateValue} />
           </label>
 
           {error && <p className="form-error" id={errorId} role="alert">{error}</p>}
