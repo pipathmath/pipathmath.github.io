@@ -15,10 +15,10 @@ const {
   showAnnouncement = true,
   ctaHref = "#schedule",
   ctaLabel = "View dates",
-  announcementLabel = "Now enrolling",
+  announcementLabel = "August SAT cohort",
   announcementText = "August 18–September 10 · Live online",
-  announcementHref = "#schedule",
-  announcementLinkLabel = "View the schedule",
+  announcementHref = "/sat-math-bootcamp#schedule",
+  announcementLinkLabel = "View the program",
 } = Astro.props;
 
 const navigation = [
@@ -37,35 +37,37 @@ const navigation = [
 ];
 ---
 
-{
-  showAnnouncement && (
-<div class="announcement-bar">
-  <div class="site-container announcement-inner">
-    <span class="announcement-label">{announcementLabel}</span>
-    <span>{announcementText}</span>
-    <a href={announcementHref}>{announcementLinkLabel}</a>
-  </div>
+<div class="site-header-shell">
+  {
+    showAnnouncement && (
+      <div class="announcement-bar">
+        <div class="site-container announcement-inner">
+          <span class="announcement-label">{announcementLabel}</span>
+          <span>{announcementText}</span>
+          <a href={announcementHref}>{announcementLinkLabel}</a>
+        </div>
+      </div>
+    )
+  }
+
+  <header class="site-header">
+    <div class="site-container header-inner">
+      <a class="brand-lockup" href="/" aria-label="PiPath Academy home">
+        <span>PiPath Academy</span>
+        <small>Dr. Orlando Ferrer</small>
+      </a>
+
+      <nav class="primary-nav" aria-label="Primary navigation">
+        {
+          navigation.map((item) => (
+            <a href={item.href} aria-current={activePage === item.key ? "page" : undefined}>
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <a class="button button-small button-primary header-cta" href={ctaHref}>{ctaLabel}</a>
+    </div>
+  </header>
 </div>
-  )
-}
-
-<header class="site-header">
-  <div class="site-container header-inner">
-    <a class="brand-lockup" href="/" aria-label="PiPath Academy home">
-      <span>PiPath Academy</span>
-      <small>Dr. Orlando Ferrer</small>
-    </a>
-
-    <nav class="primary-nav" aria-label="Primary navigation">
-      {
-        navigation.map((item) => (
-          <a href={item.href} aria-current={activePage === item.key ? "page" : undefined}>
-            {item.label}
-          </a>
-        ))
-      }
-    </nav>
-
-    <a class="button button-small button-primary header-cta" href={ctaHref}>{ctaLabel}</a>
-  </div>
-</header>

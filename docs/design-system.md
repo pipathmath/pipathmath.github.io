@@ -49,6 +49,8 @@ The header action is contextual:
 
 A later navigation review may shorten "Contact Me" to "Contact," but that label has not been approved yet.
 
+The announcement and navigation are one sticky header unit. The approved cohort promotion is shared across Home, Math Tutoring, SAT Math Bootcamp, and Contact: "August SAT cohort" with "August 18–September 10 · Live online" and a "View the program" link.
+
 ## Information order
 
 The default marketing-page order is:
@@ -93,7 +95,7 @@ The default marketing-page order is:
 - Design mobile-first for a 320px minimum viewport.
 - Avoid horizontally clipped navigation.
 - Keep tap targets at least 44px high when practical.
-- Anchor targets reserve clearance for the sticky announcement bar.
+- Anchor targets reserve clearance for the full sticky announcement and navigation unit.
 - Interactive disclosure controls expose `aria-expanded` and `aria-controls`.
 - Confirmation and private pages must be excluded from indexing.
 - Respect `prefers-reduced-motion` when meaningful animation is introduced.
@@ -104,26 +106,26 @@ The Home implementation:
 
 - removes the Duke campus banner and uses Orlando's genuine existing portrait;
 - uses a dark editorial hero so Home is visually distinct from the SAT course page;
-- leads with the family's need for clearer, personalized math instruction;
+- introduces Orlando directly while preserving his full teaching philosophy and Duke Mathematics Ph.D. context;
 - makes a free consultation the primary conversion;
+- keeps the “What PiPath believes” positioning statement beside Orlando's portrait;
+- places Orlando's education immediately beneath his portrait;
+- places genuine PiPath YouTube teaching content in the lower-left of the hero with the teaching-style prompt;
 - provides a three-way needs guide for course support, SAT preparation, or an unsure family;
 - presents Math Tutoring and the Digital SAT Math Bootcamp as two distinct paths;
 - gives the SAT pathway concrete dates, live hours, and targeted practice;
-- explains the PiPath learning progression before presenting instructor credentials;
-- pairs Orlando's Duke credential with genuine PiPath YouTube teaching content rather than a campus image;
+- removes the separate learning-progression and instructor/video sections to shorten the page;
 - avoids fabricated testimonials, guarantees, or unsupported monetary-value claims;
 - uses Organization, Person, and FAQ structured data plus Home-specific social metadata;
-- uses the shared header/footer, relative internal navigation, responsive two-by-two mobile navigation, and a consultation bar that appears only after the hero action leaves view.
+- uses the shared header/footer, relative internal navigation, a compact single-row mobile tab bar, and a consultation bar that appears only after the hero action leaves view.
 
 The content order is:
 
-1. family-centered promise and consultation action;
+1. Orlando introduction, portrait, education, genuine teaching video, and consultation action;
 2. needs-based starting-point guide;
 3. Math Tutoring and SAT pathways;
-4. learning progression;
-5. instructor credibility and genuine teaching content;
-6. family decision FAQs;
-7. consultation close and email alternative.
+4. family decision FAQs;
+5. consultation close and email alternative.
 
 The current portrait is suitable for local review. Genuine classroom/tutoring imagery may supplement or replace it later when owner-approved assets exist.
 

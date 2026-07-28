@@ -54,24 +54,6 @@ const pathways = [
   },
 ];
 
-const principles = [
-  {
-    label: "Notice",
-    title: "Find the actual obstacle.",
-    description: "A missed concept, a rushed habit, and a confidence problem need different responses. We begin by telling them apart.",
-  },
-  {
-    label: "Explain",
-    title: "Make the structure visible.",
-    description: "Ideas come before recipes, so students can see why a method works and recognize when to use it again.",
-  },
-  {
-    label: "Transfer",
-    title: "Practice toward independence.",
-    description: "Guided work becomes targeted follow-up, better self-checking, and stronger decisions without constant prompting.",
-  },
-];
-
 const faqs = [
   {
     question: "What levels and subjects does PiPath support?",
@@ -81,12 +63,17 @@ const faqs = [
   {
     question: "Are sessions online or in person?",
     answer:
-      "Remote tutoring is available through Zoom. In-person tutoring in the Research Triangle, North Carolina area may be available by request; contact us to discuss scheduling and pricing.",
+      "Remote tutoring is available through Zoom. In-person tutoring in the RTP, North Carolina area may be available by request; ",
+    linkHref: "/contact",
+    linkLabel: "contact us",
+    answerAfter: " to discuss scheduling and pricing.",
   },
   {
     question: "Who is the SAT Math Bootcamp made for?",
     answer:
-      "The bootcamp is made for any student getting ready to take the SAT, regardless of if they've taken the exam before. Students in the bootcamp come from different starting points, and PiPath takes this into account by personalizing each student's homework to the areas they need most work in. If you'd like to learn more about how exactly we do this, you can click here!",
+      "The bootcamp is for students preparing for the SAT, whether or not they have taken it before. Homework is personalized around each student's starting point. ",
+    linkHref: "/sat-math-bootcamp",
+    linkLabel: "Explore the SAT Math Bootcamp.",
   },
   {
     question: "What if my student can't make it to all of the SAT Math Bootcamp sessions?",
@@ -97,8 +84,7 @@ const faqs = [
     question: "What happens during the free consultation?",
     answer:
       "You will discuss the student's current course or test, goals, timing, and the kind of support that may fit. It is a short planning conversation, not a commitment to purchase.",
-  },
-   
+    },
 ];
 
 const structuredData = {
@@ -133,7 +119,10 @@ const structuredData = {
       mainEntity: faqs.map((item) => ({
         "@type": "Question",
         name: item.question,
-        acceptedAnswer: { "@type": "Answer", text: item.answer },
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `${item.answer}${item.linkLabel ?? ""}${item.answerAfter ?? ""}`,
+        },
       })),
     },
   ],
@@ -155,21 +144,20 @@ const structuredData = {
     <section class="home-hero">
       <div class="site-container home-hero-grid">
         <div class="hero-copy home-hero-copy">
-          <p class="section-kicker">Personalized math instruction</p>
-          <h1>Meet PiPath's Lead Educator: Dr. Orlando Ferrer.</h1>
+          <h1>Meet PiPath's Lead Educator: <span class="home-hero-name">Dr. Orlando Ferrer.</span></h1>
           <p class="hero-lead">
-            Orlando completed his Mathematics Ph.D. at Duke University. Throughout his academic career, he realized his biggest impact came from finding intuitive ways to teach difficult concepts. 
-            Instead of memorizing math, he focuses on having students build conceptual mastery by challening themselves and asking, "why is this true?" <br /><br /> Orlando has applied this philosophy for over ten years to help students overcome their math anxiety and often discover a passion for the subject.
-            Want to see his teaching style in action? Check out PiPath's YouTube channel below!
+            Orlando completed his Mathematics Ph.D. at Duke University. Throughout his academic career, he realized his biggest impact came from finding intuitive ways to teach difficult concepts. Instead of memorizing math, he focuses on having students build conceptual mastery by challenging themselves and asking, “Why is this true?”
+          </p>
+          <p class="hero-lead">
+            Orlando has applied this philosophy for over ten years to help students overcome their math anxiety and often discover a passion for the subject.
           </p>
           <div class="hero-actions">
             <a class="button button-light" href={consultationUrl} target="_blank" rel="noreferrer">Book a free consultation</a>
             <a class="button home-button-outline" href="#start-here">Find the right starting point</a>
           </div>
-          <p class="home-availability">Online nationwide <span aria-hidden="true">·</span> In person in the RTP, NC area by request</p>
         </div>
 
-        <div class="home-hero-visual">
+        <div class="home-hero-visual" id="instructor">
           <figure class="home-portrait-card">
             <div class="home-portrait-frame">
               <Image
@@ -182,9 +170,26 @@ const structuredData = {
               />
               <div class="home-portrait-badge"><span>Lead Educator</span><strong>Orlando Ferrer, Ph.D.</strong></div>
             </div>
-            <figcaption><span>Dr. Orlando Ferrer</span><small>Mathematician & Educator</small></figcaption>
+            <figcaption><small>Mathematician & Educator</small></figcaption>
           </figure>
           <aside class="home-belief-card"><span>What PiPath believes</span><strong>Each student has their own unique path to learning math.</strong></aside>
+        </div>
+
+        <div class="home-hero-video-card">
+          <div class="home-hero-video-heading">
+            <strong>Want to see his teaching style in action?</strong>
+            <a href="https://www.youtube.com/@PiPathMath" target="_blank" rel="noreferrer">Visit YouTube</a>
+          </div>
+          <div class="home-video-frame">
+            <iframe src="https://www.youtube-nocookie.com/embed/88TobExZ2FY?rel=0" title="PiPath Academy math lesson with Dr. Orlando Ferrer" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          </div>
+        </div>
+
+        <div class="home-hero-credentials" aria-label="Dr. Ferrer's education">
+          <p>Education</p>
+          <div><strong>Ph.D. Mathematics</strong><span>Duke University</span></div>
+          <div><strong>M.A. Mathematics</strong><span>Wake Forest University</span></div>
+          <div><strong>B.S. Mathematics</strong><span>UNC–Chapel Hill</span></div>
         </div>
       </div>
     </section>
@@ -228,52 +233,21 @@ const structuredData = {
       </div>
     </section>
 
-    <section class="section home-method" id="approach">
-      <div class="site-container">
-        <div class="section-heading home-method-intro">
-          <p class="section-kicker">How learning changes</p>
-          <h2>From stuck to self-directed.</h2>
-          <p>Strong tutoring is more than answering the question on the page. It helps a student notice structure, choose a strategy, and carry that judgment into the next problem.</p>
-        </div>
-        <div class="home-principle-grid">
-          {principles.map((item, index) => (
-            <article class="home-principle-card">
-              <div class="home-principle-marker" aria-hidden="true">{index + 1}</div>
-              <p>{item.label}</p>
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="section home-instructor" id="instructor">
-      <div class="site-container home-instructor-grid">
-        <div class="home-instructor-copy">
-          <p class="section-kicker">Depth made understandable</p>
-          <h2>A mathematician who chose teaching for the human part.</h2>
-          <p>Orlando's doctoral work at Duke connected graph theory with biology, statistics, and machine learning. His teaching brings that same curiosity to the moment a student says, “I don't get it”—and turns that moment into something to examine, not avoid.</p>
-          <div class="home-credentials" aria-label="Dr. Ferrer's education">
-            <div><strong>Ph.D. Mathematics</strong><span>Duke University</span></div>
-            <div><strong>M.A. Mathematics</strong><span>Wake Forest University</span></div>
-            <div><strong>B.S. Mathematics</strong><span>UNC–Chapel Hill</span></div>
-          </div>
-        </div>
-        <div class="home-video-card">
-          <div class="home-video-heading"><span>See PiPath teach</span><a href="https://www.youtube.com/@PiPathMath" target="_blank" rel="noreferrer">Visit YouTube</a></div>
-          <div class="home-video-frame">
-            <iframe src="https://www.youtube-nocookie.com/embed/88TobExZ2FY?rel=0" title="PiPath Academy math lesson with Dr. Orlando Ferrer" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-          </div>
-          <p>Visual explanations and problem-solving from the PiPath Math channel.</p>
-        </div>
-      </div>
-    </section>
-
     <section class="section faq-section home-faq" id="faq">
       <div class="site-container faq-grid">
         <div class="section-heading compact-heading"><p class="section-kicker">Before we begin</p><h2>Questions families usually need answered first.</h2></div>
-        <div class="faq-list">{faqs.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+        <div class="faq-list">
+          {faqs.map((item) => (
+            <details>
+              <summary>{item.question}</summary>
+              <p>
+                {item.answer}
+                {item.linkHref && <a href={item.linkHref}>{item.linkLabel}</a>}
+                {item.answerAfter}
+              </p>
+            </details>
+          ))}
+        </div>
       </div>
     </section>
 
