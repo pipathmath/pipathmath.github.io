@@ -9,13 +9,13 @@ import "../../styles/home.css";
 const consultationUrl = "https://calendly.com/pipathmath/free-15-minute-tutoring-consultation";
 const pageTitle = "Personalized Math Tutoring & SAT Prep | PiPath Academy";
 const pageDescription =
-  "Personalized online and Apex-area math tutoring plus live Digital SAT Math preparation, taught by Duke Math Ph.D. Dr. Orlando Ferrer.";
+  "Personalized online and Research Triangle-area math tutoring plus live Digital SAT Math preparation, taught by Duke Math Ph.D. Dr. Orlando Ferrer.";
 
 const startingPoints = [
   {
     prompt: "The class feels stuck",
     description: "Get focused help with the course, homework, or an upcoming school exam.",
-    href: "/tutoring.html",
+    href: "/tutoring",
     label: "Explore tutoring",
   },
   {
@@ -39,8 +39,8 @@ const pathways = [
     title: "Math Tutoring",
     description:
       "Build understanding, work through difficult coursework, and prepare for exams with instruction shaped around the student's class, pace, and goals.",
-    details: ["K–12 through college math", "One-on-one or small-group format", "Online; Apex-area in person by request"],
-    href: "/tutoring.html",
+    details: ["K–12 through college math", "One-on-one or small-group format", "Online; RTP-area in person by request"],
+    href: "/tutoring",
     label: "Explore math tutoring",
   },
   {
@@ -81,7 +81,7 @@ const faqs = [
   {
     question: "Are sessions online or in person?",
     answer:
-      "Remote tutoring is available through Zoom. In-person tutoring in the Apex, North Carolina area may be available by request; contact us to discuss scheduling and pricing.",
+      "Remote tutoring is available through Zoom. In-person tutoring in the Research Triangle, North Carolina area may be available by request; contact us to discuss scheduling and pricing.",
   },
   {
     question: "Who is the SAT Math Bootcamp made for?",
@@ -110,7 +110,7 @@ const structuredData = {
       name: "PiPath Academy",
       url: "https://www.pipathacademy.com/",
       email: "pipathmath@gmail.com",
-      areaServed: ["Apex, North Carolina", "United States"],
+      areaServed: ["Research Triangle, North Carolina", "United States"],
       founder: { "@id": "https://www.pipathacademy.com/#orlando-ferrer" },
       sameAs: ["https://www.linkedin.com/in/orlando-ferrer/", "https://www.youtube.com/@PiPathMath"],
     },
@@ -166,7 +166,7 @@ const structuredData = {
             <a class="button button-light" href={consultationUrl} target="_blank" rel="noreferrer">Book a free consultation</a>
             <a class="button home-button-outline" href="#start-here">Find the right starting point</a>
           </div>
-          <p class="home-availability">Online nationwide <span aria-hidden="true">·</span> In person near Apex, North Carolina</p>
+          <p class="home-availability">Online nationwide <span aria-hidden="true">·</span> In person in the RTP, NC area by request</p>
         </div>
 
         <div class="home-hero-visual">
@@ -248,7 +248,7 @@ const structuredData = {
       </div>
     </section>
 
-    <section class="section home-instructor">
+    <section class="section home-instructor" id="instructor">
       <div class="site-container home-instructor-grid">
         <div class="home-instructor-copy">
           <p class="section-kicker">Depth made understandable</p>

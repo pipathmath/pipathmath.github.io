@@ -8,8 +8,6 @@ const outputDirectory = path.join(projectRoot, "dist");
 // Preserve the existing non-Astro pages exactly until each page is redesigned and
 // migrated. Remove an entry from this list only when Astro owns that route.
 const legacyFiles = [
-  "tutoring.html",
-  "contact.html",
   "resume.html",
   "resume.pdf",
   "Orlando.png",

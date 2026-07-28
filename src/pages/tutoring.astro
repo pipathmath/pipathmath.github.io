@@ -1,0 +1,145 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import "../styles/tutoring.css";
+
+const consultationUrl = "https://calendly.com/pipathmath/free-15-minute-tutoring-consultation";
+const pageTitle = "Math Tutoring | PiPath Academy";
+const pageDescription =
+  "One-on-one math tutoring, small-group tutoring, test preparation, and admissions coaching from PiPath Academy.";
+
+const subjectGroups = [
+  {
+    label: "Foundations",
+    subjects: ["Elementary Math", "Pre-Algebra", "Algebra I & II", "Geometry"],
+  },
+  {
+    label: "Advanced high school",
+    subjects: ["Trigonometry", "Precalculus", "AP Calculus AB/BC", "Statistics"],
+  },
+  {
+    label: "College & technical",
+    subjects: ["Calculus I, II & III", "Linear Algebra", "Differential Equations", "Discrete Math", "Probability", "Python & R"],
+  },
+  {
+    label: "Tests & competitions",
+    subjects: ["SAT Math", "ACT Math", "AMC and other competition math"],
+  },
+];
+
+const services = [
+  {
+    label: "Individual",
+    title: "One-on-One Math Tutoring",
+    description: "A one-hour session for course support, homework, test preparation, or advanced math.",
+    price: "Contact us for pricing",
+    href: "/contact?topic=math-tutoring",
+    action: "Ask about one-on-one tutoring",
+  },
+  {
+    label: "Small group",
+    title: "Small-Group Tutoring",
+    description: "For classmates or friends taking the same course who want to study and review together.",
+    price: "$50 / hour per student",
+    href: "/contact?topic=small-group",
+    action: "Ask about a small group",
+  },
+  {
+    label: "College applications",
+    title: "Admissions Coaching",
+    description: "Application strategy, personal statement feedback, and project ideas for students applying to competitive universities.",
+    price: "Contact us for pricing",
+    href: "/contact?topic=admissions-coaching",
+    action: "Ask about admissions coaching",
+  },
+];
+
+const needs = [
+  "The current class is not making sense",
+  "A test or difficult unit is approaching",
+  "The student wants consistent course support",
+  "The student needs greater challenge",
+];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: "PiPath Academy Math Tutoring",
+  description: pageDescription,
+  url: "https://www.pipathacademy.com/tutoring",
+  provider: {
+    "@type": "EducationalOrganization",
+    name: "PiPath Academy",
+    url: "https://www.pipathacademy.com/",
+  },
+};
+---
+
+<SiteLayout title={pageTitle} description={pageDescription} canonicalPath="/tutoring" structuredData={structuredData} socialImagePath="/Orlando.png">
+  <SiteHeader
+    activePage="tutoring"
+    announcementLabel="August SAT cohort"
+    announcementText="August 18–September 10 · Live online"
+    announcementHref="/sat-math-bootcamp#schedule"
+    announcementLinkLabel="View the program"
+    ctaHref={consultationUrl}
+    ctaLabel="Book consultation"
+  />
+
+  <main id="main-content">
+    <section class="tutoring-curriculum" aria-labelledby="tutoring-heading">
+      <div class="site-container">
+        <div class="tutoring-page-heading">
+          <h1 id="tutoring-heading">Math Tutoring</h1>
+        </div>
+
+        <div class="tutoring-subject-grid" aria-label="Math subjects">
+          {subjectGroups.map((group) => (
+            <article>
+              <h2>{group.label}</h2>
+              <ul>{group.subjects.map((subject) => <li>{subject}</li>)}</ul>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="tutoring-services" aria-labelledby="services-heading">
+      <div class="site-container">
+        <h2 id="services-heading">Tutoring Services</h2>
+        <div class="tutoring-service-grid">
+          {services.map((service) => (
+            <article class="tutoring-service-card">
+              <p>{service.label}</p>
+              <h3>{service.title}</h3>
+              <p>{service.description}</p>
+              <strong>{service.price}</strong>
+              <a class="button button-secondary" href={service.href}>{service.action}</a>
+            </article>
+          ))}
+        </div>
+
+        <a class="tutoring-sat-path" href="/sat-math-bootcamp">
+          <span><strong>Preparing for SAT Math?</strong> View the live Digital SAT Math Bootcamp.</span>
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="tutoring-needs-section" aria-labelledby="needs-heading">
+      <div class="site-container tutoring-needs-inner">
+        <h2 id="needs-heading">Families usually come to PiPath when…</h2>
+        <ol>
+          {needs.map((need) => <li>{need}</li>)}
+        </ol>
+        <div class="tutoring-actions">
+          <a class="button button-primary" href={consultationUrl} target="_blank" rel="noreferrer">Book a free consultation</a>
+          <a class="button button-secondary" href="/contact?topic=math-tutoring">Send an inquiry</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+</SiteLayout>

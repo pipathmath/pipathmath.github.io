@@ -1,9 +1,15 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  createGoogleSheetInquiry,
   createGoogleSheetLead,
   updateGoogleSheetPayment,
 } from "../server/google-sheets";
-import type { CheckoutRequest, EnrollmentCohortDefinition, Env } from "../server/types";
+import type {
+  CheckoutRequest,
+  EnrollmentCohortDefinition,
+  Env,
+  InquiryRequest,
+} from "../server/types";
 
 const env = {
   GOOGLE_SHEETS_WEB_APP_URL:
@@ -38,6 +44,17 @@ const checkout: CheckoutRequest = {
     landingPage: "https://www.pipathacademy.com/sat-math-bootcamp",
     referrer: null,
   },
+};
+
+const inquiry: InquiryRequest = {
+  contactName: "Grace Hopper",
+  email: "parent@example.com",
+  phone: "919-555-0123",
+  inquiryType: "math-tutoring",
+  studentCourse: "10th grade, Algebra II",
+  message: "The current unit is the main concern.",
+  website: null,
+  attribution: checkout.attribution,
 };
 
 afterEach(() => {
@@ -105,6 +122,32 @@ describe("Google Sheets lead adapter", () => {
         amountCents: 29_900,
       },
     });
+  });
+
+  it("sends contact inquiries to a separate receiver action", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({ ok: true, result: "inquiry_created" }),
+    );
+
+    await createGoogleSheetInquiry(
+      env,
+      "3f434684-1b29-4d09-b2d6-8be0403b43b6",
+      inquiry,
+    );
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body));
+    expect(body).toMatchObject({
+      action: "create_inquiry",
+      secret: "test-shared-secret",
+      inquiry: {
+        inquiryId: "3f434684-1b29-4d09-b2d6-8be0403b43b6",
+        inquiryType: "math-tutoring",
+        contactName: "Grace Hopper",
+        studentCourse: "10th grade, Algebra II",
+        utmSource: "newsletter",
+      },
+    });
+    expect(body.inquiry.website).toBeUndefined();
   });
 
   it("rejects a non-Google receiver URL before sending family data", async () => {

@@ -4,6 +4,7 @@ import type {
   CheckoutRequest,
   EnrollmentCohortDefinition,
   Env,
+  InquiryRequest,
 } from "./types";
 
 interface AppsScriptResponse {
@@ -41,7 +42,7 @@ function appsScriptUrl(env: Env): string {
     throw new ApiError(
       503,
       "lead_store_not_configured",
-      "Online enrollment is temporarily unavailable. Please try again later.",
+      "This service is temporarily unavailable. Please try again later.",
     );
   }
 
@@ -49,7 +50,7 @@ function appsScriptUrl(env: Env): string {
     throw new ApiError(
       503,
       "lead_store_not_configured",
-      "Online enrollment is temporarily unavailable. Please try again later.",
+      "This service is temporarily unavailable. Please try again later.",
     );
   }
 
@@ -75,7 +76,7 @@ async function postToAppsScript(
     throw new ApiError(
       502,
       "lead_store_unavailable",
-      "We could not save the enrollment information. Please try again.",
+      "We could not save your information. Please try again.",
     );
   }
 
@@ -86,7 +87,7 @@ async function postToAppsScript(
     throw new ApiError(
       502,
       "lead_store_invalid_response",
-      "We could not save the enrollment information. Please try again.",
+      "We could not save your information. Please try again.",
     );
   }
 
@@ -95,7 +96,7 @@ async function postToAppsScript(
     throw new ApiError(
       502,
       "lead_store_rejected",
-      "We could not save the enrollment information. Please try again.",
+      "We could not save your information. Please try again.",
     );
   }
 
@@ -125,6 +126,37 @@ export async function createGoogleSheetLead(
       parentPhone: input.parentPhone,
       studentMathScore: input.studentMathScore,
       additionalNotes: input.additionalNotes,
+      gaClientId: attribution.gaClientId,
+      utmSource: attribution.utmSource,
+      utmMedium: attribution.utmMedium,
+      utmCampaign: attribution.utmCampaign,
+      utmContent: attribution.utmContent,
+      utmTerm: attribution.utmTerm,
+      gclid: attribution.gclid,
+      landingPage: attribution.landingPage,
+      referrer: attribution.referrer,
+    },
+  });
+}
+
+export async function createGoogleSheetInquiry(
+  env: Env,
+  inquiryId: string,
+  input: InquiryRequest,
+): Promise<void> {
+  const attribution: Attribution = input.attribution;
+
+  await postToAppsScript(env, {
+    action: "create_inquiry",
+    inquiry: {
+      createdAt: new Date().toISOString(),
+      inquiryId,
+      inquiryType: input.inquiryType,
+      contactName: input.contactName,
+      email: input.email,
+      phone: input.phone,
+      studentCourse: input.studentCourse,
+      message: input.message,
       gaClientId: attribution.gaClientId,
       utmSource: attribution.utmSource,
       utmMedium: attribution.utmMedium,

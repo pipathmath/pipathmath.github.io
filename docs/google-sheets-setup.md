@@ -1,6 +1,6 @@
-# Google Sheets enrollment setup
+# Google Sheets enrollment and inquiry setup
 
-This is the owner-run setup for connecting PiPath's private enrollment Sheet to the website. It does not make the Sheet public. The Apps Script web app runs as the Sheet owner and accepts only requests carrying a strong shared secret.
+This is the owner-run setup for connecting PiPath's private enrollment and inquiry Sheet to the website. It does not make the Sheet public. The Apps Script web app runs as the Sheet owner and accepts only requests carrying a strong shared secret.
 
 Use the private PiPath enrollment spreadsheet created by the owner. Keep it restricted to the owner's personal account and the PiPath account. Do not change it to “anyone with the link,” and do not commit its URL or ID to this public repository.
 
@@ -8,10 +8,11 @@ The spreadsheet ID is the value between `/d/` and `/edit` in its Google Sheets U
 
 ## What the setup creates
 
-The script automatically creates and formats two tabs the first time it receives a valid request:
+The script automatically creates and formats three tabs the first time it receives a valid request:
 
 - `Leads` is the staff-facing enrollment list.
 - `Stripe Events` is a small audit/idempotency ledger used to avoid processing the same Stripe event twice.
+- `Inquiries` stores tutoring, small-group, SAT, and other contact-form submissions for staff follow-up.
 
 The original empty `Sheet1` tab can be left alone or removed after the two operational tabs appear.
 
@@ -58,7 +59,8 @@ The same value will be stored in two private places:
 5. Add another property:
    - Property: `PIPATH_SHARED_SECRET`
    - Value: the generated random value
-6. Save the properties.
+6. Optionally add `PIPATH_INQUIRY_EMAIL` if inquiry notifications should go somewhere other than `pipathmath@gmail.com`.
+7. Save the properties.
 
 Do not add quotation marks around either value. For `PIPATH_SPREADSHEET_ID`, paste only the ID between `/d/` and `/edit`; do not paste the complete `https://docs.google.com/spreadsheets/...` URL.
 
@@ -70,7 +72,7 @@ Do not add quotation marks around either value. For `PIPATH_SPREADSHEET_ID`, pas
 4. Set **Execute as** to **Me**. “Me” must be the account that can edit the spreadsheet.
 5. Set **Who has access** to **Anyone**.
 6. Click **Deploy**.
-7. Google will ask the owner to authorize the script to access the spreadsheet. Confirm the project name and Google account before approving.
+7. Google will ask the owner to authorize the script to access the spreadsheet and send inquiry-notification email. Confirm the project name and Google account before approving.
 8. Copy the **Web app URL** ending in `/exec`. Do not use a test URL ending in `/dev`.
 
 “Anyone” applies to the web-app URL, not to the spreadsheet itself. Cloudflare is a server process and cannot interactively sign into a Google account, so a deployment restricted to the owner or signed-in Google users would redirect Cloudflare to a Google login page instead of accepting the lead. The Sheet stays private and the script still runs as its authorized owner.
@@ -108,6 +110,8 @@ npm run dev:review
 
 Open `http://localhost:8788/sat-math-bootcamp/`, submit a clearly labeled test family, and stop when the Stripe page opens. The test lead should appear in the `Leads` tab immediately. The existing July URL is a live Payment Link, so do not use Stripe test-card numbers on it.
 
+Open `http://localhost:8788/contact`, submit one clearly labeled inquiry, and confirm both that the `Inquiries` row appears and that the notification reaches the configured inbox. Delete the test row after verification.
+
 ## Step 6: configure Cloudflare later
 
 Deployment is a separate gate. When the `croquette` preview is ready, add these as encrypted environment secrets in the Cloudflare Pages project:
@@ -138,12 +142,16 @@ Saving edited code does not automatically update an existing versioned deploymen
 4. Add a concise description and deploy.
 5. Keep the existing deployment URL unless Google explicitly replaces it.
 
+The July 2026 Contact launch requires this update because older deployed versions do not recognize the `create_inquiry` action. Saving `Code.gs` without publishing a new deployment version is not sufficient.
+
 Record every production script version in `docs/implementation-log.md`.
 
 ## Recovery checks
 
 - If the website reports that it could not save the enrollment, check Apps Script **Executions** for the matching time.
 - If no `Leads` tab appears, verify both Script Properties and confirm the deployment executes as the Sheet owner.
+- If no `Inquiries` tab appears, confirm the deployed Apps Script version includes `create_inquiry` and that the website uses the same web-app URL and shared secret.
+- If an inquiry row says `Email failed`, inspect Apps Script **Executions** and confirm that the owner authorized the script's email permission. The archived row remains available for follow-up.
 - If Apps Script reports `Illegal spreadsheet ID or key`, `PIPATH_SPREADSHEET_ID` probably contains the complete Google Sheets URL. Replace it with only the segment between `/d/` and `/edit`.
 - If Apps Script reports `unauthorized`, the Google and Cloudflare/local shared-secret values differ.
 - If Apps Script reports a header mismatch, do not reorder automated columns manually. Compare the Sheet header row with `LEAD_HEADERS` in `Code.gs`.

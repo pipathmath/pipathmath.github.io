@@ -10,6 +10,7 @@
 
 var LEADS_SHEET_NAME = "Leads";
 var EVENTS_SHEET_NAME = "Stripe Events";
+var INQUIRIES_SHEET_NAME = "Inquiries";
 
 var LEAD_HEADERS = [
   "created_at",
@@ -57,6 +58,30 @@ var EVENT_HEADERS = [
   "result"
 ];
 
+var INQUIRY_HEADERS = [
+  "created_at",
+  "inquiry_id",
+  "inquiry_type",
+  "contact_name",
+  "email",
+  "phone",
+  "student_course",
+  "message",
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "utm_term",
+  "gclid",
+  "ga_client_id",
+  "landing_page",
+  "referrer",
+  "notification_status",
+  "follow_up_status",
+  "internal_notes",
+  "updated_at"
+];
+
 function doGet() {
   return jsonOutput_({
     ok: true,
@@ -78,10 +103,13 @@ function doPost(event) {
       var spreadsheet = openSpreadsheet_();
       var leadsSheet = ensureSheet_(spreadsheet, LEADS_SHEET_NAME, LEAD_HEADERS);
       var eventsSheet = ensureSheet_(spreadsheet, EVENTS_SHEET_NAME, EVENT_HEADERS);
+      var inquiriesSheet = ensureSheet_(spreadsheet, INQUIRIES_SHEET_NAME, INQUIRY_HEADERS);
       var result;
 
       if (payload.action === "create_lead") {
         result = createLead_(leadsSheet, payload.lead);
+      } else if (payload.action === "create_inquiry") {
+        result = createInquiry_(inquiriesSheet, payload.inquiry);
       } else if (payload.action === "payment_update") {
         result = updatePayment_(leadsSheet, eventsSheet, payload.payment);
       } else if (payload.action === "refund_update") {
@@ -101,6 +129,95 @@ function doPost(event) {
       code: safeErrorCode_(error)
     });
   }
+}
+
+function createInquiry_(sheet, inquiry) {
+  requireObject_(inquiry, "invalid_inquiry");
+  requireId_(inquiry.inquiryId, "invalid_inquiry_id");
+  requireText_(inquiry.inquiryType, "invalid_inquiry_type", 30);
+  requireText_(inquiry.contactName, "invalid_contact_name", 120);
+  requireText_(inquiry.email, "invalid_contact_email", 254);
+  requireText_(inquiry.message, "invalid_inquiry_message", 1500);
+
+  var allowedTypes = ["math-tutoring", "small-group", "admissions-coaching", "sat-bootcamp", "other"];
+  if (allowedTypes.indexOf(inquiry.inquiryType) === -1) {
+    throw new Error("invalid_inquiry_type");
+  }
+
+  var existingRow = findRow_(sheet, "inquiry_id", inquiry.inquiryId);
+  if (existingRow) {
+    return "inquiry_already_exists";
+  }
+
+  var now = new Date().toISOString();
+  var row = emptyRow_(INQUIRY_HEADERS.length);
+  setRowValue_(row, INQUIRY_HEADERS, "created_at", safeCell_(inquiry.createdAt || now, 40));
+  setRowValue_(row, INQUIRY_HEADERS, "inquiry_id", inquiry.inquiryId);
+  setRowValue_(row, INQUIRY_HEADERS, "inquiry_type", safeCell_(inquiry.inquiryType, 30));
+  setRowValue_(row, INQUIRY_HEADERS, "contact_name", safeCell_(inquiry.contactName, 120));
+  setRowValue_(row, INQUIRY_HEADERS, "email", safeCell_(inquiry.email, 254));
+  setRowValue_(row, INQUIRY_HEADERS, "phone", safeCell_(inquiry.phone, 30));
+  setRowValue_(row, INQUIRY_HEADERS, "student_course", safeCell_(inquiry.studentCourse, 160));
+  setRowValue_(row, INQUIRY_HEADERS, "message", safeCell_(inquiry.message, 1500));
+  setRowValue_(row, INQUIRY_HEADERS, "utm_source", safeCell_(inquiry.utmSource, 200));
+  setRowValue_(row, INQUIRY_HEADERS, "utm_medium", safeCell_(inquiry.utmMedium, 200));
+  setRowValue_(row, INQUIRY_HEADERS, "utm_campaign", safeCell_(inquiry.utmCampaign, 200));
+  setRowValue_(row, INQUIRY_HEADERS, "utm_content", safeCell_(inquiry.utmContent, 200));
+  setRowValue_(row, INQUIRY_HEADERS, "utm_term", safeCell_(inquiry.utmTerm, 200));
+  setRowValue_(row, INQUIRY_HEADERS, "gclid", safeCell_(inquiry.gclid, 300));
+  setRowValue_(row, INQUIRY_HEADERS, "ga_client_id", safeCell_(inquiry.gaClientId, 120));
+  setRowValue_(row, INQUIRY_HEADERS, "landing_page", safeCell_(inquiry.landingPage, 2048));
+  setRowValue_(row, INQUIRY_HEADERS, "referrer", safeCell_(inquiry.referrer, 2048));
+  setRowValue_(row, INQUIRY_HEADERS, "notification_status", "Pending");
+  setRowValue_(row, INQUIRY_HEADERS, "follow_up_status", "New");
+  setRowValue_(row, INQUIRY_HEADERS, "updated_at", now);
+
+  sheet.appendRow(row);
+  var appendedRow = sheet.getLastRow();
+
+  try {
+    sendInquiryNotification_(inquiry);
+    setCellValue_(sheet, appendedRow, "notification_status", "Sent");
+  } catch (error) {
+    setCellValue_(sheet, appendedRow, "notification_status", "Email failed");
+  }
+
+  return "inquiry_created";
+}
+
+function sendInquiryNotification_(inquiry) {
+  var destination = PropertiesService.getScriptProperties()
+    .getProperty("PIPATH_INQUIRY_EMAIL") || "pipathmath@gmail.com";
+  var subjectLabels = {
+    "math-tutoring": "One-on-one math tutoring",
+    "small-group": "Small-group tutoring",
+    "admissions-coaching": "Admissions coaching",
+    "sat-bootcamp": "SAT Math Bootcamp",
+    "other": "Other inquiry"
+  };
+  var subject = "New PiPath inquiry: " + subjectLabels[inquiry.inquiryType];
+  var body = [
+    "A new inquiry was submitted at pipathacademy.com.",
+    "",
+    "Name: " + inquiry.contactName,
+    "Email: " + inquiry.email,
+    "Phone: " + (inquiry.phone || "Not provided"),
+    "Interest: " + subjectLabels[inquiry.inquiryType],
+    "Student grade/course: " + (inquiry.studentCourse || "Not provided"),
+    "",
+    "Message:",
+    inquiry.message,
+    "",
+    "The complete inquiry and attribution are archived in the Inquiries tab."
+  ].join("\n");
+
+  MailApp.sendEmail({
+    to: destination,
+    subject: subject,
+    body: body,
+    replyTo: inquiry.email,
+    name: "PiPath Academy Website"
+  });
 }
 
 function parsePayload_(event) {

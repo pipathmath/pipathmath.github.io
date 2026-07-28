@@ -1,6 +1,6 @@
 # PiPath Academy design system
 
-Status: Adopted for the SAT experience and Home. Math Tutoring and Contact remain on the legacy system until their approved migration gates.
+Status: Adopted for the SAT experience, Home, Math Tutoring, and Contact.
 
 ## Design goals
 
@@ -126,3 +126,18 @@ The content order is:
 7. consultation close and email alternative.
 
 The current portrait is suitable for local review. Genuine classroom/tutoring imagery may supplement or replace it later when owner-approved assets exist.
+
+## Math Tutoring and Contact launch direction
+
+The July 2026 launch migration keeps these pages deliberately concise:
+
+- Math Tutoring leads with the approved positioning line, “Each student has their own unique path to learning math.”
+- A static family-needs panel replaces a more complex interactive recommendation selector.
+- One-on-one tutoring remains a single flexible offer for course support, tests, ongoing help, and advanced learning.
+- Small-group tutoring remains a secondary offer at `$50 / hour per student`.
+- Subjects are organized into foundations, advanced high school, college, and tests/competitions, including SAT, ACT, and AMC-style competition math.
+- Teaching proof is not duplicated; Tutoring links to Orlando's instructor and lesson section on Home.
+- Testimonials, FAQs, and a detailed session walkthrough are deferred to keep the launch pages short and conversion-focused.
+- Contact gives families two immediate paths: book the existing free consultation or send a short inquiry.
+- Contact inquiries are submitted to a first-party Cloudflare Function, stored in a separate private Google Sheet `Inquiries` tab, and emailed to PiPath by the existing Apps Script receiver.
+- Online service is nationwide. Local in-person availability is described as the Research Triangle / RTP, North Carolina area by request.

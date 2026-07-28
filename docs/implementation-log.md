@@ -469,3 +469,20 @@ Status: implemented and verified locally; awaiting owner-run Apps Script setup a
 - This change allows the parent to submit checkout again without refreshing or re-entering family information.
 - Verification passed with a headless browser and mocked checkout destination: after navigation and browser Back, the payment button was enabled and the form draft remained populated. The browser test made zero Google Sheet writes and did not open Stripe.
 - The site rebuilt with 0 Astro errors/warnings/hints; 24 automated tests passed and the opt-in external integration test remained skipped during the normal suite.
+
+## July 27, 2026 — Math Tutoring and Contact launch migration
+
+- Replaced the legacy Math Tutoring and Contact presentation with concise Astro pages using the shared PiPath layout, header, footer, metadata, responsive navigation, design tokens, and accessibility behavior.
+- Used the owner-approved tutoring positioning, “Each student has their own unique path to learning math,” and corrected local service language from Apex to the Research Triangle / RTP, North Carolina area by request across the shared site.
+- Kept the tutoring funnel compact: one static family-needs panel, one unified one-on-one offer, small-group tutoring, an organized subject list including SAT/ACT and competition math, and consultation/inquiry actions.
+- Linked the tutoring credential strip to the existing Home instructor/lesson section instead of duplicating teaching proof. Deferred testimonials, FAQs, detailed recommendations, and a session walkthrough.
+- Rebuilt Contact around the existing Calendly consultation, direct email, and a short contextual inquiry form. Added topic preselection for tutoring and small-group links without adding SAT cross-selling logic.
+- Added a same-origin `/api/inquiry` Function with server-side validation, sanitization, attribution capture, hidden honeypot handling, and client-safe errors.
+- Extended the authenticated Apps Script receiver with a separate private `Inquiries` tab and email notification. Inquiry data does not enter the enrollment `Leads` tab, and an email failure does not remove the archived row.
+- Added clean `/tutoring` and `/contact` routes, permanent redirects from the two legacy `.html` URLs, and updated sitemap and internal navigation entries.
+- Added `docs/tutoring-contact-launch.md` and updated the owner Google Sheets setup instructions. The new Apps Script version still requires owner deployment and one labeled end-to-end inquiry check before public launch.
+- Verification passed with 31 automated tests, 0 Astro diagnostics, a successful five-route static build, a successful Cloudflare Worker build, valid Apps Script JavaScript syntax, and clean diff whitespace checks.
+- Browser review covered 1440px desktop and 390px mobile layouts, active navigation, horizontal-overflow checks, clean-route redirects, contact-topic preselection, and a mocked successful inquiry submission. External Google Fonts/Analytics requests were blocked only by the local browser sandbox.
+- Temporary browser screenshots used for local review were removed after inspection and were not added to the repository.
+- Simplified the Contact review copy to one direct headline, one Zoom consultation action, and the inquiry form. Removed redundant kickers, commitment/location/storage explanations, and the split-background divider that could visually collide with the consultation card at intermediate widths. Updated the shared footer location to “Based in North Carolina.”
+- Simplified the Math Tutoring review page and reordered it as curriculum, three service blocks, the SAT Bootcamp pathway, family needs, and final consultation/inquiry actions. Removed the slogan-led hero, format/location/credential strip, duplicate availability language, mobile sticky action, and filler marketing headings. Restored Admissions Coaching as a distinct service and contact-form inquiry type.

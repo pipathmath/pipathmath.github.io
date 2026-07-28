@@ -18,6 +18,11 @@ const requiredWebhookKeys = [
   "GOOGLE_SHEETS_SHARED_SECRET",
 ] as const;
 
+const requiredInquiryKeys = [
+  "GOOGLE_SHEETS_WEB_APP_URL",
+  "GOOGLE_SHEETS_SHARED_SECRET",
+] as const;
+
 const enrollmentCohorts: Record<string, EnrollmentCohortDefinition> = {
   [AUGUST_COHORT_ID]: {
     id: AUGUST_COHORT_ID,
@@ -34,6 +39,10 @@ export function missingCheckoutConfig(env: Env): string[] {
 
 export function missingWebhookConfig(env: Env): string[] {
   return requiredWebhookKeys.filter((key) => !env[key]?.trim());
+}
+
+export function missingInquiryConfig(env: Env): string[] {
+  return requiredInquiryKeys.filter((key) => !env[key]?.trim());
 }
 
 export function getStripePaymentLinkUrl(env: Env, cohortId: string): string | null {
