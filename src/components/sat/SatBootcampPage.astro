@@ -8,34 +8,35 @@ import { augustSatMathCohort } from "../../data/cohorts";
 
 const pageTitle = "Digital SAT Math Bootcamp | PiPath Academy";
 const pageDescription =
-  "A live online Digital SAT Math Bootcamp led by Duke Math Ph.D. Dr. Orlando Ferrer, featuring eight small-group sessions, personalized practice, and focused test strategy.";
+  "A live online Digital SAT Math Bootcamp with 10 live hours, personalized practice, practical Desmos instruction, and time-saving test strategies.";
 const enrollmentEnabled = import.meta.env.PUBLIC_ENROLLMENT_ENABLED === "true";
 const consultationUrl = "https://calendly.com/pipathmath/free-15-minute-tutoring-consultation";
+const showTestimonials = false;
 
 const curriculum = [
   {
     week: "Week 1",
     title: "Algebra Foundations",
     description:
-      "Linear equations, slope and intercepts, systems of equations, and translating word problems into mathematical structure.",
+      "Linear equations, linear inequalities, slope and intercepts, systems of equations, and modeling word problems with linear equations.",
   },
   {
     week: "Week 2",
     title: "Advanced Math",
     description:
-      "Quadratic forms, polynomials, exponential growth, radicals, and recognizing equivalent expressions without unnecessary calculation.",
+      "Quadratic forms, polynomials, exponential growth/decay, rational expressions, radicals, and recognizing equivalent expressions.",
   },
   {
     week: "Week 3",
     title: "Problem-Solving & Data",
     description:
-      "Ratios, percent change, multi-step applications, scatterplots, standard deviation intuition, and probability traps.",
+      "Ratios, rates, density, percentages, scatterplots, statistics, probability and conditional probability.",
   },
   {
     week: "Week 4",
-    title: "Geometry, Trigonometry & Strategy",
+    title: "Geometry & Trigonometry",
     description:
-      "Triangles, circles, coordinate geometry, trigonometry, mixed-domain practice, pacing, and final test-day decisions.",
+      "Triangles, circles, coordinate geometry, 3D geometry, trigonometry, and geometric applications.",
   },
 ];
 
@@ -43,22 +44,40 @@ const methodology = [
   {
     number: "01",
     title: "Establish the baseline",
-    description: "A diagnostic or recent score reveals which concepts and habits will create the most meaningful gains.",
+    description: "A diagnostic or recent score reveals which concepts the student needs to strengthen.",
   },
   {
     number: "02",
     title: "Teach the underlying math",
-    description: "Students learn why the method works, not only which shortcut to memorize for one question type.",
+    description:
+      "Gaps are filled in the student’s conceptual understanding with an emphasis on understanding the material so that it becomes intuitive, as opposed to just memorizing formulas.",
   },
   {
     number: "03",
     title: "Practice under SAT conditions",
-    description: "Timed problem-solving and strategic Desmos use turn understanding into reliable test-day execution.",
+    description:
+      "Timed problem-solving happens during the live sessions and students learn how to work through SAT Math problems quickly by using time-saving strategies (including in-depth Desmos tutorials).",
   },
   {
     number: "04",
     title: "Target the follow-up work",
-    description: "Personalized homework focuses each student on the topics that deserve their limited practice time.",
+    description: "Personalized homework focuses each student on the topics that they need the most work on.",
+  },
+];
+const methodologyColumns = [methodology.slice(0, 2), methodology.slice(2)];
+
+const faqs = [
+  {
+    question: "What if my student has not taken an SAT or PSAT yet?",
+    answer: "We will use a diagnostic to establish a baseline and identify priority topics.",
+  },
+  {
+    question: "What happens if a student misses a live class?",
+    answer: "Recordings will be available, although live attendance is encouraged for discussion and problem-solving.",
+  },
+  {
+    question: "How is the bootcamp personalized?",
+    answer: "Core class topics are shared, but assigned practice can be adjusted to each student's needs.",
   },
 ];
 
@@ -108,40 +127,11 @@ const structuredData = {
     {
       "@type": "FAQPage",
       "@id": "https://www.pipathacademy.com/sat-math-bootcamp#faq",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "What if my student has not taken an SAT or PSAT yet?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "That is completely fine. We will use a diagnostic to establish a baseline and identify priority topics.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "What happens if a student misses a live class?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Recordings will be available, although live attendance is encouraged for discussion and problem-solving.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Does the course only teach calculator shortcuts?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "No. Desmos is used strategically, alongside the underlying algebra, geometry, and data-analysis concepts.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Is homework the same for every student?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Core class topics are shared, but assigned practice can be adjusted to each student's needs.",
-          },
-        },
-      ],
+      mainEntity: faqs.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
     },
   ],
 };
@@ -154,18 +144,11 @@ const structuredData = {
     <section class="hero-section">
       <div class="site-container hero-grid">
         <div class="hero-copy">
-          <p class="section-kicker">Live online · Summer 2026</p>
-          <h1>A path to math is never standardized.</h1>
+          <h1>SAT Math is standardized, but your learning path doesn’t have to be.</h1>
           <p class="hero-lead">
-            Four focused weeks of concept-building, live problem-solving, and practical test strategy—taught directly by
-            Duke Math Ph.D. Dr. Orlando Ferrer.
+            Four focused weeks of concept-building, live problem-solving, practical Desmos and time-saving test strategies.
           </p>
-
-          <ul class="hero-points" aria-label="Program highlights">
-            <li>Eight live sessions</li>
-            <li>Personalized homework</li>
-            <li>Recordings available</li>
-          </ul>
+          <p class="hero-instructor-credit">Taught directly by Orlando Ferrer, Ph.D. in Mathematics from Duke.</p>
         </div>
 
         <div class="hero-media-column">
@@ -198,10 +181,10 @@ const structuredData = {
 
     <section class="proof-strip" aria-label="Course facts">
       <div class="site-container proof-grid">
-        <div><strong>Duke Math Ph.D.</strong><span>Instructor-led throughout</span></div>
-        <div><strong>10 live hours</strong><span>Across eight sessions</span></div>
-        <div><strong>10–15 students</strong><span>A focused group setting</span></div>
+        <div><strong>10 live hours</strong><span>Eight live sessions · recordings available</span></div>
+        <div><strong>10–15 students</strong><span>Interactive classroom setting</span></div>
         <div><strong>$299 total</strong><span>Complete four-week program</span></div>
+        <div><strong>Personalized homework</strong><span>Customized to student's needs</span></div>
       </div>
     </section>
 
@@ -222,11 +205,8 @@ const structuredData = {
       <div class="site-container">
         <div class="section-heading">
           <p class="section-kicker">What we cover</p>
-          <h2>Four weeks, organized around the highest-value SAT Math work.</h2>
-          <p>
-            Each week builds deliberately from core algebra through test-day strategy, so families can see what students
-            will practice, how the course progresses, and why each topic matters.
-          </p>
+          <h2>Bootcamp Overview</h2>
+          <p>A non-comprehensive list of the core concepts that we will touch on each week.</p>
         </div>
 
         <div class="curriculum-grid">
@@ -246,79 +226,54 @@ const structuredData = {
     </section>
 
     <section class="section section-approach" id="approach">
-      <div class="site-container approach-grid">
+      <div class="site-container">
         <div class="section-heading approach-intro">
           <p class="section-kicker">The PiPath approach</p>
-          <h2>Personalized practice without losing the energy of a live class.</h2>
-          <p>
-            Students learn the same high-impact concepts together, while diagnostics and homework direct each student
-            toward the work that matters most for them.
-          </p>
-
-          <aside class="included-note">
-            <strong>Included in the program</strong>
-            <ul>
-              <li>Live instruction and guided problem-solving</li>
-              <li>Digital SAT and Desmos strategy</li>
-              <li>Personalized homework feedback</li>
-              <li>Session recordings when attendance is not possible</li>
-            </ul>
-          </aside>
+          <h2>How we prepare students</h2>
         </div>
 
-        <ol class="method-list">
+        <div class="method-columns">
           {
-            methodology.map((item) => (
-              <li>
-                <span>{item.number}</span>
-                <div>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                </div>
-              </li>
+            methodologyColumns.map((column) => (
+              <ol class="method-list">
+                {column.map((item) => (
+                  <li>
+                    <span>{item.number}</span>
+                    <div>
+                      <h3>{item.title}</h3>
+                      <p>{item.description}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
             ))
           }
-        </ol>
-      </div>
-    </section>
-
-    <section class="section instructor-section">
-      <div class="site-container instructor-grid">
-        <div class="portrait-placeholder" aria-label="Instructor portrait placeholder">
-          <span>OF</span>
-          <small>Approved portrait will be placed here</small>
-        </div>
-        <div class="instructor-copy">
-          <p class="section-kicker">Your instructor</p>
-          <h2>Direct instruction from Dr. Orlando Ferrer.</h2>
-          <p class="instructor-role">Mathematician, data scientist, and educator · Ph.D. in Mathematics, Duke University</p>
-          <p>
-            Orlando’s teaching combines mathematical depth with an understanding of where students lose confidence,
-            time, and points. The goal is not to make students dependent on tricks—it is to help them recognize structure
-            and make better decisions under pressure.
-          </p>
         </div>
       </div>
     </section>
 
-    <section class="section testimonial-section" aria-labelledby="stories-heading">
-      <div class="site-container">
-        <div class="section-heading compact-heading">
-          <p class="section-kicker">Parent perspectives</p>
-          <h2 id="stories-heading">A reserved space for real family stories.</h2>
-        </div>
-        <div class="testimonial-grid">
-          <article class="testimonial-placeholder">
-            <span>Testimonial placeholder</span>
-            <p>An approved parent testimonial will appear here before launch.</p>
-          </article>
-          <article class="testimonial-placeholder">
-            <span>Testimonial placeholder</span>
-            <p>A second approved family story will appear here before launch.</p>
-          </article>
-        </div>
-      </div>
-    </section>
+    {
+      showTestimonials && (
+        <section class="section testimonial-section" aria-labelledby="stories-heading">
+          <div class="site-container">
+            <div class="section-heading compact-heading">
+              <p class="section-kicker">Parent perspectives</p>
+              <h2 id="stories-heading">A reserved space for real family stories.</h2>
+            </div>
+            <div class="testimonial-grid">
+              <article class="testimonial-placeholder">
+                <span>Testimonial placeholder</span>
+                <p>An approved parent testimonial will appear here before launch.</p>
+              </article>
+              <article class="testimonial-placeholder">
+                <span>Testimonial placeholder</span>
+                <p>A second approved family story will appear here before launch.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+      )
+    }
 
     <section class="section faq-section">
       <div class="site-container faq-grid">
@@ -328,22 +283,7 @@ const structuredData = {
         </div>
 
         <div class="faq-list">
-          <details>
-            <summary>What if my student has not taken an SAT or PSAT yet?</summary>
-            <p>That is completely fine. We will use a diagnostic to establish a baseline and identify priority topics.</p>
-          </details>
-          <details>
-            <summary>What happens if a student misses a live class?</summary>
-            <p>Recordings will be available, although live attendance is encouraged for discussion and problem-solving.</p>
-          </details>
-          <details>
-            <summary>Does the course only teach calculator shortcuts?</summary>
-            <p>No. Desmos is used strategically, alongside the underlying algebra, geometry, and data-analysis concepts.</p>
-          </details>
-          <details>
-            <summary>Is homework the same for every student?</summary>
-            <p>Core class topics are shared, but assigned practice can be adjusted to each student’s needs.</p>
-          </details>
+          {faqs.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
         </div>
       </div>
     </section>
@@ -359,7 +299,6 @@ const structuredData = {
         <div class="enrollment-copy">
           <p class="section-kicker">August enrollment</p>
           <h2>Reserve your student's place.</h2>
-          <p>Complete the short family form to continue to secure payment for the August Digital SAT Math Bootcamp.</p>
           <dl class="enrollment-summary">
             <div><dt>Dates</dt><dd>August 18–September 10</dd></div>
             <div><dt>Schedule</dt><dd>Tuesdays & Thursdays · 7:00–8:15 PM ET</dd></div>

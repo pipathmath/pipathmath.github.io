@@ -89,7 +89,6 @@ export default function CohortCard({ cohort }: Props) {
             {statusLabels[cohort.status]}
           </button>
         )}
-        <small>Complete the short family form, then continue to secure payment.</small>
       </div>
     </article>
   );

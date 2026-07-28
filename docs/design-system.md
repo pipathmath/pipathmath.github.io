@@ -129,6 +129,22 @@ The content order is:
 
 The current portrait is suitable for local review. Genuine classroom/tutoring imagery may supplement or replace it later when owner-approved assets exist.
 
+## SAT Bootcamp launch direction
+
+The launch version keeps the paid-program page focused on concrete family decisions:
+
+1. Personal-learning-path promise, concise supporting copy, genuine course video, and schedule/consultation actions.
+2. Four program facts covering live hours and recordings, group size, tuition, and customized homework.
+3. Current cohort dates, schedule, format, and enrollment action.
+4. Four-week curriculum overview.
+5. “How we prepare students” methodology in two independent columns: 01/02 on the left and 03/04 on the right.
+6. Three launch-relevant FAQs.
+7. Family enrollment form and lower-pressure consultation route.
+
+The separate instructor section is removed because Orlando's qualification is already established in the hero and Home page. Testimonial markup and styling remain available behind a disabled feature flag until approved family stories are ready; placeholders must not render publicly.
+
+The shared footer identifies PiPath as “Based in North Carolina.” and places the clickable `@PiPathMath` YouTube identity beside the contact email.
+
 ## Math Tutoring and Contact launch direction
 
 The July 2026 launch migration keeps these pages deliberately concise:
