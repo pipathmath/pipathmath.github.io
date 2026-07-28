@@ -498,3 +498,30 @@ Status: implemented and verified locally; awaiting owner-run Apps Script setup a
 - Preserved the concise needs guide, service pathways, FAQ, and final consultation routes while reducing the Home page's overall scroll length.
 - Compacted the sticky header from a two-row mobile tab grid to a single-row four-tab layout and reduced desktop header spacing; browser checks confirmed no horizontal overflow down to 320px.
 - Restored the hero portrait's staggered badge hierarchy: the Lead Educator badge leads, while the PiPath belief card steps lower and left. Removed the duplicate Orlando name beneath the portrait, retained the educator descriptor, and kept “Dr. Orlando Ferrer.” together as one typographic unit in the headline.
+
+## July 27, 2026 — SAT Bootcamp copy and information hierarchy refinement
+
+- Replaced the SAT hero promise and supporting copy with the owner-approved standardized-test/personal-learning-path positioning, practical Desmos emphasis, and Duke Mathematics credential wording.
+- Removed the repetitive three-item hero list and consolidated the essential program facts into four columns: 10 live hours across eight sessions with recordings, 10–15 students in an interactive classroom setting, $299 total, and personalized DeltaMath/Khan Academy homework.
+- Increased the separation between the course video and its two next-step buttons so the media and actions read as distinct elements.
+- Renamed the curriculum introduction “Bootcamp Overview,” added the approved non-comprehensive-list description, and replaced all four weekly topic summaries with the expanded owner-provided syllabus details.
+- Updated the Home SAT pathway and SAT page metadata to use “10 live hours” consistently instead of leading with eight sessions.
+- Changed the fact strip to a 2×2 tablet layout and stacked the enrollment panel at 1040px, eliminating a 900px horizontal overflow while keeping the four-column desktop and single-column phone presentations.
+- Reduced the long SAT hero headline's responsive type scale so the message remains prominent without overwhelming the video or pushing practical course information unnecessarily far below the fold.
+- Top-aligned the SAT hero copy and video columns, then separated the instructor credential into a quieter supporting line. This preserves the approved wording while clarifying the promise, program description, and credibility hierarchy.
+- Matched the separated instructor line to the program-description typography and raised both supporting text and headline scale slightly, reducing the empty lower-left area while preserving the three-level reading order.
+- Lowered the Home hero's PiPath belief card so it again steps beyond the portrait's lower edge, closer to the deliberate overlap in the earlier approved composition.
+
+## July 28, 2026 — SAT Bootcamp launch-content reduction
+
+- Removed the “Live online · Summer 2026” hero kicker and top-aligned the headline directly with the course video.
+- Changed the personalized-homework fact to “Customized to student's needs” and removed redundant pre-payment form instructions from both the cohort card and enrollment introduction.
+- Replaced all four PiPath methodology descriptions with the owner-approved diagnostic, conceptual-understanding, timed-strategy/Desmos, and targeted-homework copy.
+- Renamed the methodology section “How we prepare students” and removed its supporting paragraph and “Included in the program” callout.
+- Removed the separate SAT instructor section. Orlando's credential remains in the hero, with fuller teaching proof on Home.
+- Hid the placeholder testimonial section behind the local `showTestimonials` flag while retaining its markup and CSS for future approved family stories.
+- Reduced the visible and structured FAQ set to three synchronized entries, shortened the diagnostic answer, removed the calculator-shortcuts question, and renamed the personalization question.
+- Added a subtle divider between the methodology and FAQ sections after removing the intervening instructor/testimonial bands.
+- Reworked “How we prepare students” into a full-width heading and two independent method columns, with 01/02 on the left and 03/04 on the right. Independent columns avoid height coupling and eliminate the large blank area beneath the heading.
+- Restored section-color alternation by using the paper background for FAQs after the white methodology section.
+- Updated the shared footer across all pages: the PiPath identity now says “Based in North Carolina.” and the previous location slot now links `@PiPathMath` to the official YouTube channel while retaining the contact email.
