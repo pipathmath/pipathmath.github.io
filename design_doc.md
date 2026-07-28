@@ -5,6 +5,10 @@ This original planning document has been preserved from the OneDrive working cop
 - [Project plan](docs/project-plan.md)
 - [Implementation log](docs/implementation-log.md)
 - [Design system](docs/design-system.md)
+- [Current enrollment architecture](docs/enrollment-backend.md)
+- [Google Sheets architecture decision](docs/decisions/0001-google-sheets-enrollment.md)
+
+Revision notice (2026-07-27): the original D1-first P3/Batch 2 plan below is historical and has been superseded for the current launch scale. The active system captures the family lead first, stores operations in a private Google Sheet through Cloudflare and Apps Script, then redirects to an owner-supplied Stripe Payment Link. A form submission does not reserve a seat; accepted payment under Stripe's configured cap confirms the seat. D1 and an owner dashboard remain future options rather than launch dependencies.
 
 ---
 

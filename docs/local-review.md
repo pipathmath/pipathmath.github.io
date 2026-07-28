@@ -1,129 +1,129 @@
-# Batch 2 local review guide
+# Local website and enrollment review
 
-This guide covers the private review environment only. It does not deploy the site, create a Cloudflare database, affect production, or charge a real card.
+This guide runs the Astro site and Cloudflare Pages Functions on this computer. It does not deploy the website or change DNS.
 
-## Review the pages and interactions now
+## Review the pages
 
-From the C-drive working copy:
+From the repository:
 
 ```powershell
 npm run dev:review
 ```
 
-Then open:
+Open:
 
+- `http://localhost:8788/`
 - `http://localhost:8788/sat-math-bootcamp/`
 - `http://localhost:8788/sat-math-bootcamp/enrollment-confirmed/`
-- `http://localhost:8788/` for the redesigned Home page
 
-Use the trailing slash in the SAT URLs. Wrangler redirects the no-slash form, but the slash form is the clearest review URL.
+Review at 390px mobile, 768px tablet, and 1440px desktop. Confirm there is no horizontal scrolling; keyboard focus is visible; the video remains 16:9; its two actions remain below the card; and all enrollment actions reach the family form.
 
-The default build keeps the family form fillable and makes every cohort enrollment action scroll to it, while deliberately disabling only the final payment button. This allows safe review of the complete intake layout, responsive behavior, navigation, dates, selling points, payment-availability messaging, and the confirmation-page recovery state without accepting a payment.
+## Safe form-only review
 
-Review each page at minimum at 390px mobile, 768px tablet, and 1440px desktop widths. Confirm that:
+Keep this ignored `.env` value when the Google receiver is not configured:
 
-- no content scrolls horizontally;
-- keyboard focus is visible and follows the visual order;
-- the SAT overview video retains a 16:9 ratio;
-- both SAT video actions remain directly below the video;
-- the schedule jump lands with the heading visible;
-- external consultation and YouTube links open correctly;
-- the mobile enrollment/consultation bar appears only after the main call to action leaves the viewport;
-- YouTube's unavailable state does not obscure the surrounding actions.
-
-## What the private local D1 database is
-
-Wrangler provides a local SQLite-backed implementation of the Cloudflare D1 binding. The Function code still uses `env.DB`, so the local environment exercises the same database interface intended for Cloudflare while keeping all records on this computer.
-
-The database state is stored below the ignored `.wrangler/` directory in this working copy. It is not committed, pushed, synchronized to Cloudflare, or visible to website visitors.
-
-Apply any new migrations and list the tables:
-
-```powershell
-npm run d1:local:migrate
-npm run d1:local:tables
+```dotenv
+PUBLIC_ENROLLMENT_ENABLED=false
 ```
 
-Inspect the cohort and recent records:
+The family form remains visible and fillable, but its final payment button is disabled. This is useful for visual and validation review without creating a lead.
 
-```powershell
-npx wrangler d1 execute DB --local --command "SELECT id, name, status, capacity, price_cents, starts_at, ends_at FROM cohorts;"
-npx wrangler d1 execute DB --local --command "SELECT id, cohort_id, status, parent_name, parent_email, parent_phone, student_name, student_math_score, additional_notes, created_at FROM checkout_attempts ORDER BY created_at DESC LIMIT 20;"
-npx wrangler d1 execute DB --local --command "SELECT id, cohort_id, status, created_at FROM enrollments ORDER BY created_at DESC LIMIT 20;"
-npx wrangler d1 execute DB --local --command "SELECT enrollment_id, status, amount_cents, refunded_cents, currency, created_at FROM payments ORDER BY created_at DESC LIMIT 20;"
-npx wrangler d1 execute DB --local --command "SELECT s.id, s.parent_id, s.display_name, ca.student_math_score, s.checkout_attempt_id, s.score_range, s.onboarding_completed_at, s.updated_at FROM students s LEFT JOIN checkout_attempts ca ON ca.id = s.checkout_attempt_id ORDER BY s.updated_at DESC LIMIT 20;"
-npx wrangler d1 execute DB --local --command "SELECT event_id, event_type, status, processed_at, error_code, created_at FROM stripe_events ORDER BY created_at DESC LIMIT 20;"
-npx wrangler d1 execute DB --local --command "SELECT enrollment_id, kind, recipient, status, attempts, provider_message_id, last_error, updated_at FROM email_deliveries ORDER BY updated_at DESC LIMIT 20;"
+## Real lead-to-Sheet review
+
+Complete `docs/google-sheets-setup.md` first. Then configure the ignored `.dev.vars` file:
+
+```dotenv
+GOOGLE_SHEETS_WEB_APP_URL=https://script.google.com/macros/s/your-deployment-id/exec
+GOOGLE_SHEETS_SHARED_SECRET=your-matching-random-secret
+STRIPE_PAYMENT_LINK_URL_AUGUST_2026=https://buy.stripe.com/dRmeVcbzcgMf8rd3kG9MY00
 ```
 
-The planned owner dashboard will replace most routine command-line inspection before live operations begin.
+Enable the payment action in the ignored `.env` file:
 
-## Review the Payment Link handoff locally
+```dotenv
+PUBLIC_ENROLLMENT_ENABLED=true
+```
 
-The supplied July Payment Link is configured temporarily so the family-form-to-Stripe navigation can be inspected without a Stripe API key. It is a live-mode link: do not enter payment details or complete a charge during visual review.
+Restart `npm run dev:review`, submit a clearly labeled test family, and confirm:
 
-1. Copy `.dev.vars.example` to the ignored `.dev.vars` file.
-2. Keep the temporary July URL for visual testing, or replace `STRIPE_PAYMENT_LINK_URL_AUGUST_2026` with a new Stripe test-mode Payment Link before testing payment.
-3. In `.dev.vars`, set two different, strong random values for `ONBOARDING_TOKEN_SECRET` and `RATE_LIMIT_SALT`.
-4. For a full test-mode payment, run the Stripe CLI listener in a separate terminal:
+1. Required fields and email validation work before submission.
+2. The website shows a retryable error if Apps Script is unavailable or rejects the secret.
+3. A successful submission adds one row to the private `Leads` tab.
+4. The row contains a UUID lead ID, family fields, expected amount `29900`, currency `usd`, and `Not paid` status.
+5. Stripe opens only after the row exists.
+6. Stripe receives the same lead ID as `client_reference_id` and locks the validated parent email.
 
-   ```powershell
-   stripe listen --events checkout.session.completed,checkout.session.expired,payment_intent.payment_failed,charge.refunded --forward-to http://localhost:8788/api/stripe-webhook
-   ```
+Wrangler reads `.dev.vars` when the Pages server starts. If the form says “Online enrollment is being configured” after adding or changing the Google URL/secret, stop the existing review process and restart `npm run dev:review`; refreshing the browser alone does not reload server environment values.
 
-5. Put the listener's test webhook secret (`whsec_...`) into `.dev.vars`, then restart the local site with enrollment enabled:
+The July Payment Link is live. Stop when its hosted Checkout page opens unless the owner deliberately intends to make a real payment. Never enter Stripe test-card data into a live Payment Link.
 
-   ```powershell
-   $env:PUBLIC_ENROLLMENT_ENABLED = "true"
-   npm run dev:review
-   ```
+For a controlled server-to-server check without opening a browser or following Stripe, run the opt-in integration test after `.dev.vars` is configured:
 
-6. Open the SAT page, choose Enroll, complete the family form, and continue to Stripe. Confirm that the hosted page opens and the validated parent email is locked. Only use Stripe test-card data when the configured URL is visibly a test-mode Payment Link.
-7. After payment, confirm the success page does not ask for the same family information again.
-8. Use the D1 inspection commands above to confirm the lead exists on the checkout attempt before payment, then confirm the parent, student, enrollment, payment, access token, Stripe event, and email-delivery records after the webhook.
+```powershell
+$env:RUN_GOOGLE_SHEETS_INTEGRATION = "true"
+npm test -- tests/google-sheets.integration.test.ts
+Remove-Item Env:RUN_GOOGLE_SHEETS_INTEGRATION
+```
 
-## Payment-flow test matrix
+This deliberately creates one clearly labeled `PiPath Integration Test` row and verifies that the checkout Function returns Stripe only after Apps Script accepts the write. It never follows the returned Stripe URL or submits a payment. The test is skipped during ordinary `npm test` runs.
 
-Run payment scenarios with a newly created Stripe test-mode Payment Link only. Use a fresh browser session when checking rate limits or first-touch attribution. The temporary July live-mode link is for visual navigation review, not payment submission.
+## Webhook review
 
-| Scenario | Action | Expected result |
-| --- | --- | --- |
-| Required lead fields | Leave each required family field blank in turn | Inline browser validation prevents checkout creation and focuses the missing field |
-| Optional lead fields | Leave score and notes blank | Checkout opens normally; both values are stored as empty/null |
-| Successful card | Submit the family form, then complete Checkout with `4242 4242 4242 4242` | Lead exists before Stripe; redirect confirms enrollment after the webhook without repeating the form |
-| Declined card | Use Stripe's generic-decline test card | Stay in Stripe Checkout; no paid enrollment is created |
-| Cancelled checkout | Use the Checkout back link | Return to the enrollment form with the entered values restored and cancellation guidance; the hold remains only until expiry |
-| Double click | Submit repeatedly while Checkout is opening | One browser request; the submit button remains disabled while pending |
-| Duplicate webhook | Resend the completed event from Stripe CLI/dashboard | No duplicate enrollment, payment, email delivery, or analytics transaction |
-| Expired hold | Wait beyond the 30-minute D1 hold without paying | The unpaid attempt no longer counts against website capacity |
-| Full cohort | Temporarily fill all 15 test seats/holds | The next website checkout receives the friendly unavailable response and no Payment Link is returned |
-| Copied-link cap | Configure the clean test Payment Link with a 15-payment limit and reach it | Stripe deactivates the link so direct or copied-link purchases cannot exceed 15 |
-| Wrong amount/config | Point the test environment at a non-$299 Payment Link without completing payment | Checkout exposes the mismatch visually; stop the test and fix configuration. If completed accidentally, the webhook rejects fulfillment and the payment needs a refund |
-| Partial refund | Refund part of the test PaymentIntent | Payment becomes `partially_refunded`; enrollment remains active/paid |
-| Full refund | Refund the complete test payment | Payment and enrollment become `refunded`; onboarding access becomes unavailable |
-| Email outage | Omit Resend configuration | Payment remains recorded; failed/skipped email delivery is visible for retry |
+Use a Stripe sandbox/test-mode Payment Link for safe payment testing. In a separate terminal, use the Stripe CLI to forward supported events:
 
-For a plain-language system walkthrough and the current launch risks, see `docs/enrollment-backend.md`.
+```powershell
+stripe listen --events checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed,checkout.session.expired,charge.refunded --forward-to http://localhost:8788/api/stripe-webhook
+```
 
-Do not paste secret keys into project documents, source files, Git, screenshots, or chat. Add them only to the ignored `.dev.vars` file or an approved secret manager.
+Copy the CLI's `whsec_...` value into ignored `.dev.vars`:
 
-## Email and analytics during local payment review
+```dotenv
+STRIPE_WEBHOOK_SECRET=whsec_from_the_current_stripe_cli_listener
+```
 
-A paid enrollment can be stored even if Resend and server-side GA4 are not configured. Without valid optional credentials:
+Restart the review server and complete a test-mode payment. Confirm:
 
-- the email adapter records the delivery failure/skip for inspection;
-- the enrollment remains paid;
-- analytics failure does not reverse enrollment.
+- `Leads.payment_status` becomes `Paid` only for a paid event;
+- the amount, currency, Checkout Session ID, Payment Intent ID, Stripe event ID, and paid timestamp are present;
+- `Stripe Events` receives the processed event;
+- resending the same event does not create a second lead or event row;
+- a wrong shared secret or wrong payment amount does not mark the lead paid;
+- refund events update the matching row without erasing staff follow-up/internal notes.
 
-Add valid test credentials only when email-delivery and server-side purchase-event review becomes part of the approved test scope.
+## Payment-flow matrix
 
-## Later Cloudflare preview setup
+| Scenario | Expected result |
+| --- | --- |
+| Required field omitted | Browser validation focuses the missing field; no Sheet write occurs |
+| Invalid email | Inline and server validation reject it |
+| Optional fields blank | Lead writes successfully with blank score/note cells |
+| Apps Script unavailable | Website stays on the form and does not reveal Stripe |
+| Successful lead write | Exactly one lead row exists before Stripe opens |
+| Parent abandons Stripe | Lead remains `Not paid` for follow-up; no seat is reserved |
+| Successful instant payment | Verified webhook marks the row `Paid` |
+| Delayed payment | Completed event marks `Processing`; later async event marks `Paid` or `Failed` |
+| Duplicate event | Existing event is acknowledged without a duplicate business update |
+| Wrong amount/currency | Sheet refuses to mark the lead paid; Stripe delivery shows an error for investigation |
+| Partial refund | Payment becomes `Partially refunded`; lead remains visible for staff handling |
+| Full refund | Payment and lead status become `Refunded` |
+| Payment Link cap reached | Stripe prevents further completed payments according to the owner-configured limit |
 
-The remote preview environment is deliberately separate from local review. At that gate we will:
+## Current data and capacity rule
 
-1. create a non-production D1 database in Cloudflare;
-2. replace the placeholder database ID with the preview ID;
-3. apply the same versioned migrations remotely;
-4. configure the preview Payment Link plus preview-only webhook, token, email, and analytics secrets in Cloudflare;
-5. deploy the `croquette` preview only after the branch review and push are approved;
-6. repeat payment, webhook retry, refund, email, mobile, desktop, and accessibility QA before any production cutover.
+Google Sheets is the active lead/operations record. Stripe is the active payment record. D1 is not required for local review or deployment.
+
+There is no temporary seat hold. A lead row means the parent reached Checkout; it does not mean the student owns a seat. Payment accepted by the capped Stripe Payment Link confirms the seat.
+
+## Automated verification
+
+Run:
+
+```powershell
+npm run verify
+```
+
+This checks request validation, Payment Link construction, Google adapter behavior, retained migration references, Astro diagnostics/build, and the Pages Functions build.
+
+## Deployment boundary
+
+Local review does not configure Cloudflare, Stripe, or Google automatically. Deployment variables and the public webhook registration are later owner-approved steps. See `docs/google-sheets-setup.md` and `docs/decisions/0001-google-sheets-enrollment.md`.

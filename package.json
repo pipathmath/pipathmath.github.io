@@ -4,9 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "dev:review": "npm run d1:local:migrate && npm run build:site && wrangler pages dev dist --port 8788",
-    "d1:local:migrate": "wrangler d1 migrations apply DB --local",
-    "d1:local:tables": "wrangler d1 execute DB --local --command \"SELECT name FROM sqlite_schema WHERE type='table' ORDER BY name;\"",
+    "dev:review": "npm run build:site && wrangler pages dev dist --port 8788",
     "dev:pages": "npm run build:site && wrangler pages dev dist",
     "build": "npm run build:site && npm run functions:build",
     "build:site": "astro check && astro build && node scripts/copy-legacy-static.mjs",
