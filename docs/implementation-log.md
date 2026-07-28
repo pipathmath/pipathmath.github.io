@@ -461,3 +461,11 @@ Status: implemented and verified locally; awaiting owner-run Apps Script setup a
 - Confirmed `/sat-math-bootcamp/` returns HTTP 200.
 - Sent a non-writing `{}` probe to `/api/checkout`; it returned HTTP 400 `invalid_checkout` rather than HTTP 503 `enrollment_not_configured`, proving the restarted Function loaded all required enrollment configuration.
 - Added the `.dev.vars` restart requirement to the local review guide. No additional Sheet row or Stripe request was created by the probe.
+
+### Checkout back-button recovery
+
+- Fixed the family form remaining greyed out when a parent opened Stripe and used the browser Back button.
+- The browser can preserve the React tree in its back-forward cache with `isStarting=true`; the form now resets only that transient navigation/loading state on `pageshow` while retaining the saved family draft.
+- This change allows the parent to submit checkout again without refreshing or re-entering family information.
+- Verification passed with a headless browser and mocked checkout destination: after navigation and browser Back, the payment button was enabled and the form draft remained populated. The browser test made zero Google Sheet writes and did not open Stripe.
+- The site rebuilt with 0 Astro errors/warnings/hints; 24 automated tests passed and the opt-in external integration test remained skipped during the normal suite.
