@@ -3,6 +3,8 @@ import type {
   Attribution,
   CheckoutRequest,
   Grade,
+  InquiryRequest,
+  InquiryType,
   OnboardingRequest,
   ScoreRange,
 } from "./types";
@@ -14,6 +16,14 @@ const scoreValues = new Set<ScoreRange>([
   "500_600",
   "600_700",
   "700_plus",
+]);
+
+const inquiryTypeValues = new Set<InquiryType>([
+  "math-tutoring",
+  "small-group",
+  "admissions-coaching",
+  "sat-bootcamp",
+  "other",
 ]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -102,6 +112,64 @@ export function parseCheckoutRequest(value: unknown): CheckoutRequest {
     studentName,
     studentMathScore,
     additionalNotes,
+    attribution: parseAttribution(value.attribution),
+  };
+}
+
+export function parseInquiryRequest(value: unknown): InquiryRequest {
+  if (!isRecord(value)) {
+    throw new ApiError(400, "invalid_inquiry", "The inquiry is incomplete.");
+  }
+
+  const contactName = cleanRequiredString(
+    value.contactName,
+    "your name",
+    2,
+    120,
+    "invalid_inquiry",
+  );
+  const email = cleanRequiredString(
+    value.email,
+    "your email address",
+    3,
+    254,
+    "invalid_inquiry",
+  ).toLowerCase();
+  const phone = cleanOptionalString(value.phone, 30);
+  const inquiryType = cleanOptionalString(value.inquiryType, 30) as InquiryType | null;
+  const studentCourse = cleanOptionalString(value.studentCourse, 160);
+  const message = cleanRequiredString(
+    value.message,
+    "a short message",
+    5,
+    1_500,
+    "invalid_inquiry",
+  );
+  const website = cleanOptionalString(value.website, 200);
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(email)) {
+    throw new ApiError(400, "invalid_inquiry", "Enter a valid email address.");
+  }
+
+  if (phone) {
+    const phoneDigits = phone.replace(/\D/gu, "");
+    if (phoneDigits.length < 7 || phoneDigits.length > 15) {
+      throw new ApiError(400, "invalid_inquiry", "Enter a valid phone number or leave it blank.");
+    }
+  }
+
+  if (!inquiryType || !inquiryTypeValues.has(inquiryType)) {
+    throw new ApiError(400, "invalid_inquiry", "Choose what you are interested in.");
+  }
+
+  return {
+    contactName,
+    email,
+    phone,
+    inquiryType,
+    studentCourse,
+    message,
+    website,
     attribution: parseAttribution(value.attribution),
   };
 }

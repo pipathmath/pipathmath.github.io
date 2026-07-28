@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { ApiError } from "../server/http";
-import { parseCheckoutRequest, parseOnboardingRequest } from "../server/validation";
+import {
+  parseCheckoutRequest,
+  parseInquiryRequest,
+  parseOnboardingRequest,
+} from "../server/validation";
 
 describe("checkout request validation", () => {
   const validCheckout = {
@@ -98,5 +102,58 @@ describe("onboarding request validation", () => {
     expect(() =>
       parseOnboardingRequest({ ...validRequest, targetAndChallenges: "  " }),
     ).toThrow("Please enter the target score and any challenging topics.");
+  });
+});
+
+describe("contact inquiry validation", () => {
+  const validInquiry = {
+    contactName: " Grace Hopper ",
+    email: " Parent@Example.com ",
+    phone: " (919) 555-0123 ",
+    inquiryType: "math-tutoring",
+    studentCourse: " 10th grade, Algebra II ",
+    message: " We would like help with the current unit. ",
+    website: "",
+    attribution: { utmSource: "newsletter" },
+  };
+
+  it("returns a clean inquiry and accepts optional fields", () => {
+    expect(parseInquiryRequest(validInquiry)).toMatchObject({
+      contactName: "Grace Hopper",
+      email: "parent@example.com",
+      phone: "(919) 555-0123",
+      inquiryType: "math-tutoring",
+      studentCourse: "10th grade, Algebra II",
+      message: "We would like help with the current unit.",
+      website: null,
+      attribution: { utmSource: "newsletter" },
+    });
+
+    const withoutOptionalFields = parseInquiryRequest({
+      ...validInquiry,
+      phone: "",
+      studentCourse: "",
+    });
+    expect(withoutOptionalFields.phone).toBeNull();
+    expect(withoutOptionalFields.studentCourse).toBeNull();
+
+    expect(
+      parseInquiryRequest({
+        ...validInquiry,
+        inquiryType: "admissions-coaching",
+      }).inquiryType,
+    ).toBe("admissions-coaching");
+  });
+
+  it("rejects invalid contact details and inquiry types", () => {
+    expect(() => parseInquiryRequest({ ...validInquiry, email: "not-an-email" })).toThrow(
+      "Enter a valid email address.",
+    );
+    expect(() => parseInquiryRequest({ ...validInquiry, phone: "123" })).toThrow(
+      "Enter a valid phone number",
+    );
+    expect(() => parseInquiryRequest({ ...validInquiry, inquiryType: "unknown" })).toThrow(
+      "Choose what you are interested in.",
+    );
   });
 });

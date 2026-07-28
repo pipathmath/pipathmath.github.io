@@ -39,6 +39,24 @@ export interface CheckoutRequest {
   attribution: Attribution;
 }
 
+export type InquiryType =
+  | "math-tutoring"
+  | "small-group"
+  | "admissions-coaching"
+  | "sat-bootcamp"
+  | "other";
+
+export interface InquiryRequest {
+  contactName: string;
+  email: string;
+  phone: string | null;
+  inquiryType: InquiryType;
+  studentCourse: string | null;
+  message: string;
+  website: string | null;
+  attribution: Attribution;
+}
+
 export interface EnrollmentCohortDefinition {
   id: string;
   name: string;
