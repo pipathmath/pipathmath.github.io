@@ -10,18 +10,26 @@ The customer policies are already configured in Stripe. Adding separate policy p
 
 ## Current readiness
 
+**Current position:** local development is complete enough to begin **Phase 1: prepare the repository for Cloudflare**. Stripe webhook setup still comes after the Cloudflare preview deployment, as ordered in this runbook.
+
 The local application is technically healthy:
 
-- [x] 31 automated tests pass.
+- [x] 32 automated tests pass; 1 external integration test is intentionally skipped.
 - [x] Astro reports zero errors and zero warnings.
-- [x] The static website builds successfully.
+- [x] All five static website routes build successfully.
 - [x] The three Cloudflare Pages Functions compile successfully:
   - `/api/checkout`
   - `/api/inquiry`
   - `/api/stripe-webhook`
 - [x] The Google Apps Script receiver and private Sheet exist.
 - [x] Lead-to-Sheet behavior has been tested.
-- [ ] The latest repository `integrations/google-apps-script/Code.gs`, including Contact inquiries and email notifications, has been published as a new Apps Script deployment version.
+- [x] The Contact form has created an inquiry row through the deployed Apps Script web app.
+- [x] The Contact message is optional in the website and Apps Script validation.
+- [x] Contact-form success handling has been fixed so the completed form and disabled submit button do not remain visible.
+- [x] The website code includes email-alert handling for both new enrollment leads and Contact inquiries, with `pipathmath@gmail.com` as the default destination.
+- [ ] Re-publish or confirm the latest repository `integrations/google-apps-script/Code.gs`, run `testNotificationEmail`, and verify that both alert types arrive. The last reported inquiry row said `Email failed`, so email authorization has not yet been proven complete.
+- [ ] Replace the local-review values in `wrangler.jsonc` with production-safe Cloudflare configuration.
+- [ ] Create the Cloudflare Pages project and deploy the `croquette` preview.
 - [ ] A Stripe sandbox Payment Link for exactly `$299 USD` has completed the full website-to-Stripe-to-Sheet webhook test.
 - [ ] The real/live `$299 USD` Stripe Payment Link has been created.
 - [ ] The live Stripe webhook endpoint has been created.
@@ -148,16 +156,17 @@ Add:
 
 Cloudflare documentation: [Pages variables and secrets](https://developers.cloudflare.com/pages/functions/bindings/)
 
-## Phase 3A: update the deployed Google Apps Script
+## Phase 3A: verify the deployed Google Apps Script and email authorization
 
-The older Apps Script receiver supports enrollment and Stripe payment updates only. It does not contain:
+The deployed Apps Script has already accepted a Contact inquiry and written its row to the private Sheet. However, that row reported `notification_status = Email failed`. Since then, the repository version has been updated to:
 
-- the `Inquiries` sheet definition;
-- the `create_inquiry` action;
-- Contact inquiry validation and storage;
-- `MailApp.sendEmail` notification handling.
+- make the Contact message optional;
+- notify `pipathmath@gmail.com` for both enrollment leads and Contact inquiries;
+- preserve saved rows and checkout access even if an alert email fails;
+- record a safer email-failure reason in the row and execution log;
+- provide `testNotificationEmail` so the script owner can explicitly authorize Google email sending.
 
-The Contact form will fail with `unsupported_action` until the current repository version is deployed.
+Before preview acceptance testing, confirm that this latest repository version—not an earlier deployed version—is active.
 
 Update it as follows:
 
@@ -168,7 +177,7 @@ Update it as follows:
 5. Open **Deploy -> Manage deployments**.
 6. Select the active web-app deployment and click **Edit**.
 7. Choose **New version**.
-8. Add a description such as `Add Contact inquiry storage and email notifications`.
+8. Add a description such as `Optional inquiry message and lead/inquiry email alerts`.
 9. Deploy the new version.
 10. Approve the email-sending permission if Google requests it.
 11. Keep using the existing web-app `/exec` URL unless Google explicitly changes it.
@@ -183,13 +192,15 @@ pipathmath@gmail.com
 
 No `PIPATH_INQUIRY_EMAIL` Script Property is required for that destination. The code uses `pipathmath@gmail.com` as its built-in default. `PIPATH_INQUIRY_EMAIL` is only an optional override if PiPath later wants notifications sent somewhere else.
 
-After deployment, submit one clearly labeled Contact test and confirm:
+After deployment, submit one clearly labeled Contact test and one clearly labeled enrollment test. Confirm:
 
 - [ ] The website reports success.
 - [ ] An `Inquiries` tab is created if it does not already exist.
 - [ ] The inquiry appears in that tab.
 - [ ] `notification_status` says `Sent`.
-- [ ] The message reaches `pipathmath@gmail.com`.
+- [ ] The Contact alert reaches `pipathmath@gmail.com`.
+- [ ] The enrollment appears in `Leads`.
+- [ ] The new-lead alert reaches `pipathmath@gmail.com`.
 
 New SAT enrollment leads also send an alert to `pipathmath@gmail.com`. A notification failure is logged but does not discard the saved lead or prevent the family from continuing to Stripe.
 
@@ -476,6 +487,7 @@ Launch only when every item below is checked:
 
 - [ ] Production-safe Cloudflare configuration is committed.
 - [ ] Cloudflare preview is owner-approved.
+- [ ] Contact and enrollment email alerts both reach `pipathmath@gmail.com`.
 - [ ] The complete `$299 USD` sandbox webhook and refund test passes.
 - [ ] Stripe account is activated for live payments.
 - [ ] Live `$299 USD` Payment Link has the 15-payment cap and correct redirect.
