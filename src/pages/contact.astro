@@ -77,8 +77,8 @@ const pageDescription =
           </div>
 
           <div class="contact-field">
-            <label for="contact-message">Your message to us</label>
-            <textarea id="contact-message" name="message" rows="5" maxlength="1500" required></textarea>
+            <label for="contact-message">Your message to us <span>optional</span></label>
+            <textarea id="contact-message" name="message" rows="5" maxlength="1500"></textarea>
           </div>
 
           <p class="contact-form-status" id="inquiry-status" aria-live="polite"></p>
@@ -88,7 +88,7 @@ const pageDescription =
         <div class="contact-success" id="inquiry-success" role="status" tabindex="-1" hidden>
           <span aria-hidden="true">✓</span>
           <h2>Thank you for reaching out.</h2>
-          <p>Your inquiry has been sent to PiPath Academy.</p>
+          <p>Your inquiry has been received by PiPath Academy.</p>
           <a href="/">Return to the PiPath home page</a>
         </div>
       </section>
@@ -169,6 +169,8 @@ const pageDescription =
           const result = await response.json().catch(() => ({})) as { message?: string };
           if (!response.ok) throw new Error(result.message || "We could not send your inquiry.");
 
+          inquiryStatus.textContent = "";
+          if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
           inquiryForm.hidden = true;
           inquirySuccess.hidden = false;
           inquirySuccess.focus();

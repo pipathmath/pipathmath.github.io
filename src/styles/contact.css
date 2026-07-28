@@ -91,6 +91,10 @@
   gap: 18px;
 }
 
+.contact-form[hidden] {
+  display: none;
+}
+
 .contact-honeypot {
   position: absolute;
   left: -10000px;

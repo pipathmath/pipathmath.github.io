@@ -5,6 +5,9 @@
  * - PIPATH_SPREADSHEET_ID
  * - PIPATH_SHARED_SECRET
  *
+ * Optional Script Properties:
+ * - PIPATH_INQUIRY_EMAIL (defaults to pipathmath@gmail.com)
+ *
  * Do not paste either value into this file.
  */
 
@@ -89,6 +92,32 @@ function doGet() {
   });
 }
 
+/**
+ * Run this once from the Apps Script editor after adding MailApp support.
+ * Google will request the send-mail permission, then this sends a real test
+ * alert to the same inbox used for lead and inquiry notifications.
+ */
+function testNotificationEmail() {
+  var destination = notificationDestination_();
+  var remainingQuota = MailApp.getRemainingDailyQuota();
+  if (remainingQuota < 1) {
+    throw new Error("email_quota_exhausted");
+  }
+
+  MailApp.sendEmail({
+    to: destination,
+    subject: "PiPath website notification test",
+    body: [
+      "This is a test of the PiPath website's Google Apps Script email notifications.",
+      "",
+      "If this message arrived, lead and inquiry alerts are authorized for this Apps Script project."
+    ].join("\n"),
+    name: "PiPath Academy Website"
+  });
+
+  console.log("Notification test sent to " + destination + "; remaining daily quota before send: " + remainingQuota);
+}
+
 function doPost(event) {
   try {
     var payload = parsePayload_(event);
@@ -137,7 +166,7 @@ function createInquiry_(sheet, inquiry) {
   requireText_(inquiry.inquiryType, "invalid_inquiry_type", 30);
   requireText_(inquiry.contactName, "invalid_contact_name", 120);
   requireText_(inquiry.email, "invalid_contact_email", 254);
-  requireText_(inquiry.message, "invalid_inquiry_message", 1500);
+  requireOptionalText_(inquiry.message, "invalid_inquiry_message", 1500);
 
   var allowedTypes = ["math-tutoring", "small-group", "admissions-coaching", "sat-bootcamp", "other"];
   if (allowedTypes.indexOf(inquiry.inquiryType) === -1) {
@@ -179,15 +208,16 @@ function createInquiry_(sheet, inquiry) {
     sendInquiryNotification_(inquiry);
     setCellValue_(sheet, appendedRow, "notification_status", "Sent");
   } catch (error) {
-    setCellValue_(sheet, appendedRow, "notification_status", "Email failed");
+    var errorCode = safeErrorCode_(error);
+    console.error("Inquiry notification failed: " + errorCode);
+    setCellValue_(sheet, appendedRow, "notification_status", "Email failed: " + errorCode);
   }
 
   return "inquiry_created";
 }
 
 function sendInquiryNotification_(inquiry) {
-  var destination = PropertiesService.getScriptProperties()
-    .getProperty("PIPATH_INQUIRY_EMAIL") || "pipathmath@gmail.com";
+  var destination = notificationDestination_();
   var subjectLabels = {
     "math-tutoring": "One-on-one math tutoring",
     "small-group": "Small-group tutoring",
@@ -206,7 +236,7 @@ function sendInquiryNotification_(inquiry) {
     "Student grade/course: " + (inquiry.studentCourse || "Not provided"),
     "",
     "Message:",
-    inquiry.message,
+    inquiry.message || "Not provided",
     "",
     "The complete inquiry and attribution are archived in the Inquiries tab."
   ].join("\n");
@@ -218,6 +248,37 @@ function sendInquiryNotification_(inquiry) {
     replyTo: inquiry.email,
     name: "PiPath Academy Website"
   });
+}
+
+function sendLeadNotification_(lead) {
+  var destination = notificationDestination_();
+  var body = [
+    "A new SAT Math Bootcamp enrollment lead was submitted at pipathacademy.com.",
+    "",
+    "Cohort: " + lead.cohortName,
+    "Parent or guardian: " + lead.parentName,
+    "Student: " + lead.studentName,
+    "Email: " + lead.parentEmail,
+    "Phone: " + lead.parentPhone,
+    "SAT/PSAT Math score: " + (lead.studentMathScore || "Not provided"),
+    "Additional notes: " + (lead.additionalNotes || "Not provided"),
+    "Expected tuition: $" + (Number(lead.expectedAmountCents) / 100).toFixed(2) + " " + String(lead.expectedCurrency).toUpperCase(),
+    "",
+    "The lead is archived in the Leads tab. Payment has not yet been confirmed."
+  ].join("\n");
+
+  MailApp.sendEmail({
+    to: destination,
+    subject: "New PiPath enrollment lead: " + lead.cohortName,
+    body: body,
+    replyTo: lead.parentEmail,
+    name: "PiPath Academy Website"
+  });
+}
+
+function notificationDestination_() {
+  return PropertiesService.getScriptProperties()
+    .getProperty("PIPATH_INQUIRY_EMAIL") || "pipathmath@gmail.com";
 }
 
 function parsePayload_(event) {
@@ -346,6 +407,13 @@ function createLead_(sheet, lead) {
   setRowValue_(row, LEAD_HEADERS, "updated_at", now);
 
   sheet.appendRow(row);
+
+  try {
+    sendLeadNotification_(lead);
+  } catch (error) {
+    console.error("Lead notification failed: " + safeErrorCode_(error));
+  }
+
   return "lead_created";
 }
 
@@ -524,6 +592,16 @@ function requireId_(value, code) {
 
 function requireText_(value, code, maximumLength) {
   if (typeof value !== "string" || !value.trim() || value.length > maximumLength) {
+    throw new Error(code);
+  }
+}
+
+function requireOptionalText_(value, code, maximumLength) {
+  if (value === null || value === "" || typeof value === "undefined") {
+    return;
+  }
+
+  if (typeof value !== "string" || value.length > maximumLength) {
     throw new Error(code);
   }
 }

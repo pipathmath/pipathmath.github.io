@@ -133,9 +133,11 @@ describe("contact inquiry validation", () => {
       ...validInquiry,
       phone: "",
       studentCourse: "",
+      message: "",
     });
     expect(withoutOptionalFields.phone).toBeNull();
     expect(withoutOptionalFields.studentCourse).toBeNull();
+    expect(withoutOptionalFields.message).toBeNull();
 
     expect(
       parseInquiryRequest({

@@ -22,7 +22,7 @@ This launch intentionally keeps both pages short and focused on inquiries rather
 - Visitors can book the consultation, email `pipathmath@gmail.com`, or submit the inquiry form.
 - Contact uses the direct headline “Speak with us directly” and a concise “Free 15-Minute Zoom Consultation” action labeled “Book now.”
 - `?topic=math-tutoring`, `?topic=small-group`, `?topic=admissions-coaching`, and `?topic=sat-bootcamp` preselect the relevant form option.
-- The form asks for contact details, inquiry type, optional student grade/course, and a message.
+- The form asks for contact details and inquiry type. Student grade/course and a message are optional.
 - No response-time promise is displayed.
 
 ## Inquiry storage and notification
@@ -35,6 +35,8 @@ Apps Script:
 2. sets `follow_up_status` to `New`;
 3. sends an email notification to `PIPATH_INQUIRY_EMAIL`, or to `pipathmath@gmail.com` when that optional property is absent;
 4. records whether the email notification was sent without deleting or rolling back the archived inquiry if email fails.
+
+New enrollment leads also send an alert to the same destination. An email-delivery failure never removes a saved lead or inquiry and never prevents a successfully saved family lead from continuing to Stripe.
 
 Names, email addresses, phone numbers, student details, and message text are not sent to Google Analytics. A successful browser submission records only the generic `generate_lead` event and inquiry type.
 

@@ -64,6 +64,20 @@ The same value will be stored in two private places:
 
 Do not add quotation marks around either value. For `PIPATH_SPREADSHEET_ID`, paste only the ID between `/d/` and `/edit`; do not paste the complete `https://docs.google.com/spreadsheets/...` URL.
 
+## Step 3A: authorize and test email alerts
+
+The current Apps Script sends an alert for both a new Contact inquiry and a new SAT enrollment lead. Both alerts go to `PIPATH_INQUIRY_EMAIL`, or to `pipathmath@gmail.com` when that optional property is absent.
+
+Google's `MailApp` service requires the script owner's send-mail authorization. A web-app request cannot show the owner an authorization prompt, so authorize it once from the editor:
+
+1. At the top of the Apps Script editor, select `testNotificationEmail` from the function list.
+2. Click **Run**.
+3. Review and approve the requested email-sending permission.
+4. Confirm the `PiPath website notification test` message reaches `pipathmath@gmail.com`.
+5. Check the execution log for the remaining daily email quota.
+
+If the test function fails, resolve the displayed error before testing the public forms. Apps Script email alerts require the `https://www.googleapis.com/auth/script.send_mail` scope and are subject to the sending account's daily recipient quota.
+
 ## Step 4: deploy the web app
 
 1. In Apps Script, click **Deploy > New deployment**.
@@ -151,7 +165,7 @@ Record every production script version in `docs/implementation-log.md`.
 - If the website reports that it could not save the enrollment, check Apps Script **Executions** for the matching time.
 - If no `Leads` tab appears, verify both Script Properties and confirm the deployment executes as the Sheet owner.
 - If no `Inquiries` tab appears, confirm the deployed Apps Script version includes `create_inquiry` and that the website uses the same web-app URL and shared secret.
-- If an inquiry row says `Email failed`, inspect Apps Script **Executions** and confirm that the owner authorized the script's email permission. The archived row remains available for follow-up.
+- If an inquiry row starts with `Email failed:`, the remainder of that cell contains the sanitized MailApp error. Inspect Apps Script **Executions**, run `testNotificationEmail` from the editor, and confirm that the owner authorized the script's email permission. The archived row remains available for follow-up.
 - If Apps Script reports `Illegal spreadsheet ID or key`, `PIPATH_SPREADSHEET_ID` probably contains the complete Google Sheets URL. Replace it with only the segment between `/d/` and `/edit`.
 - If Apps Script reports `unauthorized`, the Google and Cloudflare/local shared-secret values differ.
 - If Apps Script reports a header mismatch, do not reorder automated columns manually. Compare the Sheet header row with `LEAD_HEADERS` in `Code.gs`.
