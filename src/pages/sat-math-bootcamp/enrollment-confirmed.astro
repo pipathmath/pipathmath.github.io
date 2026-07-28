@@ -1,12 +1,11 @@
 ---
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
-import EnrollmentConfirmation from "../../components/sat/EnrollmentConfirmation";
 import SiteLayout from "../../layouts/SiteLayout.astro";
 
 const title = "Enrollment Confirmation | PiPath Academy";
 const description =
-  "Secure enrollment confirmation and student onboarding for PiPath Academy's Digital SAT Math Bootcamp.";
+  "Payment follow-up information for PiPath Academy's Digital SAT Math Bootcamp.";
 ---
 
 <SiteLayout
@@ -26,7 +25,29 @@ const description =
 
   <main id="main-content" class="confirmation-section">
     <div class="site-container confirmation-shell">
-      <EnrollmentConfirmation client:load />
+      <section class="confirmation-card confirmation-status" aria-labelledby="confirmation-title">
+        <span class="status-chip">Payment submitted</span>
+        <h1 id="confirmation-title">Thank you. We have your family information.</h1>
+        <p>
+          Stripe is handling the payment confirmation. PiPath will match it to the
+          family information you submitted before checkout and send course details
+          to the parent or guardian email.
+        </p>
+        <div class="confirmation-next">
+          <strong>What happens next</strong>
+          <ol>
+            <li>Keep the Stripe receipt for your records.</li>
+            <li>Watch for enrollment and course-access details from PiPath Academy.</li>
+            <li>Email us if the Stripe receipt arrives but PiPath follow-up does not.</li>
+          </ol>
+        </div>
+        <p>
+          Need help? Email <a href="mailto:pipathmath@gmail.com">pipathmath@gmail.com</a>.
+        </p>
+        <a class="button button-primary" href="/sat-math-bootcamp">
+          Review the course schedule
+        </a>
+      </section>
     </div>
   </main>
 

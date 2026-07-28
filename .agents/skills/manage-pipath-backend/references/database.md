@@ -1,4 +1,6 @@
-# PiPath D1 database reference
+# PiPath deferred D1 database reference
+
+Status: inactive future/reference architecture as of 2026-07-27. Google Sheets is the active operations record, there is no D1 binding in the current Wrangler configuration, and the `d1:local:*` package commands were removed. Do not use the SQL below as current enrollment operations or add D1 beside Sheets without an approved replacement/dual-write decision.
 
 ## Schema map
 
@@ -42,17 +44,11 @@ enrollments --< email_deliveries
 - Stripe event: `processing -> processed|failed`; failed events may be retried and re-enter `processing`.
 - Email delivery: `pending -> sent|failed`; already-sent enrollment/kind pairs are not sent twice.
 
-## Local database workflow
+## Historical/future local database workflow
 
-Run from the repository root:
+The commands below require deliberately restoring a local D1 binding and are not valid in the current active configuration. They are retained to support a future transactional-storage evaluation.
 
-```powershell
-npm run d1:local:migrate
-npm run d1:local:tables
-npm run dev:review
-```
-
-Local records live under ignored `.wrangler/` state. Always include `--local` when inspecting this database.
+If D1 is reconsidered, create a separate approved local configuration, apply the retained migrations to disposable state, and keep every inspection explicitly `--local`.
 
 Inspect the cohort:
 

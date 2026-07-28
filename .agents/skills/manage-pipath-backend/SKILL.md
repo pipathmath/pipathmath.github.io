@@ -1,76 +1,69 @@
 ---
 name: manage-pipath-backend
-description: Operate, inspect, explain, troubleshoot, or safely change the PiPath Academy enrollment backend built with Cloudflare Pages Functions, D1, Stripe Checkout/webhooks, Resend, and GA4. Use for database schema or migration work, local/preview/production D1 setup, enrollment/payment/onboarding/refund record review, environment configuration, webhook debugging, backend tests, owner-dashboard data design, or explanations of how PiPath backend records are created and maintained.
+description: Operate, inspect, explain, troubleshoot, or safely change the PiPath Academy lead-first enrollment backend built with Cloudflare Pages Functions, Google Sheets/Apps Script, Stripe Payment Links, and signed Stripe webhooks. Use for lead capture, Sheet schema/operations, Apps Script deployment, Cloudflare environment configuration, webhook debugging, payment reconciliation, backend tests, or future D1 evaluation.
 ---
 
 # Manage PiPath Backend
 
-Use the repository implementation as the source of truth. Keep payment processing, enrollment state, student onboarding, email delivery, analytics, and owner operations consistent across local, preview, and production environments.
+Use current code and `docs/decisions/0001-google-sheets-enrollment.md` as the source of truth. Google Sheets is the active operations record; Stripe is the financial source of truth; Cloudflare is the validation/integration layer. D1 files are future/reference infrastructure and are not an active binding.
 
 ## Start every task
 
-1. Work from the approved PiPath repository and inspect `git status`, the active branch, `docs/project-plan.md`, and the latest `docs/implementation-log.md` entry.
-2. Identify the target environment before running commands:
-   - **local**: ignored Wrangler state under `.wrangler/`; safe default for implementation and inspection;
-   - **preview**: remote non-production Cloudflare/Stripe resources; require explicit approval and preview credentials;
-   - **production**: live customer/payment data; never access or mutate without explicit user authorization and exact targets.
-3. Read the relevant bundled reference before acting:
-   - [architecture.md](references/architecture.md) for stack, code ownership, and request flows;
-   - [database.md](references/database.md) for tables, relationships, lifecycle, migrations, and inspection queries;
-   - [operations.md](references/operations.md) for configuration, Stripe testing, troubleshooting, deployment gates, and owner operations.
-4. Re-read the actual migration and affected source modules. If a reference and code differ, treat code/migrations as authoritative, correct the stale reference, and record the correction.
-5. State whether the task is inspection-only, local implementation, remote preview work, or production work before making external changes.
+1. Inspect `git status`, the branch, `docs/project-plan.md`, the latest `docs/implementation-log.md` entry, and the architecture decision.
+2. Name the target environment before acting: local, Cloudflare preview, or production.
+3. Read the relevant bundled reference completely:
+   - `references/architecture.md` for active flow and code ownership;
+   - `references/operations.md` for Google/Stripe/Cloudflare configuration, testing, and recovery;
+   - `references/database.md` only when explicitly evaluating or restoring the deferred D1 design.
+4. Re-read affected source modules. Correct a stale reference in the same task.
+5. Separate local code work from owner-run Google/Stripe steps and remote Cloudflare actions.
 
 ## Preserve these invariants
 
-- Treat Stripe as the payment processor and verified Stripe webhooks as the only authority that creates paid enrollments. Never simulate payment by manually inserting a paid enrollment.
-- Treat D1 as PiPath's operational record. Do not store card numbers, CVCs, full Stripe event payloads, plaintext onboarding tokens, or raw request IPs.
-- Determine cohort eligibility, price, amount, currency, and capacity server-side. Never trust browser-supplied price or paid status.
-- Preserve webhook idempotency through unique Stripe event, Checkout Session, Payment Intent, and checkout-attempt identifiers.
-- Count paid/active enrollments plus unexpired holds when enforcing capacity. Do not replace the conditional seat-reservation SQL with a read-then-write sequence.
-- Keep same-origin, JSON size/type, enum, length, and required-field validation on public write endpoints.
-- Hash onboarding tokens before storage; mask parent email in status responses; keep confirmation/onboarding pages out of search and analytics.
-- Keep email and analytics failures non-fatal to a verified paid enrollment. Record their status for later review.
-- Link financial actions to Stripe. Do not make the owner dashboard a second refund/payment system.
-- Record every future owner mutation in `audit_events` with the actor, action, entity, and privacy-conscious metadata.
+- Save a validated lead before returning a Stripe Payment Link.
+- A lead does not reserve a seat; accepted Stripe payment confirms the seat.
+- Never trust the browser for price, currency, cohort availability, or paid status.
+- Verify Stripe's signature from the raw body before any Sheet payment update.
+- Match payments using Stripe `client_reference_id`, never by parent/student name alone.
+- Keep Google/Stripe secrets and the Apps Script URL out of browser-visible `PUBLIC_` variables.
+- Keep the Sheet private and minimize editors. Do not solve Apps Script access issues by making the Sheet public.
+- Use Apps Script locking, event-ID deduplication, expected amount/currency checks, and formula-injection neutralization.
+- Do not redirect to Stripe when the lead write fails. Return webhook failure when a payment update fails so Stripe can retry.
+- Treat Stripe as authoritative for payments, refunds, disputes, and completed-payment limits.
+- Do not activate D1 beside Sheets without an approved replacement/dual-write architecture decision.
+- Never store or log card details, webhook/shared secrets, full customer payloads, or unnecessary student narratives.
 
-## Change the database safely
+## Diagnose by lifecycle
 
-1. Add a new numbered SQL file under `migrations/`; never rewrite an already-applied migration merely to change a deployed schema.
-2. Make schema and application changes together. Update TypeScript row types, prepared SQL, validation, tests, inspection queries, and owner-dashboard projections in the same task.
-3. Apply and test locally first with `npm run d1:local:migrate`.
-4. Inspect the resulting schema and representative records using [database.md](references/database.md).
-5. Run `npm run test`, `npm run check`, `npm run build`, and `git diff --check`.
-6. Apply remotely only at the approved preview/production gate. Confirm the exact Cloudflare account, database, binding, branch, and migration list before using `--remote`.
-7. Do not perform ad hoc production corrections until the owner has approved the exact record and the correction includes an audit trail.
+1. Browser/UI: did local validation pass and did `/api/checkout` return a URL?
+2. Cloudflare checkout Function: did server validation and cohort/link configuration pass?
+3. Apps Script execution: did the shared secret validate and did `Leads` receive the UUID row?
+4. Stripe: did Checkout receive that UUID as `client_reference_id`; what is the actual payment state?
+5. Webhook: was the correct signed event delivered, and did Cloudflare return success?
+6. Apps Script/Sheet: is the event in `Stripe Events`; did amount/currency match; did the lead row update?
 
-## Diagnose by lifecycle, not by one table
+Never infer payment from an opened Checkout or a success page. Reconcile against Stripe.
 
-Trace a transaction in this order:
+## Sheet changes
 
-1. `checkout_attempts`: Was a hold created? Did Stripe Session creation succeed? Did the hold expire or fail?
-2. Stripe Dashboard/CLI: Was the Checkout Session paid, expired, or failed? Was the expected webhook delivered?
-3. `stripe_events`: Was the event received, deduplicated, processed, or failed with an error code?
-4. `parents`, `enrollments`, and `payments`: Did the verified paid webhook create the operational records exactly once?
-5. `access_tokens` and `students`: Was onboarding access created, and did onboarding activate the enrollment?
-6. `email_deliveries` and `audit_events`: Were notifications/analytics attempted, skipped, sent, or failed?
+Treat the header order in `integrations/google-apps-script/Code.gs` as a versioned schema. For a new automated column, update Apps Script, TypeScript payloads, tests, setup/current architecture docs, and the implementation log together. Preserve staff-managed follow-up/internal-note fields.
 
-Do not infer a successful payment from a checkout attempt alone. Reconcile with Stripe before correcting financial or enrollment state.
+Deploying an updated Apps Script requires an owner-created new deployment version. Saving code alone does not change the versioned web app.
 
-## Owner dashboard rules
+## D1 future-work rule
 
-Keep the first dashboard owner-only, no-index, privacy-conscious, and primarily read-only. Show capacity, holds, paid/active/refunded counts, searchable enrollment detail, onboarding status, webhook/email failures, and CSV export. Mask or omit sensitive fields in list views. Add narrowly controlled corrections, resend, and cohort controls only later; validate them server-side and audit every mutation.
+The migrations and legacy server modules preserve prior work. They are not current commands or operational truth. Reintroduce D1 only when requirements need transactional holds, relational parent/student state, a protected portal/dashboard, or operations that Sheets cannot reliably support. Plan migration/cutover and a single source of truth before writing code.
 
 ## Required handoff
 
-For each backend task, report:
+Report:
 
 - environment and authorization boundary;
-- files, schema, bindings, or records examined/changed;
-- user-visible and record-lifecycle effects;
-- secrets or external setup still required, without exposing values;
-- tests and inspection queries run with results;
-- commit, push, preview, remote D1, and production status;
-- follow-up work and the next approval gate.
+- code, Sheet schema, configuration names, or external records changed;
+- lead/payment lifecycle effect;
+- owner-run steps and secrets still needed without exposing values;
+- tests/builds and real integration cases completed;
+- commit, push, deployment, Google, Stripe, and production status;
+- next approval gate.
 
-Append material implementation decisions and corrections to `docs/implementation-log.md`. Keep `docs/project-plan.md` synchronized when scope or sequencing changes.
+Append material decisions/corrections to `docs/implementation-log.md` and keep `docs/project-plan.md`, setup instructions, and bundled references synchronized.

@@ -366,3 +366,98 @@ Status: implemented locally with the supplied July live-mode link for visual han
 - Removed the Stripe API secret key and Price ID from the checkout configuration; automatic fulfillment still requires the Stripe webhook signing secret.
 - Added immediate accessible email validation on blur while retaining native browser and server-side email validation.
 - Added Payment Link URL-construction tests. The clean live August Payment Link must be configured in Stripe with its own 15-completed-payment limit because a copied reusable link bypasses the website's D1 gate.
+
+## 2026-07-27 - Google Sheets operations architecture
+
+Status: implemented and verified locally; awaiting owner-run Apps Script setup and real lead-to-Sheet test.
+
+### Owner decisions recorded
+
+- Replaced D1 as the active short-term operational store with the private Google Sheet created by the owner.
+- Confirmed that form submission does not reserve a seat. Payment accepted by the owner-configured Stripe Payment Link confirms the seat.
+- Kept Stripe Payment Link creation, enabled payment methods, and completed-payment limits as Stripe/account-owner responsibilities; the website accepts a supplied per-cohort link.
+- Kept the previous D1 schema and modules as future/reference infrastructure, but removed the D1 binding and migration step from the active local/Cloudflare configuration so the system does not dual-write.
+
+### Active backend changes
+
+- Changed `POST /api/checkout` to validate the family form, generate a UUID lead ID, write the lead to Google Sheets through Apps Script, and only then return the Payment Link.
+- Added the server-owned cohort name, expected amount, and currency to the lead write so payment fulfillment does not trust browser values.
+- Added a server-only Google Apps Script adapter with a restricted `script.google.com` destination, 10-second timeout, shared-secret request, response validation, and retryable parent-facing failures.
+- Reworked `POST /api/stripe-webhook` to update Sheets for completed, delayed-success, delayed-failure, expired, and refund events after Stripe signature verification.
+- Ignored unrelated Checkout events that do not carry PiPath's UUID-shaped `client_reference_id`.
+- Removed the active D1-backed enrollment-status and onboarding Functions. Replaced the confirmation page's D1 polling/onboarding form with a client-facing payment-submitted and follow-up explanation that does not repeat family intake.
+
+### Google Apps Script
+
+- Added `integrations/google-apps-script/Code.gs` for owner copy/paste into the private Sheet.
+- The script reads spreadsheet ID and shared secret only from Script Properties, creates `Leads` and `Stripe Events` tabs, locks concurrent changes, rejects schema drift, neutralizes formula-leading cell content, validates payment amount/currency, and deduplicates Stripe event IDs.
+- Staff-owned `follow_up_status` and `internal_notes` columns are not overwritten by automated payment updates.
+- Added `docs/google-sheets-setup.md` with exact owner clicks, secret creation/storage, deployment, local setup, update, and recovery steps. The private spreadsheet URL/ID and all credentials remain outside the public repository.
+
+### Documentation and architecture
+
+- Added `docs/decisions/0001-google-sheets-enrollment.md` to preserve the reasoning, cost/scale choice, trust boundaries, capacity tradeoff, failure behavior, and future D1 trigger conditions.
+- Rewrote the current `docs/enrollment-backend.md`, `docs/local-review.md`, and `docs/project-plan.md` so historical D1 behavior is not presented as the active system.
+- Earlier D1 entries remain in this append-only log as implementation history.
+
+### Configuration
+
+- Added server-only `GOOGLE_SHEETS_WEB_APP_URL` and `GOOGLE_SHEETS_SHARED_SECRET` environment values.
+- Removed the active D1 binding from Wrangler configuration and removed local migration from `npm run dev:review`.
+- Retained `PUBLIC_ENROLLMENT_ENABLED` as the deliberate build-time gate; it should remain false until the Apps Script receiver is configured.
+- No Google, Stripe, Cloudflare, or production secret was added to source or documentation.
+
+### Verification
+
+- Added Google adapter tests for complete lead payloads, payment updates, destination restriction, and Apps Script rejection.
+- Added checkout Function tests proving the Sheet write precedes the Stripe response, failed writes return no payment URL, and cross-origin requests never contact Google.
+- `npm run verify` passed: 6 test files and 24 tests, 0 Astro errors/warnings/hints, 3 static routes, and a successful Cloudflare Functions Worker build.
+- Google Apps Script source passed JavaScript syntax checking, `git diff --check` passed, and the built Worker contains Google Sheets configuration without active `env.DB`/checkout-attempt code.
+- A real external lead/write and signed Stripe webhook test remain pending owner setup.
+
+### External actions not performed
+
+- The private Sheet was not opened or mutated by the development environment.
+- Apps Script was not deployed.
+- Cloudflare variables, deployments, and DNS were not changed.
+- Stripe webhook settings and Payment Links were not changed.
+- No commit or push was performed.
+
+### Setup-guide correction
+
+- Replaced the newer static `.NET RandomNumberGenerator.Fill(...)` example with the backward-compatible `RandomNumberGenerator.Create().GetBytes(...)` form after Windows PowerShell reported that `Fill` was unavailable.
+- This documentation-only correction does not change the generated secret format or application behavior.
+
+### Owner Apps Script deployment checkpoint
+
+- The owner supplied the deployed Apps Script web-app URL.
+- Stored the URL only in the ignored local `.dev.vars` file; it was not added to committed configuration or documentation.
+- A read-only request returned `{ "ok": true, "service": "pipath-enrollment-receiver" }`, confirming that the expected script version is publicly reachable.
+- No Sheet write was attempted. The matching shared secret still needs to be placed privately in local `.dev.vars` before the lead-flow test can run.
+
+### First external lead-write check
+
+- The owner configured the matching shared secret locally; its presence and 44-character encoded length were checked without printing the value.
+- The first controlled checkout Function request authenticated successfully with Apps Script but was rejected before any Sheet write because `PIPATH_SPREADSHEET_ID` contained the complete Google Sheets URL rather than only its ID.
+- The Function correctly returned no Stripe destination after the failed lead write, preserving the lead-first invariant.
+- Added the specific `Illegal spreadsheet ID or key` correction to the owner setup and recovery guide. A retry remains pending the corrected Script Property.
+
+### Corrected-property retry checkpoint
+
+- Retried after the owner corrected `PIPATH_SPREADSHEET_ID`.
+- The opt-in test reached the external request but its initial five-second test timeout elapsed before Apps Script returned, so the result was intentionally treated as unknown rather than as a failed Sheet write.
+- Increased only the opt-in integration-test timeout to 20 seconds. Before another write, the owner must check whether the clearly labeled test row already exists so a duplicate is not created unnecessarily.
+
+### Lead-to-Sheet integration confirmed
+
+- The owner confirmed that the `PiPath Integration Test` / `Test Student - Delete Me` row exists in the private `Leads` tab.
+- This proves the real checkout Function authenticated to Apps Script and completed the lead write. The test runner's five-second limit expired while waiting for the HTTP response; it was not a Sheet-record expiration, enrollment timeout, seat hold, or payment timeout.
+- No second lead test was submitted and no Stripe page or payment was opened.
+
+### Local enrollment configuration restart
+
+- Diagnosed the client-facing “Online enrollment is being configured” response as a Wrangler process that had started before the Google URL/shared secret were added to `.dev.vars`.
+- Stopped only the stale PiPath review-server process tree and started the current `npm run dev:review` build with `PUBLIC_ENROLLMENT_ENABLED=true`.
+- Confirmed `/sat-math-bootcamp/` returns HTTP 200.
+- Sent a non-writing `{}` probe to `/api/checkout`; it returned HTTP 400 `invalid_checkout` rather than HTTP 503 `enrollment_not_configured`, proving the restarted Function loaded all required enrollment configuration.
+- Added the `.dev.vars` restart requirement to the local review guide. No additional Sheet row or Stripe request was created by the probe.
