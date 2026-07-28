@@ -499,6 +499,11 @@ Status: implemented and verified locally; awaiting owner-run Apps Script setup a
 - Compacted the sticky header from a two-row mobile tab grid to a single-row four-tab layout and reduced desktop header spacing; browser checks confirmed no horizontal overflow down to 320px.
 - Restored the hero portrait's staggered badge hierarchy: the Lead Educator badge leads, while the PiPath belief card steps lower and left. Removed the duplicate Orlando name beneath the portrait, retained the educator descriptor, and kept “Dr. Orlando Ferrer.” together as one typographic unit in the headline.
 
+## July 28, 2026 — Shared sticky navigation guardrail
+
+- Confirmed the announcement and primary tabs remain one sticky header unit across Home, Math Tutoring, SAT Math Bootcamp, and Contact.
+- Removed page-level cohort-banner wording overrides. The August SAT cohort label, dates, format, link text, and destination now have one shared definition in `SiteHeader.astro`, preventing copy drift between tabs.
+
 ## July 27, 2026 — SAT Bootcamp copy and information hierarchy refinement
 
 - Replaced the SAT hero promise and supporting copy with the owner-approved standardized-test/personal-learning-path positioning, practical Desmos emphasis, and Duke Mathematics credential wording.
@@ -525,3 +530,29 @@ Status: implemented and verified locally; awaiting owner-run Apps Script setup a
 - Reworked “How we prepare students” into a full-width heading and two independent method columns, with 01/02 on the left and 03/04 on the right. Independent columns avoid height coupling and eliminate the large blank area beneath the heading.
 - Restored section-color alternation by using the paper background for FAQs after the white methodology section.
 - Updated the shared footer across all pages: the PiPath identity now says “Based in North Carolina.” and the previous location slot now links `@PiPathMath` to the official YouTube channel while retaining the contact email.
+
+## July 28, 2026 — Stripe sandbox workflow preflight
+
+- Pointed only the ignored local `.dev.vars` cohort setting at the owner-supplied Stripe test Payment Link; committed configuration, Cloudflare, Stripe settings, and production were unchanged.
+- Rebuilt and started the local Pages/Functions review environment successfully with zero Astro diagnostics.
+- Submitted two clearly labeled browser test leads through the real family form. Both checkout requests returned HTTP 200 only after Apps Script accepted the Sheet write; neither test completed payment. The rows use parent name `PiPath Stripe Workflow Test` and student name `Stripe Test Student - Delete Me` so they can be removed after review.
+- Confirmed the supplied link is a Stripe test-mode Payment Link for `PiPath Sandbox SAT Bootcamp - Test Registration`, but its displayed charge is `$10.00` while the PiPath August cohort and saved lead validation require `$299.00`. No dummy card was submitted because the signed webhook update would correctly reject the amount mismatch.
+- Confirmed the local `STRIPE_WEBHOOK_SECRET` is not configured and no Stripe CLI listener is installed. A complete Stripe-to-Sheet test therefore still requires either a test-mode webhook registered against a deployed preview endpoint or a Stripe CLI listener forwarding test events to the local endpoint, plus the matching test endpoint signing secret.
+- Stopped the temporary review server and removed the temporary browser scripts/logs. The ignored local Payment Link remains set to the test link for the next sandbox run.
+
+## July 28, 2026 — Checkout handoff latency refinement
+
+- The owner confirmed a successful separate $10 Stripe-hosted sandbox payment. No test webhook was configured, so the payment was not treated as proof of Stripe-to-Sheet reconciliation or a paid enrollment update.
+- Changed Apps Script action routing so `create_lead` validates only `Leads`, `create_inquiry` validates only `Inquiries`, and payment/refund updates continue validating both `Leads` and `Stripe Events`. Authentication, the script lock, schema validation, lead append, explicit flush, and lead-before-Stripe response ordering remain unchanged.
+- Started GA client-ID collection when the enrollment form hydrates. Checkout now includes the ID only when the callback has already completed and never waits up to 700 milliseconds for analytics; missing GA attribution remains an accepted optional value.
+- Added Apps Script routing tests covering every active action. Focused verification passed with 3 test files and 12 tests, including the existing guarantees that Google acceptance precedes the Stripe response and Google rejection returns no payment destination.
+- Full verification passed with 8 test files and 35 tests, with the opt-in external Sheet test skipped; Astro reported 0 errors, warnings, or hints; all five static routes built; the Pages Functions Worker compiled; Apps Script passed JavaScript syntax validation; and `git diff --check` passed.
+- Changes are local on `croquette`. No commit, push, Cloudflare deployment, Stripe setting, Google Sheet schema, secret, or production environment changed. The owner must publish the current `Code.gs` as a new Apps Script deployment version before measuring the Sheet-side latency improvement.
+
+## July 28, 2026 — Pre-launch latency optimization rollback
+
+- Reverted the local action-specific Apps Script validation and non-blocking GA client-ID experiment before either change was committed or deployed. `Code.gs` and the checkout attribution sequence now match the previously tested implementation, so no Apps Script deployment update is required for this rollback.
+- Removed the experiment-specific Apps Script routing test and restored the current architecture/setup references.
+- Kept the existing lead-before-Stripe behavior unchanged and replaced only the checkout button's transient label with “Opening secure checkout… Please don’t refresh.” so families understand the short wait.
+- The owner-confirmed $10 Stripe sandbox payment remains an external test fact; test-webhook setup and Stripe-to-Sheet reconciliation remain pending.
+- Rollback verification passed with 31 tests, the opt-in external test skipped, 0 Astro/TypeScript diagnostics, five built routes, successful Apps Script syntax validation and Pages Functions compilation, and a clean `git diff --check` result.

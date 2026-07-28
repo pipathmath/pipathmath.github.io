@@ -4,10 +4,6 @@ interface Props {
   showAnnouncement?: boolean;
   ctaHref?: string;
   ctaLabel?: string;
-  announcementLabel?: string;
-  announcementText?: string;
-  announcementHref?: string;
-  announcementLinkLabel?: string;
 }
 
 const {
@@ -15,11 +11,14 @@ const {
   showAnnouncement = true,
   ctaHref = "#schedule",
   ctaLabel = "View dates",
-  announcementLabel = "August SAT cohort",
-  announcementText = "August 18–September 10 · Live online",
-  announcementHref = "/sat-math-bootcamp#schedule",
-  announcementLinkLabel = "View the program",
 } = Astro.props;
+
+const cohortAnnouncement = {
+  label: "August SAT cohort",
+  text: "August 18–September 10 · Live online",
+  href: "/sat-math-bootcamp#schedule",
+  linkLabel: "View the program",
+};
 
 const navigation = [
   { key: "home", label: "Home", href: "/" },
@@ -42,9 +41,9 @@ const navigation = [
     showAnnouncement && (
       <div class="announcement-bar">
         <div class="site-container announcement-inner">
-          <span class="announcement-label">{announcementLabel}</span>
-          <span>{announcementText}</span>
-          <a href={announcementHref}>{announcementLinkLabel}</a>
+          <span class="announcement-label">{cohortAnnouncement.label}</span>
+          <span>{cohortAnnouncement.text}</span>
+          <a href={cohortAnnouncement.href}>{cohortAnnouncement.linkLabel}</a>
         </div>
       </div>
     )

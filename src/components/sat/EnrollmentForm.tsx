@@ -296,7 +296,7 @@ export default function EnrollmentForm({ cohortId, price, enabled, consultationU
             aria-describedby={error ? errorId : !enabled ? availabilityId : undefined}
           >
             {isStarting
-              ? "Opening secure checkout..."
+              ? "Opening secure checkout… Please don’t refresh."
               : enabled
                 ? `Continue to secure payment — $${price}`
                 : "Continue to secure payment"}
