@@ -1,4 +1,4 @@
-import type { Env } from "./types";
+import type { EnrollmentCohortDefinition, Env } from "./types";
 
 export const AUGUST_COHORT_ID = "august-2026";
 export const CHECKOUT_HOLD_SECONDS = 30 * 60;
@@ -8,13 +8,25 @@ export const ONBOARDING_TOKEN_VALID_DAYS_AFTER_COHORT = 120;
 
 const requiredCheckoutKeys = [
   "STRIPE_PAYMENT_LINK_URL_AUGUST_2026",
-  "RATE_LIMIT_SALT",
+  "GOOGLE_SHEETS_WEB_APP_URL",
+  "GOOGLE_SHEETS_SHARED_SECRET",
 ] as const;
 
 const requiredWebhookKeys = [
   "STRIPE_WEBHOOK_SECRET",
-  "ONBOARDING_TOKEN_SECRET",
+  "GOOGLE_SHEETS_WEB_APP_URL",
+  "GOOGLE_SHEETS_SHARED_SECRET",
 ] as const;
+
+const enrollmentCohorts: Record<string, EnrollmentCohortDefinition> = {
+  [AUGUST_COHORT_ID]: {
+    id: AUGUST_COHORT_ID,
+    name: "August Digital SAT Math Bootcamp",
+    status: "enrolling",
+    priceCents: 29_900,
+    currency: "usd",
+  },
+};
 
 export function missingCheckoutConfig(env: Env): string[] {
   return requiredCheckoutKeys.filter((key) => !env[key]?.trim());
@@ -30,6 +42,12 @@ export function getStripePaymentLinkUrl(env: Env, cohortId: string): string | nu
   }
 
   return env.STRIPE_PAYMENT_LINK_URL_AUGUST_2026?.trim() || null;
+}
+
+export function getEnrollmentCohort(
+  cohortId: string,
+): EnrollmentCohortDefinition | null {
+  return enrollmentCohorts[cohortId] ?? null;
 }
 
 export function getSiteOrigin(request: Request, env: Env): string {

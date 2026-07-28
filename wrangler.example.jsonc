@@ -3,15 +3,8 @@
   "name": "pipath-academy-preview",
   "pages_build_output_dir": "./dist",
   "compatibility_date": "2026-07-26",
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "pipath-enrollment-preview",
-      "database_id": "replace-with-preview-d1-database-id",
-      "migrations_dir": "migrations"
-    }
-  ],
   "vars": {
+    "STRIPE_PAYMENT_LINK_URL_AUGUST_2026": "replace-with-cohort-payment-link",
     "SITE_URL": "https://replace-with-preview-hostname.pages.dev",
     "OWNER_EMAIL": "pipathmath@gmail.com",
     "EMAIL_FROM": "PiPath Academy <enrollment@pipathacademy.com>",

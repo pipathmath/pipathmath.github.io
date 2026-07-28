@@ -1,89 +1,55 @@
 # PiPath backend architecture
 
-## Stack
+## Active stack
 
 | Layer | Technology | Responsibility |
 | --- | --- | --- |
-| Marketing UI | Astro + React + TypeScript | Static content, enrollment controls, confirmation/onboarding interaction |
-| Runtime | Cloudflare Pages + Pages Functions | Serves static pages and `/api/*` server endpoints |
-| Database | Cloudflare D1 / local Wrangler SQLite | Cohorts, holds, enrollments, payments, onboarding, delivery ledgers, audits |
-| Payments | Stripe Checkout + signed webhooks | Customer/payment collection and payment/refund source events |
-| Email | Resend HTTP API | Parent confirmation and owner notification |
-| Analytics | GA4 browser events + Measurement Protocol | Checkout intent and verified purchase measurement |
-| Tests | Vitest + TypeScript/Astro checks | Validation, security helpers, schema/capacity behavior, compilation |
+| Marketing/enrollment UI | Astro + React + TypeScript | Static content, client validation, lead-first form |
+| Runtime | Cloudflare Pages + Pages Functions | Static hosting, authoritative request validation, Google/Stripe integration |
+| Operations record | Private Google Sheet + Apps Script | Lead rows, payment status, staff follow-up, Stripe event idempotency |
+| Payments | Stripe Payment Links + signed webhooks | Hosted payment collection, payment/refund truth, completed-payment cap |
+| Tests | Vitest + TypeScript/Astro checks | Validation, URL construction, adapter behavior, compilation |
 
-Only `/api/*` invokes Pages Functions; `public/_routes.json` keeps marketing routes static.
+D1, onboarding tokens, Resend delivery ledgers, and an owner dashboard are deferred/reference infrastructure.
 
-## Repository map
+## Active repository map
 
-- `functions/api/checkout.ts`: creates a capacity hold and Stripe Checkout Session.
-- `functions/api/stripe-webhook.ts`: verifies and processes Stripe events.
-- `functions/api/enrollment-status.ts`: returns minimal confirmation/onboarding state by Session ID or secure token.
-- `functions/api/onboarding.ts`: validates and stores the student's academic profile.
-- `server/config.ts`: cohort constants, holds/rate limits, and required configuration checks.
-- `server/db.ts`: cohort lookup, rate limit, atomic capacity reservation, and checkout-attempt updates.
-- `server/enrollment.ts`: Stripe event ledger, paid fulfillment, refunds, and audits.
-- `server/onboarding.ts`: token lookup, masked status, student create/update, and enrollment activation.
-- `server/security.ts`: HMAC token/fingerprint generation, hashing, and email masking.
-- `server/stripe.ts`: Stripe client, Checkout Session, expiration, and signature verification.
-- `server/email.ts`: Resend adapter and idempotent delivery ledger.
-- `server/analytics.ts`: verified server-side GA4 purchase event and audit records.
-- `server/http.ts` and `server/validation.ts`: same-origin, JSON, size, enum, and field validation.
-- `migrations/`: ordered D1 schema changes and seeds.
-- `tests/`: pure/unit schema and safety tests.
+- `src/components/sat/EnrollmentForm.tsx`: family intake and same-origin checkout request.
+- `functions/api/checkout.ts`: validation, lead ID, Sheet write, Payment Link response.
+- `functions/api/stripe-webhook.ts`: Stripe signature verification and payment/refund Sheet updates.
+- `server/google-sheets.ts`: server-only Apps Script adapter.
+- `server/config.ts`: allowed cohort, price/currency, Payment Link mapping, required config.
+- `server/payment-link.ts`: `client_reference_id`, locked email, and UTM URL construction.
+- `server/stripe.ts`: raw-body webhook signature verification.
+- `server/http.ts` and `server/validation.ts`: request boundary and family-field validation.
+- `integrations/google-apps-script/Code.gs`: Sheet schema, authorization, locking, writes, deduplication.
+- `docs/google-sheets-setup.md`: owner-run installation/deployment procedure.
 
-## Checkout flow
+## Lead flow
 
-1. React sends `POST /api/checkout` with the cohort ID and bounded attribution fields.
-2. The Function requires same origin and complete checkout configuration.
-3. D1 confirms the cohort is `enrolling`; the server maps the cohort to its Stripe Price ID.
-4. D1 rate-limits the HMAC request fingerprint to three attempts in 15 minutes.
-5. One conditional `INSERT` creates a 30-minute hold only when paid/active seats plus live holds are below capacity.
-6. Stripe creates a one-time payment Session with parent name, email, phone, server-selected Price, cohort metadata, and the checkout-attempt ID.
-7. D1 changes the attempt from `held` to `checkout_created`; the browser receives only the Stripe URL.
-8. If Stripe creation fails, the Function expires any orphan Session and marks the hold `failed`.
+1. Browser posts family fields, cohort, and bounded attribution to `/api/checkout`.
+2. Function validates same origin, body, cohort, contacts, score, and lengths.
+3. Function creates a UUID lead ID and sends the sanitized lead plus expected server-owned amount/currency to Apps Script.
+4. Apps Script authenticates the shared secret, locks, validates headers, neutralizes formula prefixes, and appends `Leads`.
+5. Only after success does the Function return the cohort Payment Link with UUID `client_reference_id` and locked parent email.
 
-An attempt or redirect is not an enrollment. Only a verified paid webhook creates one.
+## Webhook flow
 
-## Paid webhook flow
+1. Stripe posts to `/api/stripe-webhook`.
+2. Cloudflare verifies the raw body and `Stripe-Signature` using the endpoint secret.
+3. Relevant Checkout events require PiPath's UUID-shaped lead reference.
+4. Apps Script locks, rejects duplicate event IDs, finds the lead, and compares paid amount/currency with the saved expected values.
+5. Apps Script updates the lead and appends `Stripe Events`. Failures cause Cloudflare to return an error for Stripe retry.
 
-1. Stripe sends an event to `POST /api/stripe-webhook`.
-2. The Function reads the raw body and verifies `stripe-signature` with `STRIPE_WEBHOOK_SECRET`.
-3. `stripe_events.event_id` provides event-level idempotency; a processed event returns successfully without repeating work.
-4. For a paid `checkout.session.completed`, fulfillment rechecks attempt/cohort references, Session ID, amount, and currency.
-5. The parent is inserted or updated by normalized email.
-6. The enrollment is inserted once using unique checkout-attempt and Checkout Session IDs.
-7. The payment is inserted/updated once using the unique Payment Intent ID.
-8. The checkout attempt becomes `completed`; a hashed onboarding token and `enrollment_paid` audit event are created.
-9. Parent and owner emails are attempted through their delivery ledger.
-10. GA4 purchase is attempted only after verified fulfillment and never blocks enrollment.
-11. The Stripe event becomes `processed`; processing failures become `failed` with a short error code for retry/debugging.
-
-## Confirmation and onboarding flow
-
-1. Stripe redirects to the confirmation route with `{CHECKOUT_SESSION_ID}`.
-2. The page polls `GET /api/enrollment-status?session_id=...` while the webhook is processing.
-3. Status returns only cohort dates/name, a masked parent email, onboarding completion, and the secure onboarding token.
-4. A parent may return later using the emailed `?token=...` link.
-5. `POST /api/onboarding` hashes the supplied token, checks expiration and enrollment status, validates student fields, creates or updates the student, and changes enrollment `paid -> active`.
-6. The operation records `student_onboarding_completed` in `audit_events`.
-
-Plaintext onboarding tokens are generated when needed but only their SHA-256 hashes are stored. Token validity extends 120 days after the cohort end date.
-
-## Other event transitions
-
-- `checkout.session.expired`: checkout attempt becomes `expired`.
-- `payment_intent.payment_failed`: matching checkout attempt becomes `failed`.
-- `charge.refunded`: payment becomes `partially_refunded` or `refunded`; a full refund also changes enrollment to `refunded`.
-- Missing email configuration: delivery becomes `failed`, an audit is recorded, and the paid enrollment remains valid.
-- Missing GA4 secret/client ID: analytics is skipped and audited without changing enrollment.
+Supported events are completed, async success/failure, expired, and charge refunded.
 
 ## Sources of truth
 
-- Stripe: payment authorization, charge, receipt, and refund facts.
-- D1: PiPath cohort capacity and operational enrollment/onboarding state.
-- Migrations: database structure.
-- Source modules: current business behavior.
-- `docs/implementation-log.md`: decision/history record, not a substitute for current code.
+- Stripe: payment, refund, dispute, receipt, and Payment Link cap facts.
+- Google Sheet: operational lead and staff follow-up view.
+- `Code.gs` headers: active Sheet schema.
+- source modules: current runtime behavior.
+- architecture decision: why the current tradeoff was chosen.
+- implementation log: history, including inactive D1 work.
 
-When sources disagree, do not guess. Reconcile Stripe and D1 identifiers, inspect the webhook ledger, and report the discrepancy before mutating data.
+When sources disagree, do not guess or edit financial status to make the Sheet look correct. Reconcile Stripe IDs and webhook deliveries first.

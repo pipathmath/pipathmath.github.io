@@ -1,7 +1,11 @@
 export interface Env {
+  // Required only by retained future/reference D1 modules, not active Functions.
   DB: D1Database;
   STRIPE_WEBHOOK_SECRET: string;
   STRIPE_PAYMENT_LINK_URL_AUGUST_2026: string;
+  GOOGLE_SHEETS_WEB_APP_URL: string;
+  GOOGLE_SHEETS_SHARED_SECRET: string;
+  // Required only by retained future/reference onboarding/rate-limit modules.
   ONBOARDING_TOKEN_SECRET: string;
   RATE_LIMIT_SALT: string;
   SITE_URL?: string;
@@ -33,6 +37,14 @@ export interface CheckoutRequest {
   studentMathScore: number | null;
   additionalNotes: string | null;
   attribution: Attribution;
+}
+
+export interface EnrollmentCohortDefinition {
+  id: string;
+  name: string;
+  status: "enrolling" | "closed";
+  priceCents: number;
+  currency: string;
 }
 
 export type Grade = "9" | "10" | "11" | "12" | "other";

@@ -1,62 +1,109 @@
 # Enrollment backend: how it works
 
-## The important distinction
+## Current architecture
 
-PiPath uses a hybrid flow: its own backend captures the family lead and checks capacity first, then redirects the parent to a reusable Stripe Payment Link. The configured link is not sent to the browser until the lead has passed validation and a temporary seat hold has been created.
+PiPath uses a lead-first Google Sheets and Stripe Payment Link workflow. A parent must submit the family form before the website reveals the configured Stripe link. Google Sheets is the staff-facing operational record; Stripe is the financial source of truth.
 
-The Payment Link is deliberately simpler than creating a new Checkout Session through Stripe's API for every parent. PiPath adds a unique `client_reference_id` and locked, validated parent email to the link so the signed payment webhook can reconcile the payment with the saved lead.
+Cloudflare Pages serves the Astro site and runs two active API Functions:
+
+- `POST /api/checkout` validates and saves the lead, then returns the Stripe Payment Link.
+- `POST /api/stripe-webhook` verifies Stripe events and updates the matching Sheet row.
+
+Cloudflare D1, the previous onboarding workflow, Resend delivery ledger, and an owner dashboard are not part of the active enrollment path. Their code/schema history remains available as future reference, but the deployed project must not configure a second active store without a new architecture decision.
 
 ## End-to-end flow
 
-1. The enrollment section first asks for parent name, student name, parent email, and parent phone. SAT/PSAT Math score and an additional note are optional.
-2. The form sends those fields, the cohort ID, and optional marketing attribution to `POST /api/checkout`.
-3. The endpoint rejects cross-origin requests, invalid JSON, missing configuration, unknown cohorts, closed cohorts, and rate-limited clients.
-4. A single conditional D1 insert saves the lead and reserves a seat for 30 minutes. Paid enrollments plus unexpired holds cannot exceed the technical capacity.
-5. Only after that insert succeeds does the server append the lead reference, locked email, and available UTM attribution to the configured Stripe Payment Link.
-6. The parent pays on Stripe's hosted page. The browser redirect is only a user-experience step; it is not trusted as proof of payment. If the parent returns without paying, the entered form values remain in that browser and the hold expires normally.
-7. Stripe signs and sends a `checkout.session.completed` webhook containing the `client_reference_id`. PiPath verifies that signature, checks the payment status, saved cohort, checkout reference, amount, and currency, then promotes the saved lead into the parent, student, enrollment, payment, and hashed enrollment credential.
-8. PiPath records each Stripe event by event ID so Stripe retries do not normally create duplicate business records. Database uniqueness constraints provide another idempotency layer.
-9. The confirmation page polls `GET /api/enrollment-status`. When the webhook has finished, it confirms enrollment without asking the family to re-enter the pre-checkout information. Only a masked parent email is returned.
+1. The enrollment form asks for parent name, student name, parent email, and parent phone. SAT/PSAT Math score and an additional note are optional.
+2. The browser performs immediate client-side validation and sends the form, cohort ID, and available attribution to `POST /api/checkout`.
+3. The Cloudflare Function enforces same-origin submission, JSON type/size, server-known cohort availability, required fields, email format, phone digit length, SAT/PSAT score range, and text limits.
+4. The Function generates a random UUID lead ID and sends the sanitized lead to the Google Apps Script receiver using a server-only URL and shared secret.
+5. Apps Script acquires a script lock, verifies its schema and shared secret, neutralizes spreadsheet-formula prefixes, and appends the lead to the private `Leads` tab. It stores the expected server-owned amount and currency with the lead.
+6. Only after Apps Script confirms the write does the Function return the configured Stripe Payment Link with `client_reference_id=<lead UUID>` and `locked_prefilled_email=<validated parent email>`.
+7. The parent completes payment on Stripe's hosted page. PiPath never receives card information.
+8. Stripe sends a signed event to `POST /api/stripe-webhook`. The Function verifies the signature from the raw request body and ignores unrelated events without PiPath's UUID lead-reference shape.
+9. The Function sends the verified payment state and Stripe identifiers to Apps Script. Apps Script finds the lead row by lead ID, confirms paid amount/currency against the expected row values, updates the row, and records the Stripe event ID in the `Stripe Events` tab.
+10. Staff uses the Sheet for follow-up. Stripe remains authoritative for money, refunds, disputes, and the Payment Link's completed-payment limit.
 
-Unpaid D1 holds stop counting toward capacity after 30 minutes. Partial and full refunds update payment state; a full refund also revokes the enrollment state used by onboarding.
+## Seat capacity
 
-## Where data lives
+Form submission does not reserve a seat. Payment confirms the seat.
 
-Cloudflare Pages serves the static Astro site and runs the API Functions. Cloudflare D1 stores the pre-payment lead on the checkout attempt, along with cohorts, parents, students, enrollments, payments, hashed access tokens, Stripe event receipts, email delivery state, and an audit trail. Stripe stores card data; PiPath never receives or stores card numbers.
+PiPath supplies and configures the Payment Link for each cohort. The Stripe Payment Link must enforce the business's completed-payment limit, including a 15-payment cap when that is the cohort capacity. Multiple families may have Checkout open for the last seat; Stripe's accepted completed payments decide the enrollment order.
 
-Resend and server-side GA4 are optional downstream integrations. Their missing configuration does not undo a paid enrollment. Email delivery state and analytics decisions are recorded for later inspection.
+A timed seat reservation requires transactional state and is explicitly deferred. If it becomes necessary, reconsider D1 as a replacement architecture rather than adding a silent dual-write.
 
-## Existing safeguards
+## Sheet schema and operational behavior
 
-- The price and currency are checked again when the signed payment webhook arrives.
-- Capacity is reserved atomically in D1, including unexpired checkout holds.
-- The permanent August Payment Link must also be configured in Stripe with a 15-completed-payment limit. D1 prevents the website from issuing new checkout links when full, but a copied reusable link can bypass the website check.
-- Raw IP addresses are not stored; rate limiting uses an HMAC fingerprint of IP plus user agent.
-- Checkout and legacy onboarding writes require the request's `Origin` to match the site origin.
-- Request bodies, text fields, enum values, and attribution lengths are bounded and sanitized.
-- Webhook signatures are verified with Stripe's webhook secret.
-- Stripe event IDs and database uniqueness constraints make fulfillment retry-safe in normal operation.
-- Enrollment credentials are HMAC-derived, stored only as SHA-256 hashes, expire after the cohort, and are not exposed in database inspection.
-- API responses are marked `no-store`, and enrollment lookups return masked email addresses.
-- Refunds, enrollment changes, email outcomes, and analytics outcomes produce operational records.
+The Apps Script creates:
 
-## Robustness assessment and launch gates
+- `Leads`, containing family, cohort, expected price, lead status, payment status, Stripe IDs, timestamps, attribution, follow-up status, and internal notes;
+- `Stripe Events`, containing processed event IDs for audit and idempotency.
 
-The transactional core is sensibly designed for a small cohort launch, but it is not production-proven until the full Stripe test matrix has run in a Cloudflare preview environment.
+Automated writes never intentionally overwrite `follow_up_status` or `internal_notes` after the lead is created. Staff can filter, add views, or build charts using the Sheet without changing the website backend.
 
-Before enabling enrollment publicly:
+The Sheet contains personal information. It must remain restricted to authorized PiPath accounts, use the minimum necessary editors, and never be published or shared by public link.
 
-1. Create a clean August Payment Link, verify that its Price is exactly $299 USD, and set its completed-payment limit to 15. A wrong Price would be collected by Stripe and then rejected by PiPath's webhook amount check, requiring a refund and manual recovery.
-2. Run required-field, optional-field, successful, declined, cancelled, expired, duplicate-webhook, sold-out, partial-refund, and full-refund tests.
-3. Configure and verify webhook delivery alerts in Stripe. The confirmation page depends on the webhook, not the redirect alone.
-4. Configure Resend, verify the sending domain, and prove both parent and owner emails. Add an operational retry procedure for failed deliveries.
-5. Add remote monitoring/error alerts and a simple owner view or documented D1 runbook for paid enrollments, failed events, and failed email deliveries.
-6. Add integration tests around webhook fulfillment and endpoint behavior. The current automated suite covers validation, token/privacy helpers, schema migration, and atomic capacity, but not the full external Stripe lifecycle.
-7. Consider a stale-event recovery job and stronger event-level locking if volume grows. Database constraints prevent duplicate enrollments/payments, but two truly simultaneous deliveries of the same new Stripe event are not explicitly leased to one worker.
-8. Confirm privacy, refund, terms, and enrollment policies with the business owner before launch.
+## Webhook behavior
 
-## What can be tested without secrets
+The active handler supports:
 
-The site build, responsive layouts, fillable family form, Payment Link URL construction, navigation, confirmation-page recovery state, database migration, request validation, token helpers, and D1 capacity behavior are testable locally without a Stripe API secret key.
+- `checkout.session.completed`: marks the lead paid only when `payment_status` is already `paid`; otherwise marks it processing;
+- `checkout.session.async_payment_succeeded`: marks a delayed payment paid;
+- `checkout.session.async_payment_failed`: marks the attempt failed for follow-up;
+- `checkout.session.expired`: marks the attempt expired for follow-up;
+- `charge.refunded`: matches the Payment Intent and records a partial or full refund. An unrelated/unmatched refund is recorded in the event ledger without causing repeated delivery failures.
 
-The temporary July Payment Link is live-mode and is included only for visual handoff testing; do not submit a real payment through it. A complete safe payment test requires a new Stripe test-mode Payment Link and the Stripe CLI to forward signed webhook events. Never commit or paste webhook or application secrets into source, documentation, screenshots, or chat.
+Stripe event IDs are written under a script lock. A duplicate event returns success without repeating the business update. If Apps Script cannot update the Sheet, Cloudflare returns an error so Stripe can retry.
+
+The webhook secret is specific to its registered endpoint/environment. It is not the same value as the Google shared secret.
+
+## Security boundaries
+
+- Browser validation improves usability; Cloudflare validation is authoritative for form acceptance.
+- The browser never receives the Apps Script deployment URL or either shared/signing secret.
+- Apps Script accepts only a strong shared secret stored in Script Properties.
+- Spreadsheet cells beginning with `=`, `+`, `-`, or `@` are neutralized before insertion.
+- Stripe signatures are verified against the raw request body.
+- The paid amount and currency must match the values saved with the lead.
+- Unsupported or unrelated Stripe events do not modify the Sheet.
+- Request and response bodies are marked as non-cacheable at the API layer.
+- No card number or Stripe secret key is stored by PiPath.
+
+The shared-secret design is proportionate for this private, low-volume integration. If public form abuse appears, add Cloudflare Turnstile or a Cloudflare rate-limit rule. Same-origin checks alone are not a complete anti-bot control.
+
+## Failure behavior
+
+- Lead write failure: show a retryable website error and do not send the parent to Stripe.
+- Payment update failure: return a webhook error so Stripe retries.
+- Duplicate webhook: acknowledge it without a second update.
+- Paid amount/currency mismatch: refuse to mark the row paid and investigate in Stripe.
+- Missing lead reference: ignore an unrelated Stripe event; a PiPath event with a missing row produces an update failure and retry.
+- Sheet/Stripe disagreement: use Stripe as the financial truth and reconcile the Sheet manually using lead, Checkout Session, or Payment Intent ID.
+
+## Configuration
+
+Server-only settings:
+
+- `STRIPE_PAYMENT_LINK_URL_AUGUST_2026`
+- `GOOGLE_SHEETS_WEB_APP_URL`
+- `GOOGLE_SHEETS_SHARED_SECRET`
+- `STRIPE_WEBHOOK_SECRET`
+
+Build-time browser behavior:
+
+- `PUBLIC_ENROLLMENT_ENABLED=true` enables the form's payment action only after the receiver is configured.
+
+Never place server-only values in an Astro `PUBLIC_` variable. Local values belong in ignored `.dev.vars`; Cloudflare values belong in project environment variables/secrets.
+
+## Local and external testing
+
+Automated tests cover input validation, Payment Link URL construction, the Google request adapter, and the retained future D1 migration reference. The build also compiles all active Pages Functions.
+
+A real lead-to-Sheet test requires the owner-run Apps Script deployment described in `docs/google-sheets-setup.md`. A safe end-to-end webhook payment test requires Stripe sandbox resources or a deliberately authorized real transaction. Never enter Stripe test-card numbers into the supplied live July Payment Link.
+
+## Decision and reference documents
+
+- `docs/decisions/0001-google-sheets-enrollment.md` records why Sheets replaced D1 for the current scale and preserves the tradeoffs.
+- `docs/google-sheets-setup.md` is the exact owner setup and recovery guide.
+- `docs/local-review.md` is the current local test procedure.
+- `docs/implementation-log.md` is the chronological change record; earlier D1 entries remain historical rather than describing the active system.
