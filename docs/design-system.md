@@ -49,7 +49,7 @@ The header action is contextual:
 
 A later navigation review may shorten "Contact Me" to "Contact," but that label has not been approved yet.
 
-The announcement and navigation are one sticky header unit. The approved cohort promotion is shared across Home, Math Tutoring, SAT Math Bootcamp, and Contact: "August SAT cohort" with "August 18–September 10 · Live online" and a "View the program" link.
+The announcement and navigation are one sticky header unit. The approved cohort promotion is shared across Home, Math Tutoring, SAT Math Bootcamp, and Contact: "August SAT cohort" with "August 18–September 10 · Live online" and a "View the program" link. This promotion is defined once in `SiteHeader.astro`; individual public pages must not override its wording.
 
 ## Information order
 

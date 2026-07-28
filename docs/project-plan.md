@@ -1,6 +1,6 @@
 # PiPath Academy project plan
 
-Last updated: 2026-07-27
+Last updated: 2026-07-28
 
 ## Current state
 
@@ -11,7 +11,8 @@ Last updated: 2026-07-27
 - The SAT page captures family information before sending a parent to a reusable Stripe Payment Link.
 - The owner approved Google Sheets as the short-term operations record and confirmed that form submission does not reserve a seat; accepted payment confirms the seat.
 - The private enrollment Sheet has been created and is restricted to the owner's personal account and the PiPath account.
-- The Google Apps Script receiver, active Cloudflare-to-Sheets adapters, Stripe-to-Sheets webhook code, setup guide, and architecture decision are implemented and verified locally.
+- The Google Apps Script receiver is deployed, the real lead-to-Sheet handoff is confirmed, and the owner has completed a separate $10 Stripe-hosted sandbox payment. The test webhook remains pending, so that payment did not verify Stripe-to-Sheet reconciliation.
+- The active Cloudflare-to-Sheets adapters, Stripe-to-Sheets webhook code, setup guide, and architecture decision are implemented and verified locally.
 - The owner will supply the Payment Link for each cohort and configure its Stripe-side completed-payment limit.
 - D1 remains future/reference infrastructure and is not part of the active configuration.
 
@@ -20,8 +21,8 @@ Last updated: 2026-07-27
 1. **Complete:** agree on Sheets as the active operational backend and Stripe as the payment source of truth.
 2. **Complete:** record the no-temporary-hold decision and the Cloudflare/Apps Script security boundaries.
 3. **Complete locally:** implement and verify the Google Sheets integration code and documentation.
-4. **Owner setup:** copy the supplied Apps Script into the private Sheet, set two Script Properties, and deploy the web app.
-5. **Joint local test:** configure the ignored local variables and prove that a lead row exists before the Stripe page opens.
+4. **Complete:** the owner deployed Apps Script with the private Script Properties.
+5. **Complete:** the local workflow proved that a lead row exists before the Stripe page opens.
 6. **Stripe test gate:** register/forward a test webhook and prove paid, delayed, duplicate, expired, and refund behavior without using a live Payment Link for test-card data.
 7. **Cloudflare preview gate:** configure the same server-only values in the existing Pages project and deploy `croquette` for private review.
 8. **Launch gate:** repeat responsive, accessibility, form, Sheet, Stripe, recovery, policy, and monitoring checks before any domain cutover.
@@ -53,10 +54,7 @@ Last updated: 2026-07-27
 
 ## Inputs and external setup still needed
 
-- Owner-run Google Apps Script deployment using `integrations/google-apps-script/Code.gs`.
-- Matching `PIPATH_SHARED_SECRET` / `GOOGLE_SHEETS_SHARED_SECRET` values.
-- The resulting Apps Script `/exec` URL.
-- A Stripe test-mode Payment Link for safe end-to-end payment testing, if the owner wants automated test payments.
+- A Stripe test-mode Payment Link whose amount matches the cohort's server-owned expected amount for webhook reconciliation testing.
 - Stripe webhook endpoint/signing secret for each preview or production environment.
 - Owner-supplied Payment Link for each future cohort, with its capacity limit configured in Stripe.
 - Final parent-facing privacy, refund/cancellation, attendance, recording, and enrollment policy language.
