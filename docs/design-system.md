@@ -37,7 +37,7 @@ Approved shared labels:
 1. Home
 2. Math Tutoring
 3. SAT Math Bootcamp
-4. Contact Me
+4. Contact Us
 
 "Math Tutoring" replaces "Tutoring Services." "SAT Math Bootcamp" retains "Math" so families do not mistake it for full-SAT instruction.
 
@@ -47,7 +47,7 @@ The header action is contextual:
 - Home and Math Tutoring: Book a consultation.
 - Contact: Send an inquiry.
 
-A later navigation review may shorten "Contact Me" to "Contact," but that label has not been approved yet.
+The approved navigation label is "Contact Us."
 
 The announcement and navigation are one sticky header unit. The approved cohort promotion is shared across Home, Math Tutoring, SAT Math Bootcamp, and Contact: "August SAT cohort" with "August 18–September 10 · Live online" and a "View the program" link. This promotion is defined once in `SiteHeader.astro`; individual public pages must not override its wording.
 
