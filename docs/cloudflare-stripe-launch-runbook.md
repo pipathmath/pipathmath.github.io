@@ -239,7 +239,7 @@ In a Stripe sandbox, create:
 - price: a controlled sandbox amount (`$10 USD` for the existing test link);
 - fixed quantity: 1;
 - the same payment methods intended for production;
-- after-payment redirect to the preview confirmation page.
+- Stripe-hosted **Show confirmation page** behavior after payment.
 
 ### 2. Create the test webhook destination
 
@@ -303,15 +303,16 @@ Create a new Payment Link in **live mode** with:
 - [ ] Stripe email receipts enabled
 - [ ] Correct PiPath business name, support email, branding, and statement descriptor
 - [ ] The Stripe-hosted policies/terms already prepared by PiPath
-- [ ] After-payment redirect:
+- [ ] Under **After payment**, select **Show confirmation page** rather than redirecting to the PiPath website
+- [ ] Add a confirmation message such as:
 
 ```text
-https://www.pipathacademy.com/sat-math-bootcamp/enrollment-confirmed
+Thank you! Your payment for the August Digital SAT Math Bootcamp was successful. PiPath Academy will send enrollment and course-access details to the parent or guardian email. Questions? Contact pipathmath@gmail.com.
 ```
 
 Copy the new live link. Do not reuse a sandbox object or an old cohort link.
 
-Stripe documentation: [Limit Payment Link payments](https://docs.stripe.com/payment-links/customize) and [post-payment redirects](https://docs.stripe.com/payment-links/post-payment)
+Stripe documentation: [Limit Payment Link payments](https://docs.stripe.com/payment-links/customize) and [post-payment confirmation behavior](https://docs.stripe.com/payment-links/post-payment)
 
 The Payment Link's completed-payment limit is the capacity control. Submitting the PiPath family form does not reserve a seat; an accepted payment confirms the seat.
 
@@ -320,7 +321,7 @@ The Payment Link's completed-payment limit is the capacity control. Submitting t
 The easiest URL to configure before changing DNS is Cloudflare's stable production hostname:
 
 ```text
-https://<cloudflare-project-name>.pages.dev/api/stripe-webhook
+https://pipathacademy.pages.dev/api/stripe-webhook
 ```
 
 In Stripe **live mode**:
@@ -419,7 +420,7 @@ Immediately after the domain becomes active:
 - [ ] Stripe shows the owner-approved live tuition (currently `$299 USD`).
 - [ ] The Payment Link has the 15-payment cap.
 - [ ] Parent email is locked.
-- [ ] Payment redirects to the confirmation page.
+- [ ] Stripe displays its hosted payment confirmation page and the PiPath confirmation message.
 
 ### Payment reconciliation
 
@@ -466,7 +467,7 @@ The redesigned site has a strong SEO and answer-engine foundation:
 - [x] The shared layout provides Open Graph and Twitter social metadata.
 - [x] Images and videos have descriptive alternative text or titles.
 - [x] `robots.txt` and an XML sitemap exist.
-- [x] The payment-confirmation page has a `noindex, nofollow` meta directive.
+- [x] The unused PiPath fallback payment-confirmation page has a `noindex, nofollow` meta directive.
 - [x] Home includes `EducationalOrganization`, `Person`, and visible `FAQPage` structured data.
 - [x] Tutoring includes `Service` structured data.
 - [x] SAT Bootcamp includes `Course`, `CourseInstance`, `Offer`, instructor, provider, and visible `FAQPage` structured data.
@@ -481,7 +482,7 @@ Google documentation: [SEO Starter Guide](https://developers.google.com/search/d
 
 These are recommended but do not need to block the Cloudflare/Stripe launch.
 
-1. **Adjust confirmation-page indexing control.** The confirmation page has a correct `noindex` meta tag, but `robots.txt` also disallows crawling it. A crawler must be allowed to load the page to see its `noindex` instruction. Remove the confirmation path from `robots.txt` and keep the page-level `noindex, nofollow`, or add an `X-Robots-Tag` header.
+1. **Adjust fallback confirmation-page indexing control.** The unused fallback page has a correct `noindex` meta tag, but `robots.txt` also disallows crawling it. A crawler must be allowed to load the page to see its `noindex` instruction. Remove the confirmation path from `robots.txt` and keep the page-level `noindex, nofollow`, or add an `X-Robots-Tag` header.
 
 2. **Validate structured data after deployment.** Test Home, Tutoring, and SAT Bootcamp using Google's Rich Results Test and Schema.org Validator. The single `Course` object is useful semantic markup, but Google's Course-list rich result normally requires at least three courses plus carousel markup. Do not expect a Course rich result from the current one-course site.
 
@@ -512,7 +513,7 @@ Launch only when every item below is checked:
 - [ ] Contact and enrollment email alerts both reach `pipathmath@gmail.com`.
 - [ ] The complete controlled-amount sandbox webhook and refund test passes.
 - [ ] Stripe account is activated for live payments.
-- [ ] The owner-approved live Payment Link has the 15-payment cap and correct redirect.
+- [ ] The owner-approved live Payment Link has the 15-payment cap and Stripe-hosted confirmation page.
 - [ ] Live Stripe webhook destination exists and has a successful delivery.
 - [ ] Cloudflare production variables and secrets are complete.
 - [ ] The production `pages.dev` deployment works before DNS changes.
