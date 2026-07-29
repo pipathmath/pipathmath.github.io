@@ -13,6 +13,7 @@ const legacyFiles = [
   "Orlando.png",
   "Duke_img.jpeg",
   "sat_math_bootcamp_page.html",
+  "sat-bootcamp-terms.pdf",
 ];
 
 await Promise.all(
