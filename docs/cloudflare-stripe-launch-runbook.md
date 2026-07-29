@@ -302,7 +302,9 @@ Create a new Payment Link in **live mode** with:
 - [ ] A useful message for families if the link reaches its limit
 - [ ] Stripe email receipts enabled
 - [ ] Correct PiPath business name, support email, branding, and statement descriptor
-- [ ] The Stripe-hosted policies/terms already prepared by PiPath
+- [ ] Terms of Service URL: `https://www.pipathacademy.com/sat-bootcamp-terms.pdf`
+
+The former `/sat-bootcamp-terms.html` address redirects to this PDF so existing checkout links and bookmarks continue to work.
 - [ ] Under **After payment**, select **Show confirmation page** rather than redirecting to the PiPath website
 - [ ] Add a confirmation message such as:
 
