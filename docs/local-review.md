@@ -35,7 +35,7 @@ Complete `docs/google-sheets-setup.md` first. Then configure the ignored `.dev.v
 ```dotenv
 GOOGLE_SHEETS_WEB_APP_URL=https://script.google.com/macros/s/your-deployment-id/exec
 GOOGLE_SHEETS_SHARED_SECRET=your-matching-random-secret
-STRIPE_PAYMENT_LINK_URL_AUGUST_2026=https://buy.stripe.com/dRmeVcbzcgMf8rd3kG9MY00
+STRIPE_PAYMENT_LINK_URL_AUGUST_2026=https://buy.stripe.com/replace_with_sandbox_payment_link
 ```
 
 Enable the payment action in the ignored `.env` file:

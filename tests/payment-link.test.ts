@@ -16,7 +16,7 @@ const attribution = {
 describe("Stripe Payment Link handoff", () => {
   it("links the saved lead and locks its validated email", () => {
     const result = new URL(buildPaymentLinkUrl(
-      "https://buy.stripe.com/dRmeVcbzcgMf8rd3kG9MY00",
+      "https://buy.stripe.com/test_example",
       {
         attemptId: "3f434684-1b29-4d09-b2d6-8be0403b43b6",
         parentEmail: "parent+sat@example.com",

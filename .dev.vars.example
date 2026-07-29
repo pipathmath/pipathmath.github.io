@@ -5,5 +5,5 @@ GOOGLE_SHEETS_SHARED_SECRET=replace_with_at_least_32_random_bytes
 
 # Non-secret local settings.
 SITE_URL=http://localhost:8788
-STRIPE_PAYMENT_LINK_URL_AUGUST_2026=https://buy.stripe.com/dRmeVcbzcgMf8rd3kG9MY00
+STRIPE_PAYMENT_LINK_URL_AUGUST_2026=https://buy.stripe.com/replace_with_sandbox_payment_link
 GA4_MEASUREMENT_ID=G-EXV4N60WP8

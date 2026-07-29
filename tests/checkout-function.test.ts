@@ -4,7 +4,7 @@ import type { Env } from "../server/types";
 
 const env = {
   STRIPE_PAYMENT_LINK_URL_AUGUST_2026:
-    "https://buy.stripe.com/dRmeVcbzcgMf8rd3kG9MY00",
+    "https://buy.stripe.com/test_example",
   GOOGLE_SHEETS_WEB_APP_URL:
     "https://script.google.com/macros/s/test-deployment/exec",
   GOOGLE_SHEETS_SHARED_SECRET: "test-shared-secret",

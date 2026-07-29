@@ -65,7 +65,7 @@ describe.skipIf(!integrationEnabled)("Google Sheets external integration", () =>
       GOOGLE_SHEETS_WEB_APP_URL: webAppUrl,
       GOOGLE_SHEETS_SHARED_SECRET: sharedSecret,
       STRIPE_PAYMENT_LINK_URL_AUGUST_2026:
-        "https://buy.stripe.com/dRmeVcbzcgMf8rd3kG9MY00",
+        "https://buy.stripe.com/test_example",
     } as Env;
 
     const response = await onRequestPost({
