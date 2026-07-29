@@ -43,18 +43,18 @@ Last updated: 2026-07-28
 ## Active technical safeguards
 
 - Apps Script URL, Google shared secret, and Stripe webhook signing secret are server-only.
-- Checkout price, currency, cohort availability, and Payment Link selection are server-owned configuration.
+- Cohort availability and Payment Link selection are server-owned configuration; Stripe is authoritative for the amount and currency actually paid.
 - The browser cannot write directly to the Sheet.
 - Apps Script runs under the owner, uses a script lock, validates schema, neutralizes formula-leading text, and preserves staff follow-up/internal-note columns.
 - Stripe signatures are verified using the raw request body.
-- Paid updates must match the lead's expected amount and currency.
+- Paid updates must contain a valid Stripe-reported amount and currency, which Apps Script records on the lead.
 - Stripe event IDs provide Sheet-level idempotency.
 - Lead-store failures stop checkout; payment-update failures cause webhook retry.
 - The Sheet remains private and contains only the family/course/operational information PiPath currently needs.
 
 ## Inputs and external setup still needed
 
-- A Stripe test-mode Payment Link whose amount matches the cohort's server-owned expected amount for webhook reconciliation testing.
+- A Stripe test-mode Payment Link at a controlled test amount for webhook reconciliation testing.
 - Stripe webhook endpoint/signing secret for each preview or production environment.
 - Owner-supplied Payment Link for each future cohort, with its capacity limit configured in Stripe.
 - Final parent-facing privacy, refund/cancellation, attendance, recording, and enrollment policy language.

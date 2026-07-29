@@ -21,8 +21,6 @@ const cohort: EnrollmentCohortDefinition = {
   id: "august-2026",
   name: "August Digital SAT Math Bootcamp",
   status: "enrolling",
-  priceCents: 29_900,
-  currency: "usd",
 };
 
 const checkout: CheckoutRequest = {
@@ -62,7 +60,7 @@ afterEach(() => {
 });
 
 describe("Google Sheets lead adapter", () => {
-  it("sends the complete lead and server-owned price to Apps Script", async () => {
+  it("sends the complete lead without a server-owned price", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       Response.json({ ok: true, result: "lead_created" }),
     );
@@ -86,13 +84,13 @@ describe("Google Sheets lead adapter", () => {
       lead: {
         leadId: "3f434684-1b29-4d09-b2d6-8be0403b43b6",
         cohortId: "august-2026",
-        expectedAmountCents: 29_900,
-        expectedCurrency: "usd",
         parentEmail: "parent@example.com",
         studentMathScore: 620,
         utmSource: "newsletter",
       },
     });
+    expect(body.lead).not.toHaveProperty("expectedAmountCents");
+    expect(body.lead).not.toHaveProperty("expectedCurrency");
   });
 
   it("sends payment updates using the same lead reference", async () => {
@@ -107,7 +105,7 @@ describe("Google Sheets lead adapter", () => {
       paymentIntentId: "pi_test_123",
       checkoutSessionId: "cs_test_123",
       paymentStatus: "paid",
-      amountCents: 29_900,
+      amountCents: 1_000,
       currency: "usd",
       paidAt: "2026-07-27T20:00:00.000Z",
     });
@@ -119,7 +117,7 @@ describe("Google Sheets lead adapter", () => {
         eventId: "evt_test_123",
         leadId: "3f434684-1b29-4d09-b2d6-8be0403b43b6",
         paymentStatus: "paid",
-        amountCents: 29_900,
+        amountCents: 1_000,
       },
     });
   });

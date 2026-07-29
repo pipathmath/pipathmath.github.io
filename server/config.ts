@@ -28,8 +28,6 @@ const enrollmentCohorts: Record<string, EnrollmentCohortDefinition> = {
     id: AUGUST_COHORT_ID,
     name: "August Digital SAT Math Bootcamp",
     status: "enrolling",
-    priceCents: 29_900,
-    currency: "usd",
   },
 };
 

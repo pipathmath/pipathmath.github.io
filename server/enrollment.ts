@@ -186,10 +186,12 @@ export async function fulfillPaidCheckout(
 
   if (
     amountCents === null ||
-    amountCents !== cohort.price_cents ||
-    currency !== cohort.currency.toLowerCase()
+    !Number.isInteger(amountCents) ||
+    amountCents < 0 ||
+    !currency ||
+    !/^[a-z]{3}$/u.test(currency)
   ) {
-    throw new Error("stripe_session_amount_mismatch");
+    throw new Error("stripe_session_payment_details_invalid");
   }
 
   const parentEmail = normalizeEmail(attempt.parent_email ?? "");

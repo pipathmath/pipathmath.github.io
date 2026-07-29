@@ -61,8 +61,6 @@ export interface EnrollmentCohortDefinition {
   id: string;
   name: string;
   status: "enrolling" | "closed";
-  priceCents: number;
-  currency: string;
 }
 
 export type Grade = "9" | "10" | "11" | "12" | "other";

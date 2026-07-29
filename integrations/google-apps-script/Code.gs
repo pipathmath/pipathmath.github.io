@@ -26,8 +26,8 @@ var LEAD_HEADERS = [
   "parent_phone",
   "student_math_score",
   "additional_notes",
-  "expected_amount_cents",
-  "expected_currency",
+  "expected_amount_cents", // Legacy column retained for existing Sheet compatibility.
+  "expected_currency", // Legacy column retained for existing Sheet compatibility.
   "lead_status",
   "payment_status",
   "stripe_checkout_session_id",
@@ -262,7 +262,6 @@ function sendLeadNotification_(lead) {
     "Phone: " + lead.parentPhone,
     "SAT/PSAT Math score: " + (lead.studentMathScore || "Not provided"),
     "Additional notes: " + (lead.additionalNotes || "Not provided"),
-    "Expected tuition: $" + (Number(lead.expectedAmountCents) / 100).toFixed(2) + " " + String(lead.expectedCurrency).toUpperCase(),
     "",
     "The lead is archived in the Leads tab. Payment has not yet been confirmed."
   ].join("\n");
@@ -390,8 +389,6 @@ function createLead_(sheet, lead) {
   }
   setRowValue_(row, LEAD_HEADERS, "student_math_score", studentMathScore);
   setRowValue_(row, LEAD_HEADERS, "additional_notes", safeCell_(lead.additionalNotes, 1000));
-  setRowValue_(row, LEAD_HEADERS, "expected_amount_cents", requiredNonnegativeInteger_(lead.expectedAmountCents, "invalid_expected_amount"));
-  setRowValue_(row, LEAD_HEADERS, "expected_currency", safeCurrency_(lead.expectedCurrency));
   setRowValue_(row, LEAD_HEADERS, "lead_status", "Checkout opened");
   setRowValue_(row, LEAD_HEADERS, "payment_status", "Not paid");
   setRowValue_(row, LEAD_HEADERS, "utm_source", safeCell_(lead.utmSource, 200));
@@ -438,14 +435,8 @@ function updatePayment_(leadsSheet, eventsSheet, payment) {
   }
 
   if (paymentStatus === "paid") {
-    var expectedAmount = Number(cellValue_(leadsSheet, leadRow, "expected_amount_cents"));
-    var expectedCurrency = String(cellValue_(leadsSheet, leadRow, "expected_currency")).toLowerCase();
     var receivedAmount = requiredNonnegativeInteger_(payment.amountCents, "invalid_payment_amount");
     var receivedCurrency = safeCurrency_(payment.currency);
-
-    if (receivedAmount !== expectedAmount || receivedCurrency !== expectedCurrency) {
-      throw new Error("payment_amount_mismatch");
-    }
 
     setCellValue_(leadsSheet, leadRow, "lead_status", "Enrolled");
     setCellValue_(leadsSheet, leadRow, "payment_status", "Paid");

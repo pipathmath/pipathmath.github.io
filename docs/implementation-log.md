@@ -566,3 +566,11 @@ Status: implemented and verified locally; awaiting owner-run Apps Script setup a
 - Changed inquiry notification failures to record a sanitized failure reason in `notification_status` and the Apps Script execution log.
 - Verification passed with 32 tests and one opt-in external test skipped, zero Astro/TypeScript diagnostics, five built routes, successful Apps Script syntax validation and Pages Functions compilation, and a clean `git diff --check` result.
 - Changes are local. The owner must copy the revised `Code.gs`, run `testNotificationEmail`, approve the send-mail permission, and publish a new Apps Script deployment version before retesting alerts.
+
+## July 28, 2026 — Stripe-owned payment amount reconciliation
+
+- Removed the active backend's hardcoded expected tuition and stopped sending expected amount/currency values with new enrollment leads.
+- Changed Apps Script paid-payment handling to validate and record Stripe's actual amount and currency without comparing them with a website-owned price. Webhook signature verification, paid status, lead matching, event idempotency, and refund tracking remain unchanged.
+- Retained the existing `expected_amount_cents` and `expected_currency` Sheet columns as blank legacy columns so the deployed Sheet requires no header migration.
+- Updated the sandbox runbook so the existing `$10 USD` Payment Link can complete the full website-to-Stripe-to-Sheet test.
+- Verification passed with 32 tests and one opt-in external test skipped, zero Astro diagnostics, five built routes, successful Apps Script syntax validation and Pages Functions compilation, and a clean `git diff --check` result.

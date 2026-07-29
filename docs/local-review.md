@@ -49,7 +49,7 @@ Restart `npm run dev:review`, submit a clearly labeled test family, and confirm:
 1. Required fields and email validation work before submission.
 2. The website shows a retryable error if Apps Script is unavailable or rejects the secret.
 3. A successful submission adds one row to the private `Leads` tab.
-4. The row contains a UUID lead ID, family fields, expected amount `29900`, currency `usd`, and `Not paid` status.
+4. The row contains a UUID lead ID, family fields, and `Not paid` status; the legacy expected-price columns remain blank.
 5. Stripe opens only after the row exists.
 6. Stripe receives the same lead ID as `client_reference_id` and locks the validated parent email.
 

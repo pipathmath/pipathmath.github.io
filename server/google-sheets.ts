@@ -118,8 +118,6 @@ export async function createGoogleSheetLead(
       leadId,
       cohortId: cohort.id,
       cohortName: cohort.name,
-      expectedAmountCents: cohort.priceCents,
-      expectedCurrency: cohort.currency,
       parentName: input.parentName,
       studentName: input.studentName,
       parentEmail: input.parentEmail,

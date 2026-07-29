@@ -10,7 +10,7 @@ The customer policies are already configured in Stripe. Adding separate policy p
 
 ## Current readiness
 
-**Current position:** Phases 1 through 3 are complete for the Contact flow. The `main` branch is deployed successfully at `https://pipathacademy.pages.dev`; all public routes return HTTP 200; and a Cloudflare Contact test with a blank optional message reached the Sheet with `notification_status = Sent` and delivered its email to `pipathmath@gmail.com`. The next step is Phase 4: create the exact `$299 USD` Stripe sandbox Payment Link and sandbox webhook destination.
+**Current position:** Phases 1 through 3 are complete for the Contact flow. The `main` branch is deployed successfully at `https://pipathacademy.pages.dev`; all public routes return HTTP 200; and a Cloudflare Contact test with a blank optional message reached the Sheet with `notification_status = Sent` and delivered its email to `pipathmath@gmail.com`. The next step is Phase 4: use the controlled `$10 USD` Stripe sandbox Payment Link and create the sandbox webhook destination.
 
 The local application is technically healthy:
 
@@ -32,7 +32,7 @@ The local application is technically healthy:
 - [x] Keep the local-review values in `wrangler.jsonc` isolated from Cloudflare deployment configuration.
 - [x] Create the `pipathacademy` Cloudflare Pages project and deploy `main` successfully.
 - [x] Add `GOOGLE_SHEETS_WEB_APP_URL` and `GOOGLE_SHEETS_SHARED_SECRET` as encrypted Cloudflare Production secrets.
-- [ ] A Stripe sandbox Payment Link for exactly `$299 USD` has completed the full website-to-Stripe-to-Sheet webhook test.
+- [ ] The controlled Stripe sandbox Payment Link has completed the full website-to-Stripe-to-Sheet webhook test.
 - [ ] The real/live `$299 USD` Stripe Payment Link has been created.
 - [ ] The live Stripe webhook endpoint has been created.
 - [ ] The pre-domain deployment at `pipathacademy.pages.dev` has passed final visual and payment review; route and Contact checks have passed.
@@ -170,7 +170,7 @@ Add:
 | `PUBLIC_ENROLLMENT_ENABLED` | `false` until the sandbox Stripe values below are ready; then change to `true` | Variable |
 | `GOOGLE_SHEETS_WEB_APP_URL` | Apps Script `/exec` URL **(added)** | Encrypted secret |
 | `GOOGLE_SHEETS_SHARED_SECRET` | Matching Apps Script shared secret **(added)** | Encrypted secret |
-| `STRIPE_PAYMENT_LINK_URL_AUGUST_2026` | Add the sandbox Payment Link for exactly `$299 USD` during Phase 4 | Variable |
+| `STRIPE_PAYMENT_LINK_URL_AUGUST_2026` | Add the controlled sandbox Payment Link during Phase 4 | Variable |
 | `STRIPE_WEBHOOK_SECRET` | Add the sandbox endpoint's `whsec_...` during Phase 4 | Encrypted secret |
 
 `PUBLIC_ENROLLMENT_ENABLED` is read while Astro builds the page. Trigger a new deployment after changing it.
@@ -229,14 +229,14 @@ New SAT enrollment leads also send an alert to `pipathmath@gmail.com`. A notific
 
 ## Phase 4: finish the Stripe sandbox webhook test
 
-The prior `$10` Stripe sandbox payment did not test this website's complete reconciliation path. The website expects exactly `$299 USD`; the Google receiver intentionally rejects a paid update whose amount or currency does not match.
+The existing `$10` Stripe sandbox Payment Link can test the complete reconciliation path. The Google receiver records the amount and currency reported by a verified Stripe webhook instead of enforcing a website-owned expected price.
 
 ### 1. Create the sandbox Payment Link
 
 In a Stripe sandbox, create:
 
 - one-time product: August Digital SAT Math Bootcamp;
-- price: exactly `$299 USD`;
+- price: a controlled sandbox amount (`$10 USD` for the existing test link);
 - fixed quantity: 1;
 - the same payment methods intended for production;
 - after-payment redirect to the preview confirmation page.
@@ -274,7 +274,7 @@ Stripe documentation: [Manage event destinations](https://docs.stripe.com/workbe
 - [ ] Confirm a `Leads` row exists before Stripe opens.
 - [ ] Confirm Stripe receives the lead UUID as `client_reference_id`.
 - [ ] Confirm the parent email is locked in Stripe.
-- [ ] Complete the `$299 USD` sandbox payment.
+- [ ] Complete the controlled `$10 USD` sandbox payment.
 - [ ] Confirm Stripe reports a successful webhook delivery.
 - [ ] Confirm the Sheet row changes to `Paid`.
 - [ ] Confirm amount, currency, Checkout Session ID, Payment Intent ID, Stripe event ID, and paid timestamp are recorded.
@@ -296,7 +296,7 @@ Make sure the Stripe account is activated for live payments before continuing.
 Create a new Payment Link in **live mode** with:
 
 - [ ] Product: August Digital SAT Math Bootcamp
-- [ ] One-time price: `$299 USD`
+- [ ] One-time price: the owner-approved tuition (currently `$299 USD`)
 - [ ] Quantity: 1
 - [ ] Completed-payment limit: 15
 - [ ] A useful message for families if the link reaches its limit
@@ -349,7 +349,7 @@ Add:
 | --- | --- | --- |
 | `NODE_VERSION` | `24.14.0` | Variable |
 | `PUBLIC_ENROLLMENT_ENABLED` | `true` | Variable |
-| `STRIPE_PAYMENT_LINK_URL_AUGUST_2026` | New live `$299 USD` link | Variable |
+| `STRIPE_PAYMENT_LINK_URL_AUGUST_2026` | New owner-approved live Payment Link | Variable |
 | `GOOGLE_SHEETS_WEB_APP_URL` | Production Apps Script `/exec` URL | Encrypted secret |
 | `GOOGLE_SHEETS_SHARED_SECRET` | Matching production shared secret | Encrypted secret |
 | `STRIPE_WEBHOOK_SECRET` | Live endpoint's `whsec_...` | Encrypted secret |
@@ -416,7 +416,7 @@ Immediately after the domain becomes active:
 
 - [ ] A real Contact inquiry reaches the Sheet and sends its notification to `pipathmath@gmail.com`.
 - [ ] A live enrollment creates the Sheet lead before Stripe opens.
-- [ ] Stripe shows exactly `$299 USD`.
+- [ ] Stripe shows the owner-approved live tuition (currently `$299 USD`).
 - [ ] The Payment Link has the 15-payment cap.
 - [ ] Parent email is locked.
 - [ ] Payment redirects to the confirmation page.
@@ -510,9 +510,9 @@ Launch only when every item below is checked:
 - [ ] Production-safe Cloudflare configuration is committed.
 - [ ] The pre-domain `pipathacademy.pages.dev` deployment is owner-approved.
 - [ ] Contact and enrollment email alerts both reach `pipathmath@gmail.com`.
-- [ ] The complete `$299 USD` sandbox webhook and refund test passes.
+- [ ] The complete controlled-amount sandbox webhook and refund test passes.
 - [ ] Stripe account is activated for live payments.
-- [ ] Live `$299 USD` Payment Link has the 15-payment cap and correct redirect.
+- [ ] The owner-approved live Payment Link has the 15-payment cap and correct redirect.
 - [ ] Live Stripe webhook destination exists and has a successful delivery.
 - [ ] Cloudflare production variables and secrets are complete.
 - [ ] The production `pages.dev` deployment works before DNS changes.

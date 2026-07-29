@@ -52,13 +52,13 @@ Optional fields:
 - recent SAT/PSAT Math score;
 - additional family note.
 
-Operational fields include the lead ID, cohort, expected amount and currency, lead/payment status, Stripe identifiers, timestamps, attribution, follow-up status, and internal notes.
+Operational fields include the lead ID, cohort, lead/payment status, Stripe-reported paid amount and currency, Stripe identifiers, timestamps, attribution, follow-up status, and internal notes. The Sheet retains its two legacy expected-price columns for schema compatibility, but new leads leave them blank.
 
 ## Validation boundary
 
 The browser performs immediate validation for a smooth experience. The Cloudflare Function repeats all material validation because browser checks can be bypassed. It enforces request method, same-origin submission, JSON type and size, allowed cohort, required fields, email format, phone digit length, score range, and text-length limits.
 
-Apps Script is a second trust boundary. It requires a shared secret stored in Script Properties, uses a script lock for concurrent changes, neutralizes spreadsheet-formula prefixes in text cells, validates operation shapes, prevents duplicate Stripe event processing, and refuses to mark a row paid when the event amount or currency differs from the expected values stored with the lead.
+Apps Script is a second trust boundary. It requires a shared secret stored in Script Properties, uses a script lock for concurrent changes, neutralizes spreadsheet-formula prefixes in text cells, validates operation shapes, and prevents duplicate Stripe event processing. For a verified paid Checkout Session associated with a lead, it validates and records Stripe's actual amount and currency rather than enforcing a price stored in website code.
 
 The Apps Script web app must permit anonymous invocation because Cloudflare cannot complete an interactive Google sign-in. This does not make the Sheet public: Apps Script runs as the authorized owner, while the random shared secret authenticates the calling application. Keeping the deployment URL server-only reduces discovery, but rejected requests can still consume Apps Script quota if the URL leaks. A service-account Google Sheets API integration is the stronger, more complex alternative if this lightweight boundary becomes insufficient.
 

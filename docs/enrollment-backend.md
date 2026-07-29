@@ -64,7 +64,7 @@ The webhook secret is specific to its registered endpoint/environment. It is not
 - Apps Script accepts only a strong shared secret stored in Script Properties.
 - Spreadsheet cells beginning with `=`, `+`, `-`, or `@` are neutralized before insertion.
 - Stripe signatures are verified against the raw request body.
-- The paid amount and currency must match the values saved with the lead.
+- Stripe's paid amount and currency are validated for shape and recorded as the payment source of truth.
 - Unsupported or unrelated Stripe events do not modify the Sheet.
 - Request and response bodies are marked as non-cacheable at the API layer.
 - No card number or Stripe secret key is stored by PiPath.
@@ -76,7 +76,7 @@ The shared-secret design is proportionate for this private, low-volume integrati
 - Lead write failure: show a retryable website error and do not send the parent to Stripe.
 - Payment update failure: return a webhook error so Stripe retries.
 - Duplicate webhook: acknowledge it without a second update.
-- Paid amount/currency mismatch: refuse to mark the row paid and investigate in Stripe.
+- Invalid or missing paid amount/currency: refuse the malformed update so Stripe retries.
 - Missing lead reference: ignore an unrelated Stripe event; a PiPath event with a missing row produces an update failure and retry.
 - Sheet/Stripe disagreement: use Stripe as the financial truth and reconcile the Sheet manually using lead, Checkout Session, or Payment Intent ID.
 
