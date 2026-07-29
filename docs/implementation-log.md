@@ -580,4 +580,5 @@ Status: implemented and verified locally; awaiting owner-run Apps Script setup a
 - Removed the redundant Stripe reconciliation explanation from the post-payment confirmation page.
 - Replaced the oversized family-information headline with a calmer “Thank you for registering.” heading and reduced its responsive type scale.
 - Condensed the next steps to the two parent actions that matter, softened the callout treatment, and grouped the course-schedule action with a concise support link.
+- Changed the shared announcement label from all caps to the title-cased “August SAT Cohort.”
 - Verified the result at desktop and mobile widths. The production build passed with zero Astro diagnostics, five built routes, and successful Pages Functions compilation.
