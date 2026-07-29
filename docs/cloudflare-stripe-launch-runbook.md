@@ -357,6 +357,10 @@ Add:
 
 Do not configure D1, Resend, onboarding, or the retained rate-limit variables for this launch. They are not part of the active Google Sheets workflow.
 
+The live Payment Link URL is runtime configuration and is not hardcoded into the deployed website. Replace it only in Cloudflare's Production `STRIPE_PAYMENT_LINK_URL_AUGUST_2026` variable; do not put the live URL in `wrangler.jsonc`, `.dev.vars.example`, or source code. The local Wrangler and example values may continue to reference a sandbox link.
+
+The website's visible tuition copy and cohort data currently say `$299`. No code change is needed while the live Stripe price is also `$299`. If tuition changes in the future, update both the Stripe Payment Link and the website code/content before deployment so customers never see one amount and get charged another.
+
 Trigger a new production deployment and test the site at its production `pages.dev` address before changing DNS.
 
 ## Phase 8: switch the domain from GitHub Pages to Cloudflare Pages
