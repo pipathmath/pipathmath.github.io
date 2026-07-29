@@ -125,6 +125,19 @@ Use:
 
 Cloudflare documentation: [Astro on Pages](https://developers.cloudflare.com/pages/framework-guides/deploy-an-astro-site/) and [GitHub integration](https://developers.cloudflare.com/pages/configuration/git-integration/github-integration/)
 
+### Initial project-creation variables
+
+The first Pages setup screen labels its environment-variable section as **build-time** variables for Production and Preview. Add only these ordinary, non-secret bootstrap values there:
+
+| Name | Initial value | Why it is needed now |
+| --- | --- | --- |
+| `NODE_VERSION` | `24.14.0` | Tells Cloudflare which Node.js version to use while installing dependencies and building the site. |
+| `PUBLIC_ENROLLMENT_ENABLED` | `false` | Keeps the payment button closed until the Function runtime variables and secrets are configured. |
+
+Do not paste Google or Stripe secrets into this initial build-variable form. Complete the first deployment, then use the project's **Settings -> Variables and Secrets** controls in Phase 3, where preview and production values can be managed separately and sensitive values can be encrypted.
+
+The first deployment is only a build/deployment check. After the required preview runtime values are saved, change the Preview value of `PUBLIC_ENROLLMENT_ENABLED` to `true` and redeploy the preview.
+
 Pushing `croquette` should produce a preview address similar to:
 
 ```text
@@ -134,6 +147,14 @@ https://croquette.<cloudflare-project-name>.pages.dev
 Do not change the public PiPath domain yet.
 
 ## Phase 3: configure Cloudflare preview variables
+
+This list is longer because these values configure the deployed Pages Functions at runtime, not only the initial site build. At this point:
+
+- the Cloudflare project exists;
+- its stable `pages.dev` hostname is known for `SITE_URL`;
+- encrypted secrets can be added through the project settings;
+- the sandbox Payment Link is available;
+- the Stripe webhook signing secret can be added after Phase 4 creates the sandbox webhook destination.
 
 Open:
 
@@ -149,7 +170,7 @@ Add:
 | `STRIPE_PAYMENT_LINK_URL_AUGUST_2026` | Sandbox Payment Link for exactly `$299 USD` | Variable |
 | `GOOGLE_SHEETS_WEB_APP_URL` | Apps Script `/exec` URL | Encrypted secret |
 | `GOOGLE_SHEETS_SHARED_SECRET` | Matching Apps Script shared secret | Encrypted secret |
-| `STRIPE_WEBHOOK_SECRET` | Test endpoint's `whsec_...` | Encrypted secret |
+| `STRIPE_WEBHOOK_SECRET` | Test endpoint's `whsec_...`; add it after creating the Phase 4 webhook destination | Encrypted secret |
 
 `PUBLIC_ENROLLMENT_ENABLED` is read while Astro builds the page. Trigger a new deployment after changing it.
 
