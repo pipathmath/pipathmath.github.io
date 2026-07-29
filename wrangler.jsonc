@@ -1,8 +1,8 @@
 {
-  // Local review configuration. Secrets stay in the ignored `.dev.vars` file.
+  // Local review configuration only. Omitting `pages_build_output_dir` keeps
+  // Cloudflare Pages production and preview settings managed in the dashboard.
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "pipath-academy-local-review",
-  "pages_build_output_dir": "./dist",
   "compatibility_date": "2026-07-26",
   "vars": {
     "SITE_URL": "http://localhost:8788",

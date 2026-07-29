@@ -64,23 +64,22 @@ This gives search engines and users one consistent version of every page.
 
 Complete these before the first production deployment.
 
-### 1. Make `wrangler.jsonc` production-safe
+### 1. Keep `wrangler.jsonc` local-only
 
-The current `wrangler.jsonc` is explicitly a local-review configuration. It contains:
+The repository uses `wrangler.jsonc` for local review. It contains:
 
 - the project name `pipath-academy-local-review`;
 - `SITE_URL=http://localhost:8788`;
 - an existing Stripe Payment Link value.
 
-Do not use that configuration unchanged for production.
+Cloudflare treats a Pages Wrangler file containing `pages_build_output_dir` as the project's deployment configuration and source of truth. Because this project's values are intentionally local, the production-safe approach is to omit that key and manage Cloudflare preview and production variables in the dashboard.
 
 Before launch:
 
-- [ ] Set `name` to the actual Cloudflare Pages project name.
-- [ ] Remove `SITE_URL=http://localhost:8788` from committed production variables.
-- [ ] Remove the existing local/test Stripe link from committed production variables.
+- [x] Omit `pages_build_output_dir` from `wrangler.jsonc` so it remains local-only.
+- [x] Keep the local project name, localhost URL, and local/test Stripe link isolated from Cloudflare deployment configuration.
 - [ ] Keep local-only values in the ignored `.dev.vars` and `.env` files.
-- [ ] Keep `pages_build_output_dir` set to `./dist`.
+- [ ] Set the Cloudflare build output directory to `dist` in the dashboard.
 - [ ] Do not commit the Google shared secret or Stripe webhook signing secret.
 
 Cloudflare documentation: [Pages Wrangler configuration](https://developers.cloudflare.com/pages/functions/wrangler-configuration/)
