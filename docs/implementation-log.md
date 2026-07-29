@@ -574,3 +574,10 @@ Status: implemented and verified locally; awaiting owner-run Apps Script setup a
 - Retained the existing `expected_amount_cents` and `expected_currency` Sheet columns as blank legacy columns so the deployed Sheet requires no header migration.
 - Updated the sandbox runbook so the existing `$10 USD` Payment Link can complete the full website-to-Stripe-to-Sheet test.
 - Verification passed with 32 tests and one opt-in external test skipped, zero Astro diagnostics, five built routes, successful Apps Script syntax validation and Pages Functions compilation, and a clean `git diff --check` result.
+
+## July 28, 2026 — Enrollment confirmation page cleanup
+
+- Removed the redundant Stripe reconciliation explanation from the post-payment confirmation page.
+- Replaced the oversized family-information headline with a calmer “Thank you for registering.” heading and reduced its responsive type scale.
+- Condensed the next steps to the two parent actions that matter, softened the callout treatment, and grouped the course-schedule action with a concise support link.
+- Verified the result at desktop and mobile widths. The production build passed with zero Astro diagnostics, five built routes, and successful Pages Functions compilation.

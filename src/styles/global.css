@@ -1533,37 +1533,28 @@ a {
 }
 
 .confirmation-shell {
-  max-width: 900px;
-  padding-block: 72px 96px;
+  max-width: 780px;
+  padding-block: 64px 88px;
 }
 
 .confirmation-card {
   border: 1px solid var(--color-ink);
   border-radius: var(--radius-medium);
-  padding: clamp(28px, 6vw, 58px);
+  padding: clamp(30px, 5vw, 48px);
   background: var(--color-white);
   box-shadow: var(--shadow-offset);
 }
 
 .confirmation-status {
-  max-width: 720px;
+  max-width: 100%;
 }
 
 .confirmation-status h1 {
-  margin: 18px 0 0;
-  font-size: clamp(2.3rem, 6vw, 4rem);
-  letter-spacing: -0.05em;
-  line-height: 1.03;
-}
-
-.confirmation-status > p {
-  margin: 22px 0 0;
-  color: var(--color-text);
-  font-size: 1.02rem;
-}
-
-.confirmation-status > .button {
-  margin-top: 28px;
+  max-width: 620px;
+  margin: 16px 0 0;
+  font-size: clamp(2rem, 4.5vw, 3.15rem);
+  letter-spacing: -0.045em;
+  line-height: 1.06;
 }
 
 .status-chip-neutral {
@@ -1590,20 +1581,47 @@ a {
 }
 
 .confirmation-next {
-  margin-block: 30px;
-  padding: 24px 26px;
-  border-left: 4px solid var(--color-blue);
-  background: var(--color-sky-soft);
+  margin-top: 30px;
+  border: 1px solid #c8e5f4;
+  border-radius: var(--radius-small);
+  padding: 21px 24px;
+  background: #f5fbfe;
 }
 
-.confirmation-next ol {
-  margin: 12px 0 0;
+.confirmation-next h2 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.confirmation-next ul {
+  margin: 10px 0 0;
   padding-left: 20px;
   color: var(--color-text);
 }
 
 .confirmation-next li + li {
-  margin-top: 7px;
+  margin-top: 5px;
+}
+
+.confirmation-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px 24px;
+  margin-top: 28px;
+}
+
+.confirmation-help {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.9rem;
+}
+
+.confirmation-help a {
+  color: var(--color-blue-dark);
+  font-weight: 600;
+  text-underline-offset: 3px;
 }
 
 .onboarding-intro {
@@ -1708,12 +1726,26 @@ a {
 
 @media (max-width: 640px) {
   .confirmation-shell {
-    padding-block: 44px 72px;
+    padding-block: 40px 64px;
   }
 
   .confirmation-card {
-    padding: 28px 22px 34px;
+    padding: 28px 22px 32px;
     box-shadow: 5px 5px 0 rgba(114, 204, 254, 0.55);
+  }
+
+  .confirmation-next {
+    margin-top: 24px;
+    padding: 18px;
+  }
+
+  .confirmation-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .confirmation-actions .button {
+    width: 100%;
   }
 
   .form-grid {
