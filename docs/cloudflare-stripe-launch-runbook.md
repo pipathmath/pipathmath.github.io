@@ -10,7 +10,7 @@ The customer policies are already configured in Stripe. Adding separate policy p
 
 ## Current readiness
 
-**Current position:** Phases 1 through 3 are complete for the Contact flow. The `main` branch is deployed successfully at `https://pipathacademy.pages.dev`; all public routes return HTTP 200; and a Cloudflare Contact test with a blank optional message reached the Sheet with `notification_status = Sent` and delivered its email to `pipathmath@gmail.com`. The next step is Phase 4: use the controlled `$10 USD` Stripe sandbox Payment Link and create the sandbox webhook destination.
+**Current position:** The pre-domain Cloudflare and sandbox workflow are complete. The `main` branch is deployed at `https://pipathacademy.pages.dev`; all public routes and the Contact-to-Sheet/email path passed; and PiPath reports that the live Payment Link and live Stripe webhook destination have replaced their sandbox counterparts. Safe production probes confirm that checkout configuration is present, a webhook secret is deployed, invalid webhook signatures are rejected, and enrollment is enabled. The next step is Phase 8: custom-domain cutover, followed immediately by one controlled live payment and refund.
 
 The local application is technically healthy:
 
@@ -28,13 +28,13 @@ The local application is technically healthy:
 - [x] Contact-form success handling has been fixed so the completed form and disabled submit button do not remain visible.
 - [x] The website code includes email-alert handling for both new enrollment leads and Contact inquiries, with `pipathmath@gmail.com` as the default destination.
 - [x] Confirm the current Apps Script deployment sends Contact alerts to `pipathmath@gmail.com`.
-- [ ] Confirm the new-enrollment lead alert during the Stripe sandbox test.
+- [x] Confirm the new-enrollment lead alert during the Stripe sandbox test.
 - [x] Keep the local-review values in `wrangler.jsonc` isolated from Cloudflare deployment configuration.
 - [x] Create the `pipathacademy` Cloudflare Pages project and deploy `main` successfully.
 - [x] Add `GOOGLE_SHEETS_WEB_APP_URL` and `GOOGLE_SHEETS_SHARED_SECRET` as encrypted Cloudflare Production secrets.
-- [ ] The controlled Stripe sandbox Payment Link has completed the full website-to-Stripe-to-Sheet webhook test.
-- [ ] The real/live `$299 USD` Stripe Payment Link has been created.
-- [ ] The live Stripe webhook endpoint has been created.
+- [x] The controlled Stripe sandbox Payment Link has completed the full website-to-Stripe-to-Sheet webhook test.
+- [x] The real/live `$299 USD` Stripe Payment Link has been created and added to Cloudflare Production.
+- [x] The live Stripe webhook endpoint has been created and its signing secret added to Cloudflare Production.
 - [ ] The pre-domain deployment at `pipathacademy.pages.dev` has passed final visual and payment review; route and Contact checks have passed.
 - [ ] The production domain has been switched from GitHub Pages to Cloudflare Pages.
 
