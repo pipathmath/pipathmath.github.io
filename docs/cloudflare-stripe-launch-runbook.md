@@ -151,7 +151,6 @@ Do not change the public PiPath domain yet.
 This list is longer because these values configure the deployed Pages Functions at runtime, not only the initial site build. At this point:
 
 - the Cloudflare project exists;
-- its stable `pages.dev` hostname is known for `SITE_URL`;
 - encrypted secrets can be added through the project settings;
 - the sandbox Payment Link is available;
 - the Stripe webhook signing secret can be added after Phase 4 creates the sandbox webhook destination.
@@ -166,13 +165,14 @@ Add:
 | --- | --- | --- |
 | `NODE_VERSION` | `24.14.0` | Variable |
 | `PUBLIC_ENROLLMENT_ENABLED` | `true` | Variable |
-| `SITE_URL` | Stable `croquette.<project>.pages.dev` URL | Variable |
 | `STRIPE_PAYMENT_LINK_URL_AUGUST_2026` | Sandbox Payment Link for exactly `$299 USD` | Variable |
 | `GOOGLE_SHEETS_WEB_APP_URL` | Apps Script `/exec` URL | Encrypted secret |
 | `GOOGLE_SHEETS_SHARED_SECRET` | Matching Apps Script shared secret | Encrypted secret |
 | `STRIPE_WEBHOOK_SECRET` | Test endpoint's `whsec_...`; add it after creating the Phase 4 webhook destination | Encrypted secret |
 
 `PUBLIC_ENROLLMENT_ENABLED` is read while Astro builds the page. Trigger a new deployment after changing it.
+
+`SITE_URL` is not required by the active Google Sheets enrollment, inquiry, or Stripe webhook flow. It is retained as an optional code setting for future/reference onboarding email modules, so do not add it for this launch.
 
 Cloudflare documentation: [Pages variables and secrets](https://developers.cloudflare.com/pages/functions/bindings/)
 
@@ -346,7 +346,6 @@ Add:
 | --- | --- | --- |
 | `NODE_VERSION` | `24.14.0` | Variable |
 | `PUBLIC_ENROLLMENT_ENABLED` | `true` | Variable |
-| `SITE_URL` | `https://www.pipathacademy.com` | Variable |
 | `STRIPE_PAYMENT_LINK_URL_AUGUST_2026` | New live `$299 USD` link | Variable |
 | `GOOGLE_SHEETS_WEB_APP_URL` | Production Apps Script `/exec` URL | Encrypted secret |
 | `GOOGLE_SHEETS_SHARED_SECRET` | Matching production shared secret | Encrypted secret |
