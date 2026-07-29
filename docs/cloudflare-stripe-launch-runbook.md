@@ -1,6 +1,6 @@
 # PiPath Academy Cloudflare and Stripe launch runbook
 
-Last updated: 2026-07-28
+Last updated: 2026-07-29
 
 ## Purpose
 
@@ -10,7 +10,7 @@ The customer policies are already configured in Stripe. Adding separate policy p
 
 ## Current readiness
 
-**Current position:** local development is complete enough to begin **Phase 1: prepare the repository for Cloudflare**. Stripe webhook setup still comes after the Cloudflare preview deployment, as ordered in this runbook.
+**Current position:** Phases 1 and 2 are complete. The `main` branch is deployed successfully at `https://pipathacademy.pages.dev`, and the two Google Apps Script secrets have been added to the Cloudflare Production environment. The next step is to redeploy with those bindings and validate the Contact flow before beginning the Stripe sandbox setup.
 
 The local application is technically healthy:
 
@@ -28,12 +28,13 @@ The local application is technically healthy:
 - [x] Contact-form success handling has been fixed so the completed form and disabled submit button do not remain visible.
 - [x] The website code includes email-alert handling for both new enrollment leads and Contact inquiries, with `pipathmath@gmail.com` as the default destination.
 - [ ] Re-publish or confirm the latest repository `integrations/google-apps-script/Code.gs`, run `testNotificationEmail`, and verify that both alert types arrive. The last reported inquiry row said `Email failed`, so email authorization has not yet been proven complete.
-- [ ] Replace the local-review values in `wrangler.jsonc` with production-safe Cloudflare configuration.
-- [ ] Create the Cloudflare Pages project and deploy the `croquette` preview.
+- [x] Keep the local-review values in `wrangler.jsonc` isolated from Cloudflare deployment configuration.
+- [x] Create the `pipathacademy` Cloudflare Pages project and deploy `main` successfully.
+- [x] Add `GOOGLE_SHEETS_WEB_APP_URL` and `GOOGLE_SHEETS_SHARED_SECRET` as encrypted Cloudflare Production secrets.
 - [ ] A Stripe sandbox Payment Link for exactly `$299 USD` has completed the full website-to-Stripe-to-Sheet webhook test.
 - [ ] The real/live `$299 USD` Stripe Payment Link has been created.
 - [ ] The live Stripe webhook endpoint has been created.
-- [ ] The Cloudflare preview deployment has passed final review.
+- [ ] The pre-domain deployment at `pipathacademy.pages.dev` has passed final review.
 - [ ] The production domain has been switched from GitHub Pages to Cloudflare Pages.
 
 ## Terminology: `www` and the apex domain
@@ -78,9 +79,9 @@ Before launch:
 
 - [x] Omit `pages_build_output_dir` from `wrangler.jsonc` so it remains local-only.
 - [x] Keep the local project name, localhost URL, and local/test Stripe link isolated from Cloudflare deployment configuration.
-- [ ] Keep local-only values in the ignored `.dev.vars` and `.env` files.
-- [ ] Set the Cloudflare build output directory to `dist` in the dashboard.
-- [ ] Do not commit the Google shared secret or Stripe webhook signing secret.
+- [x] Keep local-only values in the ignored `.dev.vars` and `.env` files.
+- [x] Set the Cloudflare build output directory to `dist` in the dashboard.
+- [x] Do not commit the Google shared secret or Stripe webhook signing secret.
 
 Cloudflare documentation: [Pages Wrangler configuration](https://developers.cloudflare.com/pages/functions/wrangler-configuration/)
 
@@ -117,7 +118,6 @@ Use:
 | Framework | Astro |
 | Root directory | Repository root |
 | Production branch | `main` recommended |
-| Preview branch | `croquette` |
 | Build command | `npm run build` |
 | Output directory | `dist` |
 | Build system | V3 |
@@ -136,17 +136,19 @@ The first Pages setup screen labels its environment-variable section as **build-
 
 Do not paste Google or Stripe secrets into this initial build-variable form. Complete the first deployment, then use the project's **Settings -> Variables and Secrets** controls in Phase 3, where preview and production values can be managed separately and sensitive values can be encrypted.
 
-The first deployment is only a build/deployment check. After the required preview runtime values are saved, change the Preview value of `PUBLIC_ENROLLMENT_ENABLED` to `true` and redeploy the preview.
+The first deployment is only a build/deployment check. Keep `PUBLIC_ENROLLMENT_ENABLED=false` until the Google connection is validated and the sandbox Stripe values exist.
 
-Pushing `croquette` should produce a preview address similar to:
+The successful `main` deployment is available at:
 
 ```text
-https://croquette.<cloudflare-project-name>.pages.dev
+https://pipathacademy.pages.dev
 ```
+
+Cloudflare can still create branch preview deployments for later non-`main` work, but the pre-domain launch validation in this runbook uses the stable `main` `pages.dev` address.
 
 Do not change the public PiPath domain yet.
 
-## Phase 3: configure Cloudflare preview variables
+## Phase 3: configure the pre-domain Cloudflare Production variables
 
 This list is longer because these values configure the deployed Pages Functions at runtime, not only the initial site build. At this point:
 
@@ -157,18 +159,18 @@ This list is longer because these values configure the deployed Pages Functions 
 
 Open:
 
-**Workers & Pages -> PiPath project -> Settings -> Variables and Secrets -> Preview**
+**Workers & Pages -> pipathacademy -> Settings -> Variables and Secrets -> Production**
 
 Add:
 
-| Name | Preview value | Type |
+| Name | Pre-domain Production value | Type |
 | --- | --- | --- |
 | `NODE_VERSION` | `24.14.0` | Variable |
-| `PUBLIC_ENROLLMENT_ENABLED` | `true` | Variable |
-| `STRIPE_PAYMENT_LINK_URL_AUGUST_2026` | Sandbox Payment Link for exactly `$299 USD` | Variable |
-| `GOOGLE_SHEETS_WEB_APP_URL` | Apps Script `/exec` URL | Encrypted secret |
-| `GOOGLE_SHEETS_SHARED_SECRET` | Matching Apps Script shared secret | Encrypted secret |
-| `STRIPE_WEBHOOK_SECRET` | Test endpoint's `whsec_...`; add it after creating the Phase 4 webhook destination | Encrypted secret |
+| `PUBLIC_ENROLLMENT_ENABLED` | `false` until the sandbox Stripe values below are ready; then change to `true` | Variable |
+| `GOOGLE_SHEETS_WEB_APP_URL` | Apps Script `/exec` URL **(added)** | Encrypted secret |
+| `GOOGLE_SHEETS_SHARED_SECRET` | Matching Apps Script shared secret **(added)** | Encrypted secret |
+| `STRIPE_PAYMENT_LINK_URL_AUGUST_2026` | Add the sandbox Payment Link for exactly `$299 USD` during Phase 4 | Variable |
+| `STRIPE_WEBHOOK_SECRET` | Add the sandbox endpoint's `whsec_...` during Phase 4 | Encrypted secret |
 
 `PUBLIC_ENROLLMENT_ENABLED` is read while Astro builds the page. Trigger a new deployment after changing it.
 
@@ -247,7 +249,7 @@ In Stripe's test/sandbox environment, open:
 Endpoint:
 
 ```text
-https://croquette.<cloudflare-project-name>.pages.dev/api/stripe-webhook
+https://pipathacademy.pages.dev/api/stripe-webhook
 ```
 
 Subscribe only to:
@@ -260,13 +262,13 @@ checkout.session.expired
 charge.refunded
 ```
 
-Copy its `whsec_...` value to the Cloudflare **Preview** secret `STRIPE_WEBHOOK_SECRET`, then redeploy the preview.
+Copy its `whsec_...` value to the Cloudflare **Production** secret `STRIPE_WEBHOOK_SECRET`, then redeploy `main`. These are still sandbox values because the custom public domain has not been connected.
 
 Stripe documentation: [Manage event destinations](https://docs.stripe.com/workbench/event-destinations)
 
-### 3. Test the complete preview flow
+### 3. Test the complete pre-domain flow
 
-- [ ] Open the Cloudflare preview SAT Bootcamp page.
+- [ ] Open `https://pipathacademy.pages.dev/sat-math-bootcamp`.
 - [ ] Submit a clearly labeled test family.
 - [ ] Confirm a `Leads` row exists before Stripe opens.
 - [ ] Confirm Stripe receives the lead UUID as `client_reference_id`.
@@ -505,7 +507,7 @@ SEO/AEO does not guarantee rankings or inclusion in an AI-generated answer. The 
 Launch only when every item below is checked:
 
 - [ ] Production-safe Cloudflare configuration is committed.
-- [ ] Cloudflare preview is owner-approved.
+- [ ] The pre-domain `pipathacademy.pages.dev` deployment is owner-approved.
 - [ ] Contact and enrollment email alerts both reach `pipathmath@gmail.com`.
 - [ ] The complete `$299 USD` sandbox webhook and refund test passes.
 - [ ] Stripe account is activated for live payments.
